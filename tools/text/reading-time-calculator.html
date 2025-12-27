@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading Time Calculator</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+
+<style>
+:root{
+  --ts-bg:#0b1220;
+  --ts-card:#0f1a33;
+  --ts-border:rgba(255,255,255,.10);
+  --ts-text:rgba(255,255,255,.92);
+  --ts-muted:rgba(255,255,255,.70);
+  --ts-accent:#7dd3fc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+              radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+              var(--ts-bg);
+  color:var(--ts-text);
+}
+a{color:var(--ts-accent); text-decoration:none}
+a:hover{text-decoration:underline}
+.ts-header{
+  display:flex; gap:12px; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--ts-border);
+  position:sticky; top:0; backdrop-filter: blur(10px);
+  background: rgba(11,18,32,.65);
+}
+.ts-header .left{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.ts-badge{
+  font-size:12px; padding:6px 10px; border:1px solid var(--ts-border);
+  border-radius:999px; color:var(--ts-muted)
+}
+.ts-container{max-width:980px; margin:0 auto; padding:22px 16px 44px}
+h1{font-size:28px; margin:10px 0 6px}
+.ts-sub{margin:0 0 18px; color:var(--ts-muted)}
+.ts-grid{display:grid; grid-template-columns: 1fr; gap:14px}
+@media (min-width: 900px){ .ts-grid.cols-2{grid-template-columns: 1fr 1fr} }
+.ts-card{
+  background: rgba(15,26,51,.86);
+  border:1px solid var(--ts-border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+}
+label{display:block; font-size:13px; color:var(--ts-muted); margin:8px 0 6px}
+input, select, textarea{
+  width:100%;
+  background: rgba(0,0,0,.18);
+  border:1px solid var(--ts-border);
+  border-radius:12px;
+  padding:10px 12px;
+  color:var(--ts-text);
+  outline:none;
+}
+textarea{min-height:180px; resize:vertical; line-height:1.4}
+.ts-row{display:grid; grid-template-columns: 1fr; gap:12px}
+@media (min-width: 700px){ .ts-row.cols-2{grid-template-columns: 1fr 1fr} .ts-row.cols-3{grid-template-columns:1fr 1fr 1fr}}
+.ts-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+button{
+  cursor:pointer;
+  background: rgba(125,211,252,.18);
+  border:1px solid rgba(125,211,252,.35);
+  color:var(--ts-text);
+  padding:10px 12px;
+  border-radius:12px;
+}
+button.secondary{
+  background: rgba(255,255,255,.06);
+  border:1px solid var(--ts-border);
+}
+button:active{transform:translateY(1px)}
+.ts-kpi{
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:10px
+}
+.ts-pill{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--ts-border);
+  background: rgba(0,0,0,.16);
+  min-width: 160px;
+}
+.ts-pill b{display:block; font-size:14px}
+.ts-pill span{display:block; font-size:12px; color:var(--ts-muted); margin-top:4px}
+.ts-note{margin-top:10px; color:var(--ts-muted); font-size:12px}
+.ts-footer{
+  padding:18px 16px; border-top:1px solid var(--ts-border);
+  color:var(--ts-muted); text-align:center
+}
+code.ts-inline{background:rgba(255,255,255,.08); padding:2px 6px; border-radius:8px; border:1px solid var(--ts-border)}
+</style>
+</head>
+<body>
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Text</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="index.html">⬅ Back to Text tools</a>
+  </div>
+</header>
+<main class="ts-container">
+  <h1>Reading Time Calculator</h1>
+  <p class="ts-sub">Estimate reading time based on word count and reading speed.</p>
+  
+<div class="ts-grid">
+  <div class="ts-card">
+    <label for="rtText">Text</label>
+    <textarea id="rtText" placeholder="Paste or type your text here..."></textarea>
+
+    <div class="ts-row cols-3" style="margin-top:10px">
+      <div>
+        <label for="wpm">Reading speed (WPM)</label>
+        <input id="wpm" type="number" min="80" max="600" step="10" value="200">
+      </div>
+      <div>
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option value="silent" selected>Silent reading</option>
+          <option value="aloud">Reading aloud</option>
+        </select>
+      </div>
+      <div>
+        <label for="rounding">Rounding</label>
+        <select id="rounding">
+          <option value="exact" selected>Exact (min + sec)</option>
+          <option value="ceil">Round up to minutes</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ts-kpi" id="kpis"></div>
+
+    <div class="ts-actions">
+      <button id="clearBtn" class="secondary">Clear</button>
+      <button id="copyBtn">Copy summary</button>
+    </div>
+
+    <div class="ts-note">WPM defaults: silent ~200, aloud ~130. Estimates only.</div>
+  </div>
+</div>
+
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Estimates reading time from a word count and reading speed.</p>
+<ul>
+  <li>Words are counted from your pasted text.</li>
+  <li>Reading time: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">minutes = words ÷ WPM</code> and the remainder becomes seconds.</li>
+  <li>Typical web reading speeds are ~200–250 WPM (varies by language and difficulty).</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+</main>
+<footer class="ts-footer">Toolstack add-on pages • Works offline • Single-file tools</footer>
+<script>
+
+const $ = (id)=>document.getElementById(id);
+
+function countWords(text){
+  const t = (text || "").trim();
+  if(!t) return 0;
+  return t.split(/\s+/).filter(Boolean).length;
+}
+
+function formatTime(seconds, rounding){
+  if(!isFinite(seconds) || seconds <= 0) return "0 sec";
+  if(rounding === "ceil"){
+    const mins = Math.max(1, Math.ceil(seconds/60));
+    return `${mins} min`;
+  }
+  const mins = Math.floor(seconds/60);
+  const secs = Math.round(seconds % 60);
+  if(mins <= 0) return `${secs} sec`;
+  if(secs === 60) return `${mins+1} min 0 sec`;
+  return `${mins} min ${secs} sec`;
+}
+
+function render(){
+  const text = $("rtText").value;
+  const words = countWords(text);
+  const chars = (text || "").length;
+  const charsNoSpaces = (text || "").replace(/\s/g,"").length;
+
+  const mode = $("mode").value;
+  const baseWpm = Number($("wpm").value) || 200;
+  const wpm = mode === "aloud" ? Math.max(60, Math.min(600, baseWpm)) : Math.max(80, Math.min(600, baseWpm));
+
+  const minutes = words / wpm;
+  const seconds = minutes * 60;
+
+  const rounding = $("rounding").value;
+
+  const kpis = [
+    {label:"Words", value: words.toLocaleString()},
+    {label:"Characters", value: chars.toLocaleString()},
+    {label:"Chars (no spaces)", value: charsNoSpaces.toLocaleString()},
+    {label:"Estimated time", value: formatTime(seconds, rounding)}
+  ];
+
+  $("kpis").innerHTML = kpis.map(k=>`
+    <div class="ts-pill"><b>${k.value}</b><span>${k.label}</span></div>
+  `).join("");
+}
+
+["input","change"].forEach(evt=>{
+  $("rtText").addEventListener(evt, render);
+  $("wpm").addEventListener(evt, render);
+  $("mode").addEventListener(evt, render);
+  $("rounding").addEventListener(evt, render);
+});
+
+$("clearBtn").addEventListener("click", ()=>{
+  $("rtText").value = "";
+  render();
+  $("rtText").focus();
+});
+
+$("copyBtn").addEventListener("click", async ()=>{
+  const text = $("rtText").value;
+  const words = countWords(text);
+  const mode = $("mode").value;
+  const wpm = Number($("wpm").value) || 200;
+  const rounding = $("rounding").value;
+  const seconds = (words / wpm) * 60;
+
+  const summary = `Words: ${words}\nMode: ${mode}\nWPM: ${wpm}\nEstimated: ${formatTime(seconds, rounding)}`;
+  try{
+    await navigator.clipboard.writeText(summary);
+    $("copyBtn").textContent = "Copied ✅";
+    setTimeout(()=> $("copyBtn").textContent = "Copy summary", 1200);
+  }catch(e){
+    alert("Couldn't copy. Your browser may block clipboard access.");
+  }
+});
+
+render();
+
+</script>
+</body>
+</html>

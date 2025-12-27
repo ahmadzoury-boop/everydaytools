@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- SEO -->
+  <title>Random Number Generator – Fast, Unique, Sorted, Decimal Support</title>
+  <meta name="description" content="Generate random numbers between any min and max. Supports decimals, unique draws, sorting, multiple results, and clipboard copy. Fast, offline, and accurate." />
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/random/random-number-generator.html" />
+
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
+    .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .topnav a{opacity:.9}
+    h1{margin:0;font-size:26px;font-weight:900}
+    .sub{opacity:.8;margin-top:6px;line-height:1.6}
+
+    .card{padding:16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    label{display:block;font-size:.95rem;opacity:.9;margin-bottom:6px;font-weight:800}
+
+    input,select,textarea{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.15);
+      color:inherit;
+      outline:none;
+      font-size:18px;
+    }
+
+    textarea{
+      min-height:200px;
+      resize:vertical;
+      line-height:1.6;
+      font-size:26px;
+      font-weight:700;
+    }
+
+    .row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+    @media (max-width:900px){.row{grid-template-columns:1fr}}
+
+    .tog{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);opacity:.92;font-weight:900}
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    button{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.2);
+      color:inherit;
+      cursor:pointer;
+      font-weight:900;
+      font-size:16px;
+    }
+    button.primary{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+
+    .pillStatus{
+      display:inline-block;
+      margin-top:12px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.14);
+      opacity:.9;
+      font-weight:900;
+      font-size:20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="./index.html">← Back to Random Tools</a>
+      <div style="opacity:.8;font-weight:800">Random Number Generator</div>
+    </div>
+
+    <div class="card">
+      <h1>Random Number Generator</h1>
+      <div class="sub">
+        Generate random numbers between <b>min</b> and <b>max</b>.  
+        Supports decimals, unique draws, sorting, and multiple results.
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="min">Min</label>
+          <input id="min" type="number" value="1" />
+        </div>
+        <div>
+          <label for="max">Max</label>
+          <input id="max" type="number" value="100" />
+        </div>
+        <div>
+          <label for="count">How many?</label>
+          <input id="count" type="number" min="1" max="500" value="1" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="decimals">Decimal places</label>
+          <select id="decimals">
+            <option value="0">0 (integers)</option>
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <div style="grid-column: span 2;">
+          <div class="tog">
+            <label class="pill"><input id="unique" type="checkbox" /> Unique results (integers only)</label>
+            <label class="pill"><input id="sorted" type="checkbox" /> Sort results</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="genBtn" type="button">Generate</button>
+        <button id="clearBtn" type="button">Clear</button>
+        <button class="primary" id="copyBtn" type="button">Copy results</button>
+        <button id="resetBtn" type="button">Reset</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="out">Results</label>
+        <textarea id="out" readonly></textarea>
+      </div>
+
+      <div class="pillStatus" id="status">Ready.</div>
+    </div>
+  </div>
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        <p>Generates random numbers between a minimum and maximum.</p>
+        <ul>
+          <li>Integers use an inclusive range so both min and max can appear.</li>
+          <li>Decimals use a uniform random value rounded to your chosen precision.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const minEl = $("min");
+  const maxEl = $("max");
+  const countEl = $("count");
+  const decimalsEl = $("decimals");
+  const uniqueEl = $("unique");
+  const sortedEl = $("sorted");
+  const outEl = $("out");
+  const status = $("status");
+
+  const LS = "toolstack_rng_v1";
+
+  function setStatus(msg, ok=true){
+    status.textContent = msg;
+    status.style.borderColor = ok ? "rgba(104,240,178,.35)" : "rgba(255,122,122,.35)";
+  }
+
+  function save(){
+    try{
+      localStorage.setItem(LS, JSON.stringify({
+        min: minEl.value,
+        max: maxEl.value,
+        count: countEl.value,
+        decimals: decimalsEl.value,
+        unique: uniqueEl.checked,
+        sorted: sortedEl.checked
+      }));
+    }catch(e){}
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(LS);
+      if(!raw) return;
+      const d = JSON.parse(raw);
+      if(d.min != null) minEl.value = d.min;
+      if(d.max != null) maxEl.value = d.max;
+      if(d.count != null) countEl.value = d.count;
+      if(d.decimals != null) decimalsEl.value = d.decimals;
+      if(typeof d.unique === "boolean") uniqueEl.checked = d.unique;
+      if(typeof d.sorted === "boolean") sortedEl.checked = d.sorted;
+    }catch(e){}
+  }
+
+  function cryptoFloat(){
+    if(window.crypto && crypto.getRandomValues){
+      const a = new Uint32Array(1);
+      crypto.getRandomValues(a);
+      return a[0] / 0xFFFFFFFF;
+    }
+    return Math.random();
+  }
+
+  function randInt(min, max){
+    return Math.floor(cryptoFloat() * (max - min + 1)) + min;
+  }
+
+  function randDecimal(min, max, places){
+    const x = cryptoFloat() * (max - min) + min;
+    const f = Math.pow(10, places);
+    return Math.round(x * f) / f;
+  }
+
+  function generate(){
+    let min = Number(minEl.value);
+    let max = Number(maxEl.value);
+    let count = Math.floor(Number(countEl.value));
+    const places = Number(decimalsEl.value);
+
+    if(!Number.isFinite(min) || !Number.isFinite(max)){
+      setStatus("Min/Max must be numbers.", false);
+      return;
+    }
+
+    if(!Number.isFinite(count) || count < 1) count = 1;
+    if(count > 500) count = 500;
+
+    if(max < min){ [min, max] = [max, min]; }
+
+    const wantUnique = uniqueEl.checked && places === 0;
+
+    if(wantUnique){
+      const rangeSize = (Math.floor(max) - Math.floor(min) + 1);
+      if(count > rangeSize){
+        setStatus(`Can't pick ${count} unique numbers from a range of ${rangeSize}.`, false);
+        return;
+      }
+    }
+
+    const results = [];
+
+    if(places === 0){
+      const imin = Math.floor(min);
+      const imax = Math.floor(max);
+
+      if(wantUnique){
+        const set = new Set();
+        while(set.size < count){
+          set.add(randInt(imin, imax));
+        }
+        results.push(...set);
+      } else {
+        for(let i=0;i<count;i++){
+          results.push(randInt(imin, imax));
+        }
+      }
+    } else {
+      for(let i=0;i<count;i++){
+        results.push(randDecimal(min, max, places));
+      }
+    }
+
+    if(sortedEl.checked){
+      results.sort((a,b) => a-b);
+    }
+
+    outEl.value = results.join("\n");
+    setStatus(`Generated ${results.length} result(s).`, true);
+    save();
+  }
+
+  function clear(){
+    outEl.value = "";
+    setStatus("Cleared.", true);
+  }
+
+  function reset(){
+    minEl.value = 1;
+    maxEl.value = 100;
+    countEl.value = 1;
+    decimalsEl.value = "2";
+    uniqueEl.checked = false;
+    sortedEl.checked = false;
+    outEl.value = "";
+    try{ localStorage.removeItem(LS); }catch(e){}
+    setStatus("Reset.", true);
+  }
+
+  async function copy(){
+    if(!outEl.value.trim()){
+      setStatus("Nothing to copy.", false);
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(outEl.value.trim());
+      setStatus("Copied to clipboard.", true);
+    }catch(e){
+      setStatus("Copy failed.", false);
+    }
+  }
+
+  $("genBtn").addEventListener("click", generate);
+  $("clearBtn").addEventListener("click", clear);
+  $("resetBtn").addEventListener("click", reset);
+  $("copyBtn").addEventListener("click", copy);
+
+  [minEl, maxEl, countEl, decimalsEl, uniqueEl, sortedEl].forEach(el => {
+    el.addEventListener("change", save);
+  });
+
+  load();
+})();
+</script>
+
+</body>
+</html>

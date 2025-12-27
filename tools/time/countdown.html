@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Countdown Timer – Custom Timers with Alerts & Presets | ToolStack</title>
+  <meta name="description" content="Free online countdown timer with sound alerts, presets, pause/resume, and custom durations. Perfect for workouts, cooking, studying, meetings, and productivity." />
+
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/time/countdown.html" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    :root{
+      --ts-bg:#0b1220;
+      --ts-card:#0f1a33;
+      --ts-border:rgba(255,255,255,.10);
+      --ts-text:rgba(255,255,255,.92);
+      --ts-muted:rgba(255,255,255,.70);
+      --ts-accent:#7dd3fc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+        var(--ts-bg);
+      color:var(--ts-text);
+    }
+    a{color:var(--ts-accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .ts-header{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--ts-border);
+      position:sticky;top:0;backdrop-filter:blur(10px);
+      background:rgba(11,18,32,.65);
+    }
+    .ts-header .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .ts-badge{
+      font-size:12px;padding:6px 10px;border:1px solid var(--ts-border);
+      border-radius:999px;color:var(--ts-muted)
+    }
+
+    .ts-container{max-width:900px;margin:0 auto;padding:22px 16px 44px}
+    h1{font-size:32px;margin:10px 0 6px}
+    .ts-sub{margin:0 0 18px;color:var(--ts-muted)}
+
+    .ts-card{
+      background:rgba(15,26,51,.86);
+      border:1px solid var(--ts-border);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+      text-align:center;
+    }
+
+    .timer-display{
+      font-size:64px;
+      font-weight:900;
+      letter-spacing:2px;
+      margin:20px 0;
+    }
+
+    .preset-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+      margin-bottom:20px;
+    }
+    .preset-btn{
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid var(--ts-border);
+      background:rgba(255,255,255,.06);
+      cursor:pointer;
+      font-weight:700;
+      color:var(--ts-text);
+    }
+
+    .ts-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:10px;
+    }
+    button{
+      cursor:pointer;
+      background:rgba(125,211,252,.18);
+      border:1px solid rgba(125,211,252,.35);
+      color:var(--ts-text);
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+    }
+    button.secondary{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--ts-border);
+    }
+
+    .input-row{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:10px;
+    }
+    .input-row input{
+      width:90px;
+      text-align:center;
+      font-size:18px;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid var(--ts-border);
+      background:rgba(0,0,0,.18);
+      color:var(--ts-text);
+    }
+
+    .ts-note{
+      margin-top:14px;
+      color:var(--ts-muted);
+      font-size:12px;
+      text-align:center;
+    }
+
+    .ts-footer{
+      padding:18px 16px;
+      border-top:1px solid var(--ts-border);
+      color:var(--ts-muted);
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Time Tools</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="./index.html">⬅ Back to Time Tools</a>
+  </div>
+</header>
+
+<main class="ts-container">
+  <h1>Countdown Timer</h1>
+  <p class="ts-sub">Set a custom timer or choose a preset. Includes pause, resume, reset, and sound alert.</p>
+
+  <div class="ts-card">
+
+    <!-- TIMER DISPLAY -->
+    <div class="timer-display" id="display">00:00</div>
+
+    <!-- PRESETS -->
+    <div class="preset-row">
+      <button class="preset-btn" data-min="1">1 min</button>
+      <button class="preset-btn" data-min="5">5 min</button>
+      <button class="preset-btn" data-min="10">10 min</button>
+      <button class="preset-btn" data-min="15">15 min</button>
+      <button class="preset-btn" data-min="30">30 min</button>
+      <button class="preset-btn" data-min="60">1 hour</button>
+    </div>
+
+    <!-- CUSTOM INPUT -->
+    <div class="input-row">
+      <input id="minInput" type="number" min="0" max="999" placeholder="Min">
+      <input id="secInput" type="number" min="0" max="59" placeholder="Sec">
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="ts-actions">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn" class="secondary">Pause</button>
+      <button id="resumeBtn" class="secondary">Resume</button>
+      <button id="resetBtn" class="secondary">Reset</button>
+    </div>
+
+    <div class="ts-note">Timer continues running even if you switch tabs.</div>
+  </div>
+
+  <!-- EXPLANATION -->
+  <section style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">How it works</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        <p>This countdown timer supports:</p>
+        <ul>
+          <li>Custom minutes and seconds</li>
+          <li>Quick presets (1–60 minutes)</li>
+          <li>Pause and resume</li>
+          <li>Reset anytime</li>
+          <li>Sound alert when finished</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<footer class="ts-footer">
+  ToolStack Time Tools • Works offline • Single‑file utilities
+</footer>
+<script>
+  const displayEl = document.getElementById("display");
+  const minInput = document.getElementById("minInput");
+  const secInput = document.getElementById("secInput");
+  const startBtn = document.getElementById("startBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const resumeBtn = document.getElementById("resumeBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const presetButtons = document.querySelectorAll(".preset-btn");
+
+  let totalSeconds = 0;
+  let remainingSeconds = 0;
+  let intervalId = null;
+  let isRunning = false;
+
+  function formatTime(sec){
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    const mm = String(m).padStart(2,"0");
+    const ss = String(s).padStart(2,"0");
+    return mm + ":" + ss;
+  }
+
+  function updateDisplay(){
+    displayEl.textContent = formatTime(remainingSeconds);
+  }
+
+  function stopTimer(){
+    if(intervalId !== null){
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+    isRunning = false;
+  }
+
+  function beep(){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.0);
+      osc.stop(ctx.currentTime + 1.0);
+    }catch(e){
+      // Ignore audio errors
+    }
+  }
+
+  function startTimer(){
+    stopTimer();
+
+    let m = parseInt(minInput.value, 10);
+    let s = parseInt(secInput.value, 10);
+
+    if(isNaN(m)) m = 0;
+    if(isNaN(s)) s = 0;
+
+    if(s < 0) s = 0;
+    if(s > 59) s = 59;
+    if(m < 0) m = 0;
+
+    totalSeconds = m * 60 + s;
+    remainingSeconds = totalSeconds;
+
+    if(remainingSeconds <= 0){
+      remainingSeconds = 0;
+      updateDisplay();
+      return;
+    }
+
+    updateDisplay();
+    isRunning = true;
+
+    intervalId = setInterval(() => {
+      remainingSeconds--;
+      if(remainingSeconds <= 0){
+        remainingSeconds = 0;
+        updateDisplay();
+        stopTimer();
+        beep();
+      }else{
+        updateDisplay();
+      }
+    }, 1000);
+  }
+
+  function pauseTimer(){
+    if(!isRunning) return;
+    stopTimer();
+  }
+
+  function resumeTimer(){
+    if(isRunning) return;
+    if(remainingSeconds <= 0) return;
+
+    isRunning = true;
+    intervalId = setInterval(() => {
+      remainingSeconds--;
+      if(remainingSeconds <= 0){
+        remainingSeconds = 0;
+        updateDisplay();
+        stopTimer();
+        beep();
+      }else{
+        updateDisplay();
+      }
+    }, 1000);
+  }
+
+  function resetTimer(){
+    stopTimer();
+    remainingSeconds = 0;
+    totalSeconds = 0;
+    minInput.value = "";
+    secInput.value = "";
+    updateDisplay();
+  }
+
+  startBtn.addEventListener("click", startTimer);
+  pauseBtn.addEventListener("click", pauseTimer);
+  resumeBtn.addEventListener("click", resumeTimer);
+  resetBtn.addEventListener("click", resetTimer);
+
+  presetButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const min = parseInt(btn.getAttribute("data-min"), 10) || 0;
+      minInput.value = min;
+      secInput.value = 0;
+      remainingSeconds = min * 60;
+      totalSeconds = remainingSeconds;
+      updateDisplay();
+    });
+  });
+
+  // Initialize display
+  remainingSeconds = 0;
+  updateDisplay();
+</script>
+</body>
+</html>

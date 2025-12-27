@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Age Calculator — ToolStack</title>
+  <meta name="description" content="Calculate your age in years, months, and days. See total days lived and time until your next birthday." />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
+    .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .topnav a{opacity:.9}
+    h1{margin:0;font-size:22px}
+    .sub{opacity:.8;margin-top:6px;line-height:1.6}
+
+    .card{padding:16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    label{display:block;font-size:.9rem;opacity:.9;margin-bottom:6px;font-weight:800}
+    input[type="date"]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.15);color:inherit}
+
+    .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+    @media (max-width:900px){.row{grid-template-columns:1fr}}
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    button{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.2);color:inherit;cursor:pointer;font-weight:800}
+    button.primary{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+    .outGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+    @media (max-width:900px){.outGrid{grid-template-columns:1fr}}
+    .stat{padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.12)}
+    .k{opacity:.8;font-size:.9rem;margin-bottom:6px}
+    .v{font-size:24px;font-weight:900;letter-spacing:.3px}
+    .small{opacity:.85;margin-top:6px;line-height:1.5}
+    .pill{display:inline-block;margin-top:12px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);opacity:.9;font-weight:800}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="./index.html">← Back to Date Tools</a>
+      <div style="opacity:.8;font-weight:800">Age Calculator</div>
+    </div>
+
+    <div class="card">
+      <h1>Age Calculator</h1>
+      <div class="sub">Calculate your age in years / months / days, plus total days lived and time until your next birthday.</div>
+
+      <div class="row">
+        <div>
+          <label for="dob">Date of birth</label>
+          <input id="dob" type="date" />
+        </div>
+        <div>
+          <label for="asof">Calculate age on</label>
+          <input id="asof" type="date" />
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="calcBtn" type="button">Calculate</button>
+        <button id="todayBtn" type="button">Set “as of” = today</button>
+        <button id="copyBtn" class="primary" type="button">Copy results</button>
+        <button id="resetBtn" type="button">Reset</button>
+      </div>
+
+      <div class="outGrid">
+        <div class="stat">
+          <div class="k">Age</div>
+          <div class="v mono" id="ageOut">—</div>
+          <div class="small" id="bornDay"> </div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Total time lived</div>
+          <div class="v mono" id="daysOut">—</div>
+          <div class="small" id="daysMeta"> </div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Next birthday</div>
+          <div class="v mono" id="nextOut">—</div>
+          <div class="small" id="nextMeta"> </div>
+        </div>
+      </div>
+
+      <div class="pill" id="status">Enter dates to calculate.</div>
+
+      <div class="sub" style="margin-top:12px">
+        Note: For Feb 29 birthdays, this calculator uses <b>Feb 28</b> in non-leap years for “next birthday”.
+      </div>
+    </div>
+  </div>
+
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>This tool compares your date of birth to an “as of” date and returns your age.</p>
+<ul>
+  <li>Counts calendar differences (years → months → days), so it handles different month lengths and leap years.</li>
+  <li>Total days is computed from the exact date difference (not “30 days per month”).</li>
+  <li>Useful for forms, HR, insurance, and checking age on a specific date.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const dobEl = $("dob");
+  const asofEl = $("asof");
+  const ageOut = $("ageOut");
+  const daysOut = $("daysOut");
+  const nextOut = $("nextOut");
+  const bornDay = $("bornDay");
+  const daysMeta = $("daysMeta");
+  const nextMeta = $("nextMeta");
+  const status = $("status");
+
+  const LS = "toolstack_age_v1";
+
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const fmtISO = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+
+  function parseDateLocal(iso){
+    if(!iso) return null;
+    const [y,m,da] = iso.split("-").map(Number);
+    if(!y || !m || !da) return null;
+    return new Date(y, m-1, da);
+  }
+
+  function midnight(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function diffDays(a, b){
+    const ms = midnight(b) - midnight(a);
+    return Math.round(ms / 86400000);
+  }
+  function daysInMonth(y, m0){ return new Date(y, m0+1, 0).getDate(); }
+  function isLeap(y){ return (y%4===0 && y%100!==0) || (y%400===0); }
+
+  function diffYMD(from, to){
+    if(to < from) return null;
+    const fy = from.getFullYear(), fm = from.getMonth(), fd = from.getDate();
+    const ty = to.getFullYear(), tm = to.getMonth(), td = to.getDate();
+
+    let y = ty - fy;
+    let m = tm - fm;
+    let d = td - fd;
+
+    if(d < 0){
+      m -= 1;
+      const prevMonth = (tm - 1 + 12) % 12;
+      const prevYear = ty + (tm === 0 ? -1 : 0);
+      d += daysInMonth(prevYear, prevMonth);
+    }
+    if(m < 0){
+      y -= 1;
+      m += 12;
+    }
+    return {y,m,d};
+  }
+
+  function nextBirthday(dob, asof){
+    const m = dob.getMonth();
+    const day = dob.getDate();
+    let year = asof.getFullYear();
+
+    function bdayDate(y){
+      if(m === 1 && day === 29 && !isLeap(y)) return new Date(y, 1, 28);
+      return new Date(y, m, day);
+    }
+
+    let b = bdayDate(year);
+    if(midnight(b) < midnight(asof)) b = bdayDate(year + 1);
+    return b;
+  }
+
+  function setStatus(msg, ok=true){
+    status.textContent = msg;
+    status.style.borderColor = ok ? "rgba(104,240,178,.35)" : "rgba(255,122,122,.35)";
+  }
+
+  function save(){
+    try{
+      localStorage.setItem(LS, JSON.stringify({
+        dob: dobEl.value || "",
+        asof: asofEl.value || ""
+      }));
+    }catch(e){}
+  }
+
+  function load(){
+    const today = new Date();
+    asofEl.value = fmtISO(today);
+
+    try{
+      const raw = localStorage.getItem(LS);
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      if(typeof data.dob === "string") dobEl.value = data.dob;
+      if(typeof data.asof === "string" && data.asof) asofEl.value = data.asof;
+    }catch(e){}
+  }
+
+  function calc(){
+    const dob = parseDateLocal(dobEl.value);
+    const asof = parseDateLocal(asofEl.value);
+
+    if(!dob || !asof){
+      ageOut.textContent = "—";
+      daysOut.textContent = "—";
+      nextOut.textContent = "—";
+      bornDay.textContent = "";
+      daysMeta.textContent = "";
+      nextMeta.textContent = "";
+      setStatus("Enter dates to calculate.", true);
+      return;
+    }
+
+    if(asof < dob){
+      setStatus("“Calculate age on” must be after your date of birth.", false);
+      ageOut.textContent = "—";
+      return;
+    }
+
+    const ymd = diffYMD(dob, asof);
+    const totalDays = diffDays(dob, asof);
+    const totalWeeks = Math.floor(totalDays / 7);
+
+    ageOut.textContent = `${ymd.y}y ${ymd.m}m ${ymd.d}d`;
+    bornDay.textContent = `Born on: ${dob.toLocaleDateString(undefined, { weekday: "long", year:"numeric", month:"short", day:"numeric" })}`;
+
+    daysOut.textContent = `${totalDays.toLocaleString()} days`;
+    daysMeta.textContent = `≈ ${totalWeeks.toLocaleString()} weeks`;
+
+    const nb = nextBirthday(dob, asof);
+    const until = diffDays(asof, nb);
+    nextOut.textContent = nb.toLocaleDateString(undefined, { year:"numeric", month:"short", day:"numeric" });
+    nextMeta.textContent = until === 0 ? "Today 🎉" : `In ${until.toLocaleString()} day(s) (${nb.toLocaleDateString(undefined, { weekday: "long" })})`;
+
+    setStatus("Calculated.", true);
+    save();
+  }
+
+  async function copy(){
+    const txt =
+`Age Calculator
+DOB: ${dobEl.value || "—"}
+As of: ${asofEl.value || "—"}
+Age: ${ageOut.textContent}
+Total lived: ${daysOut.textContent} (${daysMeta.textContent})
+Next birthday: ${nextOut.textContent} — ${nextMeta.textContent}`;
+    try{
+      await navigator.clipboard.writeText(txt);
+      setStatus("Copied to clipboard.", true);
+    }catch(e){
+      setStatus("Copy failed (browser blocked clipboard).", false);
+    }
+  }
+
+  $("calcBtn").addEventListener("click", calc);
+  $("todayBtn").addEventListener("click", () => { asofEl.value = fmtISO(new Date()); calc(); });
+  $("resetBtn").addEventListener("click", () => {
+    dobEl.value = "";
+    asofEl.value = fmtISO(new Date());
+    try{ localStorage.removeItem(LS); }catch(e){}
+    calc();
+  });
+  $("copyBtn").addEventListener("click", copy);
+
+  dobEl.addEventListener("change", () => { save(); });
+  asofEl.addEventListener("change", () => { save(); });
+
+  load();
+  calc();
+})();
+</script>
+</body>
+</html>

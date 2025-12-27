@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Weighted Grade Calculator</title>
+  <meta name="description" content="Calculate your weighted average grade from multiple components. Supports percent or points input." />
+
+  <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1630;
+      --card: rgba(255,255,255,.07);
+      --card2: rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.70);
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 16px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --accent: #7aa7ff;
+      --ok: #68f0b2;
+      --warn: #ffd36e;
+      --bad: #ff7a7a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(122,167,255,.35), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(104,240,178,.20), transparent 60%),
+        radial-gradient(900px 500px at 60% 85%, rgba(255,211,110,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display:flex;
+      justify-content:center;
+      padding:28px 14px;
+    }
+    .wrap{width:min(1100px, 100%);}
+    header{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+    .title h1{
+      font-size: clamp(22px, 3vw, 34px);
+      margin:0 0 6px 0;
+      letter-spacing:.2px;
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+      max-width: 85ch;
+    }
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      margin-top:2px;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .btn:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background: rgba(122,167,255,.16); border-color: rgba(122,167,255,.35);}
+    .btn.primary:hover{background: rgba(122,167,255,.22)}
+    .btn.ghost{background: transparent}
+
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;}
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr;} .top-actions{justify-content:flex-start} }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom: 1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .card .hd .label{font-weight:950; letter-spacing:.2px; font-size:14px;}
+    .card .bd{padding:14px 16px;}
+    .note{color:var(--muted); font-size:12px; line-height:1.5;}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
+    .field{display:flex; flex-direction:column; gap:6px; min-width: 220px; flex:1;}
+    label{font-size:12px; color:var(--muted); font-weight:800;}
+    select, input{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding:12px 12px;
+      outline:none;
+      font-size:14px;
+    }
+    input:focus, select:focus{border-color: rgba(122,167,255,.55); box-shadow: 0 0 0 4px rgba(122,167,255,.16);}
+
+    .tableWrap{overflow:auto; border-radius: 16px; border: 1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.10);}
+    table{width:100%; border-collapse:collapse; min-width: 820px;}
+    th, td{padding:12px 12px; border-bottom: 1px solid rgba(255,255,255,.10); vertical-align: top;}
+    th{color:var(--muted); font-size:12px; text-align:left; font-weight:950;}
+    tr:last-child td{border-bottom:none;}
+    .mini{font-size:12px; color:var(--muted); margin-top:6px;}
+    .iconbtn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:9px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:12px;
+    }
+    .iconbtn:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18)}
+    .iconbtn.danger{border-color: rgba(255,122,122,.35); background: rgba(255,122,122,.10);}
+    .iconbtn.danger:hover{background: rgba(255,122,122,.16);}
+    .mono{font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;}
+
+    .stats{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 520px){ .stats{grid-template-columns:1fr;} }
+    .stat{
+      padding:12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.12);
+    }
+    .k{color:var(--muted); font-weight:800; font-size:12px;}
+    .v{font-weight:1000; font-size:18px; margin-top:6px; word-break: break-word;}
+    .banner{
+      padding:12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.12);
+      color: var(--muted);
+      line-height:1.6;
+      font-size:13px;
+    }
+    .footer{
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:center;
+      opacity:.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Weighted Grade Calculator</h1>
+        <p>Add assignments/exams with their weight and score. See your current grade (normalized) and what you need on the remaining weight to hit a target.</p>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn ghost" href="./index.html">← Back to School Tools</a>
+        <a class="btn ghost" href="../../index.html">🏠 Home</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-label="Inputs">
+        <div class="hd">
+          <div class="label">Inputs</div>
+          <div class="note" style="margin:0; font-weight:950;" id="status">Ready</div>
+        </div>
+
+        <div class="bd" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="row">
+            <div class="field">
+              <label for="inputMode">Score input mode</label>
+              <select id="inputMode">
+                <option value="percent" selected>Percent (e.g., 87.5%)</option>
+                <option value="points">Points (earned / possible)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="target">Target overall grade (%) (optional)</label>
+              <input id="target" type="number" min="0" max="100" step="0.01" placeholder="e.g., 90">
+            </div>
+          </div>
+
+          <div class="row" style="justify-content:space-between;">
+            <button class="btn primary" id="addRowBtn" type="button">+ Add row</button>
+            <div class="row">
+              <button class="btn" id="resetBtn" type="button">Reset</button>
+              <button class="btn primary" id="copyBtn" type="button">Copy summary</button>
+            </div>
+          </div>
+
+          <div class="tableWrap">
+            <table aria-label="Weighted grade table">
+              <thead>
+                <tr>
+                  <th style="width:34%;">Item</th>
+                  <th style="width:16%;">Weight (%)</th>
+                  <th style="width:34%;" id="scoreHeader">Score (%)</th>
+                  <th style="width:16%;">Contribution</th>
+                  <th style="width:0%;"></th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="note">
+            Tip: If your weights don’t sum to 100 yet, use “Current grade (normalized)” to see your grade on completed work only.
+          </div>
+        </div>
+      </section>
+
+      <aside class="card" aria-label="Results">
+        <div class="hd">
+          <div class="label">Results</div>
+          <div class="note" style="margin:0;" id="meta">—</div>
+        </div>
+
+        <div class="bd" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="stats">
+            <div class="stat"><div class="k">Current grade (normalized)</div><div class="v" id="curNorm">—</div></div>
+            <div class="stat"><div class="k">Overall so far (missing = 0)</div><div class="v" id="curOverall">—</div></div>
+            <div class="stat"><div class="k">Weights total</div><div class="v" id="wSum">—</div></div>
+            <div class="stat"><div class="k">Remaining weight</div><div class="v" id="wRem">—</div></div>
+          </div>
+
+          <div class="banner" id="needBox">Enter rows to calculate.</div>
+          <div class="note">Contribution = weight% × score% ÷ 100.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">ToolStack • Works offline • Single-file tool</div>
+  </div>
+
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Calculates your weighted average grade from multiple components.</p>
+<ul>
+  <li>Each row contributes: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">contribution = weight% × score% ÷ 100</code>.</li>
+  <li>Overall grade (if weights sum to 100): <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">total = Σ(weight×score) ÷ 100</code>.</li>
+  <li>If weights don’t sum to 100, the tool also shows a normalized weighted average.</li>
+  <li>Optional “target grade” can show the needed average on remaining weight.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const tbody = $("tbody");
+  const inputModeEl = $("inputMode");
+  const targetEl = $("target");
+  const addRowBtn = $("addRowBtn");
+  const resetBtn = $("resetBtn");
+  const copyBtn = $("copyBtn");
+  const status = $("status");
+  const meta = $("meta");
+  const scoreHeader = $("scoreHeader");
+
+  const curNorm = $("curNorm");
+  const curOverall = $("curOverall");
+  const wSumOut = $("wSum");
+  const wRemOut = $("wRem");
+  const needBox = $("needBox");
+
+  const fmt = (x, d=2) => Number.isFinite(x) ? x.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}) : "—";
+
+  let nextId = 1;
+  let rows = [];
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function makeDefaultRows(){
+    rows = [
+      {id: nextId++, name: "Midterm", weight: 30, scorePct: 85, earned: "", possible: ""},
+      {id: nextId++, name: "Homework", weight: 20, scorePct: 92, earned: "", possible: ""},
+      {id: nextId++, name: "Final", weight: 50, scorePct: "", earned: "", possible: ""},
+    ];
+  }
+
+  function rowScorePct(r){
+    const mode = inputModeEl.value;
+    if(mode === "percent"){
+      const p = Number(r.scorePct);
+      return Number.isFinite(p) ? p : NaN;
+    }
+    const e = Number(r.earned);
+    const p = Number(r.possible);
+    if(!Number.isFinite(e) || !Number.isFinite(p) || p <= 0) return NaN;
+    return (e / p) * 100;
+  }
+
+  function contribution(weight, scorePct){
+    if(!Number.isFinite(weight) || !Number.isFinite(scorePct)) return NaN;
+    return (weight * scorePct) / 100;
+  }
+
+  function render(){
+    const mode = inputModeEl.value;
+    scoreHeader.textContent = mode === "percent" ? "Score (%)" : "Score (earned / possible)";
+    tbody.innerHTML = "";
+
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>
+          <input data-k="name" data-id="${r.id}" type="text" placeholder="e.g., Quiz 1" value="${escapeHtml(r.name ?? "")}"
+            style="min-width:220px" />
+          <div class="mini">Optional label</div>
+        </td>
+
+        <td>
+          <input data-k="weight" data-id="${r.id}" type="number" min="0" step="0.01" placeholder="%" value="${escapeHtml(r.weight ?? "")}" />
+          <div class="mini">Percent of course</div>
+        </td>
+
+        <td>
+          ${mode === "percent" ? `
+            <input data-k="scorePct" data-id="${r.id}" type="number" min="0" step="0.01" placeholder="%" value="${escapeHtml(r.scorePct ?? "")}" />
+            <div class="mini">Example: 87.5</div>
+          ` : `
+            <div class="row" style="gap:10px;">
+              <input data-k="earned" data-id="${r.id}" type="number" min="0" step="0.01" placeholder="Earned" value="${escapeHtml(r.earned ?? "")}" style="min-width:160px" />
+              <input data-k="possible" data-id="${r.id}" type="number" min="0.01" step="0.01" placeholder="Possible" value="${escapeHtml(r.possible ?? "")}" style="min-width:160px" />
+            </div>
+            <div class="mini">Score% = earned ÷ possible × 100</div>
+          `}
+        </td>
+
+        <td>
+          <div style="font-weight:1000;" id="contrib-${r.id}">—</div>
+          <div class="mini" id="pct-${r.id}"></div>
+        </td>
+
+        <td style="white-space:nowrap;">
+          <button class="iconbtn" type="button" data-act="dup" data-id="${r.id}">Dup</button>
+          <button class="iconbtn danger" type="button" data-act="del" data-id="${r.id}">Del</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    update();
+  }
+
+  function update(){
+    const mode = inputModeEl.value;
+
+    // read from DOM
+    const inputs = tbody.querySelectorAll("input[data-id]");
+    inputs.forEach(inp => {
+      const id = Number(inp.dataset.id);
+      const k = inp.dataset.k;
+      const r = rows.find(x => x.id === id);
+      if(!r) return;
+      r[k] = inp.value;
+    });
+
+    // compute
+    let sumWeights = 0;
+    let sumContrib = 0;
+    let sumWeightScore = 0;
+
+    let hasAny = false;
+    rows.forEach(r => {
+      const w = Number(r.weight);
+      const score = rowScorePct(r);
+      const contrib = contribution(w, score);
+
+      const contribEl = document.getElementById(`contrib-${r.id}`);
+      const pctEl = document.getElementById(`pct-${r.id}`);
+
+      if(contribEl){
+        contribEl.textContent = Number.isFinite(contrib) ? `${fmt(contrib, 2)}%` : "—";
+      }
+      if(pctEl){
+        if(Number.isFinite(score)){
+          pctEl.textContent = `Score: ${fmt(score, 2)}%`;
+        }else{
+          pctEl.textContent = "";
+        }
+      }
+
+      if(Number.isFinite(w) && w > 0){
+        sumWeights += w;
+      }
+      if(Number.isFinite(w) && w > 0 && Number.isFinite(score)){
+        hasAny = true;
+        sumContrib += contrib;              // overall points out of 100
+        sumWeightScore += w * score;        // for normalized
+      }
+    });
+
+    const remaining = 100 - sumWeights;
+
+    const normalized = (sumWeights > 0) ? (sumWeightScore / sumWeights) : NaN; // Σ(w*score)/Σw
+    const overallSoFar = hasAny ? sumContrib : NaN;
+
+    curNorm.textContent = Number.isFinite(normalized) ? `${fmt(normalized, 2)}%` : "—";
+    curOverall.textContent = Number.isFinite(overallSoFar) ? `${fmt(overallSoFar, 2)}%` : "—";
+    wSumOut.textContent = Number.isFinite(sumWeights) ? `${fmt(sumWeights, 2)}%` : "—";
+    wRemOut.textContent = `${fmt(remaining, 2)}%`;
+
+    // meta + warnings
+    let warn = "";
+    if(sumWeights > 100.0001) warn = "Weights exceed 100%. Check your inputs.";
+    meta.textContent = warn ? warn : (hasAny ? "Updated" : "Waiting");
+    meta.style.color = warn ? "var(--warn)" : "var(--muted)";
+
+    // target math
+    const target = Number(targetEl.value);
+    if(!hasAny){
+      needBox.textContent = "Enter rows to calculate.";
+      status.textContent = "Waiting";
+      status.style.color = "var(--muted)";
+      return;
+    }
+
+    if(Number.isFinite(target) && target >= 0 && target <= 100){
+      if(remaining <= 0){
+        needBox.textContent = "No remaining weight. Your grade is fully determined by entered rows.";
+      }else{
+        // needAvgRemaining = (target - sumContrib) / (remaining/100)
+        const needAvg = (target - sumContrib) / (remaining / 100);
+        if(!Number.isFinite(needAvg)){
+          needBox.textContent = "Enter valid weights and scores to compute target.";
+        }else if(needAvg > 100){
+          needBox.textContent = `To reach ${fmt(target,2)}%, you would need about ${fmt(needAvg,2)}% on the remaining ${fmt(remaining,2)}% (not reachable).`;
+        }else if(needAvg < 0){
+          needBox.textContent = `You already exceed ${fmt(target,2)}% based on entered grades.`;
+        }else{
+          needBox.textContent = `To reach ${fmt(target,2)}%, you need about ${fmt(needAvg,2)}% average on the remaining ${fmt(remaining,2)}%.`;
+        }
+      }
+    }else{
+      needBox.textContent = "Tip: Enter a target grade to see what you need on the remaining weight.";
+    }
+
+    status.textContent = "Updated";
+    status.style.color = "var(--ok)";
+  }
+
+  function addRow(){
+    rows.push({id: nextId++, name:"", weight:"", scorePct:"", earned:"", possible:""});
+    render();
+  }
+
+  function reset(){
+    nextId = 1;
+    makeDefaultRows();
+    inputModeEl.value = "percent";
+    targetEl.value = "";
+    render();
+    status.textContent = "Reset";
+    status.style.color = "var(--muted)";
+  }
+
+  tbody.addEventListener("input", (e) => {
+    if(e.target && e.target.matches("input[data-id]")) update();
+  });
+
+  tbody.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+    const id = Number(btn.dataset.id);
+    const act = btn.dataset.act;
+    const idx = rows.findIndex(r => r.id === id);
+    if(idx === -1) return;
+
+    if(act === "del"){
+      rows.splice(idx, 1);
+      render();
+      return;
+    }
+    if(act === "dup"){
+      const src = rows[idx];
+      rows.splice(idx+1, 0, { ...src, id: nextId++ });
+      render();
+      return;
+    }
+  });
+
+  inputModeEl.addEventListener("change", () => render());
+  targetEl.addEventListener("input", () => update());
+  addRowBtn.addEventListener("click", addRow);
+  resetBtn.addEventListener("click", reset);
+
+  copyBtn.addEventListener("click", async () => {
+    // compute again to ensure fresh
+    update();
+    const lines = [
+      `Current grade (normalized): ${curNorm.textContent}`,
+      `Overall so far (missing=0): ${curOverall.textContent}`,
+      `Weights total: ${wSumOut.textContent}`,
+      `Remaining weight: ${wRemOut.textContent}`,
+      `Target: ${targetEl.value ? targetEl.value + "%" : "—"}`,
+      `Note: Contribution = weight% × score% ÷ 100`
+    ].join("\n");
+
+    try{
+      await navigator.clipboard.writeText(lines);
+      status.textContent = "Copied";
+      status.style.color = "var(--ok)";
+      setTimeout(()=>{ status.textContent="Updated"; }, 900);
+    }catch{
+      const ta=document.createElement("textarea");
+      ta.value=lines;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      status.textContent = "Copied";
+      status.style.color = "var(--ok)";
+    }
+  });
+
+  // init
+  makeDefaultRows();
+  render();
+})();
+</script>
+</body>
+</html>

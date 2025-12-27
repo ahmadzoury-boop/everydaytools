@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Percentage Calculator</title>
+
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <!-- fallback dark -->
+  <style>
+    :root{color-scheme:dark}
+    body{margin:0;background:#0b0f17;color:#e7eaf0}
+  </style>
+
+  <style>
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
+    .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+    .topnav a{opacity:.9;text-decoration:none}
+    .card{padding:16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    h1{margin:0;font-size:22px}
+    .sub{opacity:.82;margin-top:6px;line-height:1.5}
+
+    .tabs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .tab{padding:9px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.10);cursor:pointer;user-select:none}
+    .tab.active{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+    .panel{margin-top:12px}
+    .hidden{display:none !important}
+
+    .row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
+    label{display:block;font-size:.9rem;opacity:.9;margin-bottom:6px}
+    input,select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.15);color:inherit}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    button{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.2);color:inherit;cursor:pointer}
+    button.primary{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+
+    .out{margin-top:14px;padding:14px;border-radius:14px;border:1px dashed rgba(255,255,255,.22);background:rgba(0,0,0,.12)}
+    .big{font-size:28px;font-weight:900;letter-spacing:.2px}
+    .muted{opacity:.82;margin-top:6px;line-height:1.6}
+    .pillRow{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.12);opacity:.9}
+    .hint{opacity:.75;margin-top:10px;font-size:.9rem}
+    .kbd{padding:2px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.18)}
+    @media (max-width:900px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  </style>
+
+  <script defer src="./percentage-calculator.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="./index.html">← Back to Student Tools</a>
+      <div style="opacity:.8">Percentage Calculator</div>
+    </div>
+
+    <div class="card">
+      <h1>Percentage Calculator</h1>
+      <div class="sub">Quickly calculate percent of a number, percent change, and reverse percentages.</div>
+
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-tab="of">Percent of</div>
+        <div class="tab" data-tab="change">Percent change</div>
+        <div class="tab" data-tab="reverse">Reverse percent</div>
+      </div>
+
+      <!-- Percent of -->
+      <div class="panel" id="panel-of">
+        <div class="row">
+          <div>
+            <label for="p1">Percent (%)</label>
+            <input id="p1" type="number" step="0.01" value="15" />
+          </div>
+          <div>
+            <label for="n1">Of number</label>
+            <input id="n1" type="number" step="0.01" value="200" />
+          </div>
+          <div>
+            <label for="round1">Rounding</label>
+            <select id="round1">
+              <option value="2">2 decimals</option>
+              <option value="1">1 decimal</option>
+              <option value="0">Whole number</option>
+            </select>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="primary" id="calc1">Calculate</button>
+          </div>
+        </div>
+
+        <div class="out">
+          <div class="big" id="out1">Result: —</div>
+          <div class="muted" id="note1"></div>
+        </div>
+      </div>
+
+      <!-- Percent change -->
+      <div class="panel hidden" id="panel-change">
+        <div class="row">
+          <div>
+            <label for="a2">From (old value)</label>
+            <input id="a2" type="number" step="0.01" value="80" />
+          </div>
+          <div>
+            <label for="b2">To (new value)</label>
+            <input id="b2" type="number" step="0.01" value="100" />
+          </div>
+          <div>
+            <label for="round2">Rounding</label>
+            <select id="round2">
+              <option value="2">2 decimals</option>
+              <option value="1">1 decimal</option>
+              <option value="0">Whole number</option>
+            </select>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="primary" id="calc2">Calculate</button>
+          </div>
+        </div>
+
+        <div class="out">
+          <div class="big" id="out2">Change: —</div>
+          <div class="pillRow">
+            <div class="pill" id="pill2a">Difference: —</div>
+            <div class="pill" id="pill2b">Direction: —</div>
+          </div>
+          <div class="muted" id="note2"></div>
+        </div>
+      </div>
+
+      <!-- Reverse percent -->
+      <div class="panel hidden" id="panel-reverse">
+        <div class="row">
+          <div>
+            <label for="x3">Result (after percent)</label>
+            <input id="x3" type="number" step="0.01" value="120" />
+          </div>
+          <div>
+            <label for="p3">Percent change (%)</label>
+            <input id="p3" type="number" step="0.01" value="20" />
+          </div>
+          <div>
+            <label for="dir3">Direction</label>
+            <select id="dir3">
+              <option value="increase">Increase</option>
+              <option value="decrease">Decrease</option>
+            </select>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="primary" id="calc3">Calculate</button>
+          </div>
+        </div>
+
+        <div class="out">
+          <div class="big" id="out3">Original: —</div>
+          <div class="muted" id="note3"></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="resetBtn">Reset</button>
+        <button class="primary" id="copyBtn">Copy current result</button>
+      </div>
+
+      <div class="hint">
+        Shortcuts: <span class="kbd">Enter</span> calculate current tab · <span class="kbd">1</span>/<span class="kbd">2</span>/<span class="kbd">3</span> switch tabs · <span class="kbd">R</span> reset.
+      </div>
+    </div>
+  </div>
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Common percentage operations in one place.</p>
+<ul>
+  <li>Find <b>X% of Y</b>: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">result = (X ÷ 100) × Y</code>.</li>
+  <li>Find <b>what % A is of B</b>: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">percent = (A ÷ B) × 100</code>.</li>
+  <li>Increase/decrease by %: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">new = base × (1 ± p)</code>.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+</body>
+</html>

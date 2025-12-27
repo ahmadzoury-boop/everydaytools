@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Time Difference Calculator – Hours, Minutes, Seconds | ToolStack</title>
+  <meta name="description" content="Calculate the exact time difference between two times or date‑times. Supports hours, minutes, seconds, midnight crossing, and negative results." />
+
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/time/time-difference.html" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    :root{
+      --ts-bg:#0b1220;
+      --ts-card:#0f1a33;
+      --ts-border:rgba(255,255,255,.10);
+      --ts-text:rgba(255,255,255,.92);
+      --ts-muted:rgba(255,255,255,.70);
+      --ts-accent:#7dd3fc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+        var(--ts-bg);
+      color:var(--ts-text);
+    }
+    a{color:var(--ts-accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .ts-header{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--ts-border);
+      position:sticky;top:0;backdrop-filter:blur(10px);
+      background:rgba(11,18,32,.65);
+    }
+    .ts-header .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .ts-badge{
+      font-size:12px;padding:6px 10px;border:1px solid var(--ts-border);
+      border-radius:999px;color:var(--ts-muted)
+    }
+
+    .ts-container{max-width:900px;margin:0 auto;padding:22px 16px 44px}
+    h1{font-size:32px;margin:10px 0 6px}
+    .ts-sub{margin:0 0 18px;color:var(--ts-muted)}
+
+    .ts-card{
+      background:rgba(15,26,51,.86);
+      border:1px solid var(--ts-border);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+      text-align:center;
+    }
+
+    .input-row{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .input-row input{
+      width:180px;
+      text-align:center;
+      font-size:16px;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid var(--ts-border);
+      background:rgba(0,0,0,.18);
+      color:var(--ts-text);
+    }
+
+    .ts-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:20px;
+    }
+    button{
+      cursor:pointer;
+      background:rgba(125,211,252,.18);
+      border:1px solid rgba(125,211,252,.35);
+      color:var(--ts-text);
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+    }
+    button.secondary{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--ts-border);
+    }
+
+    .result-box{
+      margin-top:20px;
+      padding:18px;
+      border-radius:14px;
+      border:1px dashed var(--ts-border);
+      background:rgba(255,255,255,.05);
+    }
+    .result-big{
+      font-size:32px;
+      font-weight:900;
+      letter-spacing:1px;
+    }
+    .ts-note{
+      margin-top:14px;
+      color:var(--ts-muted);
+      font-size:12px;
+      text-align:center;
+    }
+
+    .ts-footer{
+      padding:18px 16px;
+      border-top:1px solid var(--ts-border);
+      color:var(--ts-muted);
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Time Tools</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="./index.html">⬅ Back to Time Tools</a>
+  </div>
+</header>
+
+<main class="ts-container">
+  <h1>Time Difference Calculator</h1>
+  <p class="ts-sub">Find the exact difference between two times or date‑times.</p>
+
+  <div class="ts-card">
+
+    <!-- INPUTS -->
+    <div class="input-row">
+      <input id="startInput" type="datetime-local" placeholder="Start">
+      <input id="endInput" type="datetime-local" placeholder="End">
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="ts-actions">
+      <button id="calcBtn">Calculate</button>
+      <button id="resetBtn" class="secondary">Reset</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-box">
+      <div class="result-big" id="result">00:00:00</div>
+      <div class="ts-note" id="extraNote"></div>
+    </div>
+
+  </div>
+
+  <!-- EXPLANATION -->
+  <section style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">How it works</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        <p>This calculator:</p>
+        <ul>
+          <li>Computes the difference between two times or date‑times</li>
+          <li>Handles midnight crossing automatically</li>
+          <li>Supports negative results</li>
+          <li>Shows hours, minutes, seconds, and decimal hours</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<footer class="ts-footer">
+  ToolStack Time Tools • Works offline • Single‑file utilities
+</footer>
+<script>
+  const $ = id => document.getElementById(id);
+
+  const startInput = $("startInput");
+  const endInput = $("endInput");
+  const resultEl = $("result");
+  const extraNote = $("extraNote");
+
+  const calcBtn = $("calcBtn");
+  const resetBtn = $("resetBtn");
+
+  function format(sec){
+    const sign = sec < 0 ? "-" : "";
+    sec = Math.abs(sec);
+
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+
+    return (
+      sign +
+      String(h).padStart(2,"0") + ":" +
+      String(m).padStart(2,"0") + ":" +
+      String(s).padStart(2,"0")
+    );
+  }
+
+  function calculate(){
+    const startVal = startInput.value;
+    const endVal = endInput.value;
+
+    if(!startVal || !endVal){
+      resultEl.textContent = "00:00:00";
+      extraNote.textContent = "Please select both start and end times.";
+      return;
+    }
+
+    const start = new Date(startVal);
+    const end = new Date(endVal);
+
+    let diffMs = end - start;
+    let diffSec = Math.floor(diffMs / 1000);
+
+    resultEl.textContent = format(diffSec);
+
+    const decimalHours = (diffSec / 3600).toFixed(4);
+    extraNote.textContent = `Decimal hours: ${decimalHours}`;
+  }
+
+  function resetAll(){
+    startInput.value = "";
+    endInput.value = "";
+    resultEl.textContent = "00:00:00";
+    extraNote.textContent = "";
+  }
+
+  calcBtn.addEventListener("click", calculate);
+  resetBtn.addEventListener("click", resetAll);
+</script>
+</body>
+</html>

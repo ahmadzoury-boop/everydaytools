@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finance Tools</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+
+<style>
+:root{
+  --ts-bg:#0b1220;
+  --ts-card:#0f1a33;
+  --ts-border:rgba(255,255,255,.10);
+  --ts-text:rgba(255,255,255,.92);
+  --ts-muted:rgba(255,255,255,.70);
+  --ts-accent:#7dd3fc;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+              radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+              var(--ts-bg);
+  color:var(--ts-text);
+}
+a{color:var(--ts-accent); text-decoration:none}
+a:hover{text-decoration:underline}
+.ts-header{
+  display:flex; gap:12px; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--ts-border);
+  position:sticky; top:0; backdrop-filter: blur(10px);
+  background: rgba(11,18,32,.65);
+}
+.ts-header .left{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.ts-badge{
+  font-size:12px; padding:6px 10px; border:1px solid var(--ts-border);
+  border-radius:999px; color:var(--ts-muted)
+}
+.ts-container{max-width:980px; margin:0 auto; padding:22px 16px 44px}
+h1{font-size:28px; margin:10px 0 6px}
+.ts-sub{margin:0 0 18px; color:var(--ts-muted)}
+.ts-grid{display:grid; grid-template-columns: 1fr; gap:14px}
+@media (min-width: 900px){ .ts-grid.cols-2{grid-template-columns: 1fr 1fr} }
+.ts-card{
+  background: rgba(15,26,51,.86);
+  border:1px solid var(--ts-border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+}
+.ts-note{margin-top:10px; color:var(--ts-muted); font-size:12px}
+.ts-footer{
+  padding:18px 16px; border-top:1px solid var(--ts-border);
+  color:var(--ts-muted); text-align:center
+}
+code.ts-inline{background:rgba(255,255,255,.08); padding:2px 6px; border-radius:8px; border:1px solid var(--ts-border)}
+</style>
+</head>
+<body>
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Finance</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="index.html">⬅ Back to Finance tools</a>
+  </div>
+</header>
+
+<main class="ts-container">
+  <h1>Finance Tools</h1>
+  <p class="ts-sub">Quick, clean tools for your Toolstack site.</p>
+
+  <div class="ts-grid cols-2">
+
+    <!-- VAT Calculator -->
+    <div class="ts-card">
+      <h3 style="margin:0 0 6px">VAT Calculator</h3>
+      <p class="ts-sub" style="margin:0 0 10px">Add or remove VAT from an amount.</p>
+      <a href="vat-calculator.html">Open →</a>
+    </div>
+
+    <!-- Profit Margin Calculator -->
+    <div class="ts-card">
+      <h3 style="margin:0 0 6px">Profit Margin Calculator</h3>
+      <p class="ts-sub" style="margin:0 0 10px">Profit, margin %, and markup % from cost and price.</p>
+      <a href="profit-margin.html">Open →</a>
+    </div>
+
+    <!-- Live Currency Converter (NEW, CLEAN, SINGLE CARD) -->
+    <div class="ts-card">
+      <h3 style="margin:0 0 6px">Live Currency Converter</h3>
+      <p class="ts-sub" style="margin:0 0 10px">
+        Real-time exchange rates, auto-convert, charts, and trending pairs.
+      </p>
+      <a href="currency-converter.html">Open →</a>
+    </div>
+
+  </div>
+
+  <div class="ts-note">
+    Tip: if your site has a global tools index, add a link to this folder’s
+    <code class="ts-inline">index.html</code>.
+  </div>
+</main>
+
+<footer class="ts-footer">
+  Toolstack add-on pages • Works offline • Single-file tools
+</footer>
+
+</body>
+</html>

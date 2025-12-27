@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://everydaytools.uk/sitemap.xml

@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Reading Time Calculator – Estimate Reading Speed & Word Count Time</title>
+<meta name="description" content="Calculate reading time instantly based on word count and reading speed (WPM). Perfect for articles, essays, blogs, and study material." />
+
+<link rel="canonical" href="https://mytools-56j.pages.dev/tools/text/reading-time-calculator.html" />
+
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Reading Time Calculator – Estimate Reading Speed & Word Count Time</title>
+<meta name="description" content="Calculate reading time instantly based on word count and reading speed (WPM). Perfect for articles, essays, blogs, and study material." />
+
+<link rel="canonical" href="https://mytools-56j.pages.dev/tools/text/reading-time-calculator.html" />
+
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Reading Time Calculator – Estimate Reading Speed & Word Count Time</title>
+<meta name="description" content="Calculate reading time instantly based on word count and reading speed (WPM). Perfect for articles, essays, blogs, and study material." />
+
+<link rel="canonical" href="https://mytools-56j.pages.dev/tools/text/reading-time-calculator.html" />
+
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<title>Reading Time Calculator – Estimate Reading Speed & Word Count Time</title>
+<meta name="description" content="Calculate reading time instantly based on word count and reading speed (WPM). Perfect for articles, essays, blogs, and study material." />
+
+<link rel="canonical" href="https://mytools-56j.pages.dev/tools/text/reading-time-calculator.html" />
+
+
+  <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1630;
+      --card: rgba(255,255,255,.07);
+      --card2: rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.70);
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 16px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --accent: #7aa7ff;
+      --ok: #68f0b2;
+      --warn: #ffd36e;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(122,167,255,.35), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(104,240,178,.20), transparent 60%),
+        radial-gradient(900px 500px at 60% 85%, rgba(255,211,110,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display:flex;
+      justify-content:center;
+      padding:28px 14px;
+    }
+
+    .wrap{width:min(1100px, 100%);}
+
+    header{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:14px;
+    }
+
+    .title h1{
+      font-size: clamp(22px, 3vw, 34px);
+      margin:0 0 6px 0;
+      letter-spacing:.2px;
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      margin-top:2px;
+    }
+
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .btn:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      background: rgba(122,167,255,.16);
+      border-color: rgba(122,167,255,.35);
+    }
+    .btn.primary:hover{background: rgba(122,167,255,.22)}
+    .btn.ghost{background: transparent}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .grid{grid-template-columns: 1fr; }
+      .top-actions{justify-content:flex-start}
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card .hd .label{
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:14px;
+    }
+    .card .bd{padding:14px 16px;}
+
+    textarea{
+      width:100%;
+      min-height: 320px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding:14px;
+      outline:none;
+      line-height:1.65;
+      font-size:14px;
+    }
+    textarea:focus{border-color: rgba(122,167,255,.55); box-shadow: 0 0 0 4px rgba(122,167,255,.16);}
+
+    .row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 200px;
+      flex:1;
+    }
+    .field label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    input[type="number"], select, input[type="text"]{
+      width:100%;
+      padding:10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    input[type="number"]:focus, select:focus{
+      border-color: rgba(122,167,255,.55);
+      box-shadow: 0 0 0 4px rgba(122,167,255,.16);
+    }
+
+    input[type="range"]{width:100%}
+
+    .pillbar{display:flex; gap:8px; flex-wrap:wrap;}
+    .pill{
+      padding:8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+      font-weight:700;
+      font-size:12px;
+      user-select:none;
+    }
+    .pill:hover{background: rgba(255,255,255,.10)}
+    .pill.active{
+      background: rgba(104,240,178,.14);
+      border-color: rgba(104,240,178,.35);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 420px){
+      .stats{grid-template-columns: 1fr;}
+    }
+    .stat{
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding:12px;
+    }
+    .stat .k{
+      color: var(--muted);
+      font-size:12px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+    .stat .v{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .bigtime .v{
+      font-size:22px;
+    }
+
+    .note{
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.55;
+      margin-top:10px;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.70);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.55);
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show{opacity:1; transform: translateX(-50%) translateY(-2px);}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Reading Time Calculator</h1>
+        <p>Paste your text, choose a reading speed (WPM), and get an instant estimate + word count.</p>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn ghost" href="index.html">← Back to Time Tools</a>
+        <button class="btn" id="btnClear" type="button">Clear</button>
+        <button class="btn primary" id="btnCopy" type="button">Copy result</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: TEXT -->
+      <section class="card">
+        <div class="hd">
+          <div class="label">Your text</div>
+          <div style="color:var(--muted);font-size:12px;font-weight:700" id="liveHint">Type or paste…</div>
+        </div>
+        <div class="bd">
+          <textarea id="text" placeholder="Paste your article, caption, script, notes…"></textarea>
+
+          <div class="note">
+            Tip: This counts words using Unicode-aware matching (works well for Arabic/English and most languages).
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: SETTINGS + RESULTS -->
+      <aside class="card">
+        <div class="hd">
+          <div class="label">Settings & results</div>
+          <div style="color:var(--muted);font-size:12px;font-weight:700" id="status">Ready</div>
+        </div>
+
+        <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="row">
+            <div class="field">
+              <label for="mode">Mode</label>
+              <select id="mode">
+                <option value="silent" selected>Silent reading</option>
+                <option value="aloud">Reading out loud</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="wpm">Speed (WPM)</label>
+              <input id="wpm" type="number" min="80" max="450" step="5" value="200" />
+            </div>
+          </div>
+
+          <div class="field" style="min-width: unset;">
+            <label for="wpmRange">Adjust speed</label>
+            <input id="wpmRange" type="range" min="80" max="450" step="5" value="200" />
+          </div>
+
+          <div class="pillbar" id="presets">
+            <div class="pill" data-wpm="150">150</div>
+            <div class="pill active" data-wpm="200">200</div>
+            <div class="pill" data-wpm="250">250</div>
+            <div class="pill" data-wpm="300">300</div>
+          </div>
+
+          <div class="stats">
+            <div class="stat bigtime">
+              <div class="k">Estimated time</div>
+              <div class="v" id="timeOut">0 sec</div>
+            </div>
+
+            <div class="stat">
+              <div class="k">Words</div>
+              <div class="v" id="wordsOut">0</div>
+            </div>
+
+            <div class="stat">
+              <div class="k">Characters (with spaces)</div>
+              <div class="v" id="charsOut">0</div>
+            </div>
+
+            <div class="stat">
+              <div class="k">Characters (no spaces)</div>
+              <div class="v" id="charsNoSpaceOut">0</div>
+            </div>
+          </div>
+
+          <div class="note" id="extraOut">
+            At 200 WPM, most articles feel like ~1 minute per 200 words.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+  
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Estimates how long a text takes to read.</p>
+<ul>
+  <li>Counts words from your pasted text.</li>
+  <li>Reading time uses: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">minutes = words ÷ WPM</code>.</li>
+  <li>Shows minutes/seconds and helps pick a realistic blog/article read time.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+    const elText = document.getElementById("text");
+    const elMode = document.getElementById("mode");
+    const elWpm = document.getElementById("wpm");
+    const elWpmRange = document.getElementById("wpmRange");
+    const elWords = document.getElementById("wordsOut");
+    const elChars = document.getElementById("charsOut");
+    const elCharsNoSpace = document.getElementById("charsNoSpaceOut");
+    const elTime = document.getElementById("timeOut");
+    const elExtra = document.getElementById("extraOut");
+    const elStatus = document.getElementById("status");
+    const elHint = document.getElementById("liveHint");
+    const presets = document.getElementById("presets");
+    const btnClear = document.getElementById("btnClear");
+    const btnCopy = document.getElementById("btnCopy");
+    const toast = document.getElementById("toast");
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 1100);
+    }
+
+    function formatTime(totalSeconds){
+      if (!isFinite(totalSeconds) || totalSeconds <= 0) return "0 sec";
+      const s = Math.ceil(totalSeconds);
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+
+      if (h > 0) return `${h}h ${m}m ${sec}s`;
+      if (m > 0) return `${m}m ${sec}s`;
+      return `${sec}s`;
+    }
+
+    function countWords(text){
+      const t = (text || "").trim();
+      if (!t) return 0;
+
+      // Unicode-aware words: letters/numbers, allowing apostrophes/hyphens inside words
+      // Works well for English/Arabic and most scripts in modern browsers.
+      const matches = t.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu);
+      return matches ? matches.length : 0;
+    }
+
+    function updatePresetsActive(wpm){
+      [...presets.querySelectorAll(".pill")].forEach(p => {
+        p.classList.toggle("active", Number(p.dataset.wpm) === Number(wpm));
+      });
+    }
+
+    function getEffectiveWpm(){
+      const base = Math.max(80, Math.min(450, Number(elWpm.value) || 200));
+      // Reading aloud is usually slower; apply a simple factor
+      if (elMode.value === "aloud") return Math.round(base * 0.7);
+      return base;
+    }
+
+    function update(){
+      const text = elText.value || "";
+      const words = countWords(text);
+      const chars = text.length;
+      const charsNoSpace = text.replace(/\s+/g, "").length;
+
+      // Sync WPM inputs safely
+      let wpm = Math.max(80, Math.min(450, Number(elWpm.value) || 200));
+      elWpm.value = wpm;
+      elWpmRange.value = wpm;
+
+      const effectiveWpm = getEffectiveWpm();
+      const seconds = words > 0 ? (words / Math.max(1, effectiveWpm)) * 60 : 0;
+
+      elWords.textContent = words.toLocaleString();
+      elChars.textContent = chars.toLocaleString();
+      elCharsNoSpace.textContent = charsNoSpace.toLocaleString();
+      elTime.textContent = formatTime(seconds);
+
+      if (!text.trim()){
+        elStatus.textContent = "Ready";
+        elHint.textContent = "Type or paste…";
+      } else {
+        elStatus.textContent = "Updated";
+        elHint.textContent = `Analyzing… (${words.toLocaleString()} words)`;
+      }
+
+      const perMin = effectiveWpm;
+      const approxMins = words ? (words / perMin) : 0;
+      const low = Math.max(0, approxMins * 0.9);
+      const high = approxMins * 1.1;
+
+      elExtra.textContent =
+        `Effective speed: ${effectiveWpm} WPM (${elMode.value === "aloud" ? "aloud factor applied" : "silent"}). ` +
+        (words
+          ? `Estimated range: ~${Math.max(1, Math.round(low * 60))}–${Math.max(1, Math.round(high * 60))} sec.`
+          : `Paste text to estimate reading time.`);
+
+      updatePresetsActive(wpm);
+    }
+
+    // Events
+    elText.addEventListener("input", update);
+    elMode.addEventListener("change", update);
+
+    elWpm.addEventListener("input", () => {
+      const v = Number(elWpm.value) || 200;
+      elWpmRange.value = v;
+      update();
+    });
+
+    elWpmRange.addEventListener("input", () => {
+      elWpm.value = elWpmRange.value;
+      update();
+    });
+
+    presets.addEventListener("click", (e) => {
+      const pill = e.target.closest(".pill");
+      if (!pill) return;
+      elWpm.value = pill.dataset.wpm;
+      elWpmRange.value = pill.dataset.wpm;
+      update();
+    });
+
+    btnClear.addEventListener("click", () => {
+      elText.value = "";
+      update();
+      elText.focus();
+      showToast("Cleared");
+    });
+
+    btnCopy.addEventListener("click", async () => {
+      const text = elText.value || "";
+      const words = countWords(text);
+      const wpm = getEffectiveWpm();
+      const seconds = words ? (words / Math.max(1, wpm)) * 60 : 0;
+
+      const summary = `Words: ${words}\nEstimated reading time: ${formatTime(seconds)} (at ${wpm} WPM)`;
+      try{
+        await navigator.clipboard.writeText(summary);
+        showToast("Copied ✅");
+      }catch{
+        // Fallback
+        const ta = document.createElement("textarea");
+        ta.value = summary;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        showToast("Copied ✅");
+      }
+    });
+
+    // Init
+    update();
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Strong SEO -->
+  <title>Online Stopwatch – Accurate Timer with Laps & Split Tracking</title>
+  <meta name="description" content="Use this free online stopwatch for precise timing. Track laps, splits, and long sessions with a clean, fast, mobile‑friendly interface." />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/time/stopwatch.html" />
+
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="../../index.html" aria-label="ToolStack Home">
+        <span class="brand-mark">⧉</span>
+        <span class="brand-name">ToolStack</span>
+      </a>
+
+      <nav class="nav">
+        <a href="../index.html">Tools</a>
+        <a href="./index.html">Time</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" style="padding-bottom:10px;">
+      <h1>Stopwatch</h1>
+      <p class="lead">A fast stopwatch with laps. Keyboard shortcuts included.</p>
+    </section>
+
+    <section class="section">
+      <div class="grid">
+        <!-- Main Stopwatch -->
+        <div class="card" style="grid-column: span 12;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div>
+              <div style="color:var(--muted); font-weight:700;">Status</div>
+              <div id="statusLabel" style="font-weight:900; font-size:18px;">Ready</div>
+            </div>
+            <div id="lapCount" style="color:var(--muted); font-weight:700;">Laps: 0</div>
+          </div>
+
+          <div id="time"
+               style="font-size: clamp(46px, 7vw, 84px); font-weight: 900; letter-spacing: 1px; text-align:center; margin: 18px 0;">
+            00:00:00.00
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button id="startPauseBtn" class="btn" type="button">Start</button>
+            <button id="lapBtn" class="btn btn-secondary" type="button">Lap</button>
+            <button id="resetBtn" class="btn btn-secondary" type="button">Reset</button>
+            <button id="copyBtn" class="btn btn-secondary" type="button" title="Copy laps to clipboard">Copy laps</button>
+          </div>
+
+          <div style="margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; color:var(--muted);">
+            <span><b>Space</b> start/pause</span>
+            <span>·</span>
+            <span><b>L</b> lap</span>
+            <span>·</span>
+            <span><b>R</b> reset</span>
+          </div>
+        </div>
+
+        <!-- Laps -->
+        <div class="card" style="grid-column: span 12;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div class="card-title">Laps</div>
+            <button id="clearLapsBtn" class="btn btn-secondary" type="button">Clear laps</button>
+          </div>
+
+          <div class="card-desc" style="margin-bottom:10px;">
+            Each lap shows the split time and total time.
+          </div>
+
+          <div id="laps"
+               style="border:1px solid var(--border); border-radius:12px; overflow:hidden;">
+            <div style="padding:12px; color:var(--muted); background:rgba(0,0,0,.18);">
+              No laps yet.
+            </div>
+          </div>
+        </div>
+
+        <!-- SEO text -->
+        <div class="card" style="grid-column: span 12;">
+          <div class="card-title">How to use this stopwatch</div>
+          <div class="card-desc" style="line-height:1.6;">
+            Press <b>Start</b> to begin timing, <b>Lap</b> to record split times, and <b>Reset</b> to return to zero.
+            This stopwatch runs smoothly on mobile and desktop, and you can copy lap results for workouts, study sessions, or racing splits.
+          </div>
+        </div>
+      </div>
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>A stopwatch counts up from zero.</p>
+<ul>
+  <li>Use start/pause to control timing.</li>
+  <li>Laps capture intermediate times without stopping the main timer.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+
+<footer class="site-footer">
+  <div class="footer-row">
+    <div class="footer-links">
+      <a href="../../privacy.html">Privacy</a>
+      <a href="../../terms.html">Terms</a>
+      <a href="../../contact.html">Contact</a>
+    </div>
+    <div class="footer-note">© <span id="year"></span> ToolStack</div>
+  </div>
+</footer>
+
+  </main>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="./stopwatch.js"></script>
+</body>
+</html>

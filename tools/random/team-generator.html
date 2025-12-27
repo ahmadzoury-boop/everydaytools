@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Team Generator — ToolStack</title>
+  <meta name="description" content="Split a list of names into random teams. Fair shuffle, copyable output, and saved settings." />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .topnav a{opacity:.9}
+    h1{margin:0;font-size:22px}
+    .sub{opacity:.8;margin-top:6px;line-height:1.6}
+
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}
+    @media (max-width:950px){.grid{grid-template-columns:1fr}}
+
+    .card{padding:16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    label{display:block;font-size:.9rem;opacity:.9;margin-bottom:6px;font-weight:900}
+    textarea,input,select{
+      width:100%;
+      padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.15);color:inherit;outline:none
+    }
+    textarea{min-height:320px;resize:vertical;line-height:1.6}
+    .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+    @media (max-width:700px){.row{grid-template-columns:1fr}}
+    .tog{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);opacity:.92;font-weight:900}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    button{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.2);color:inherit;cursor:pointer;font-weight:900}
+    button.primary{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+    .out{white-space:pre-wrap;line-height:1.7}
+    .status{display:inline-block;margin-top:12px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);opacity:.9;font-weight:900}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="./index.html">← Back to Random Tools</a>
+      <div style="opacity:.8;font-weight:800">Team Generator</div>
+    </div>
+
+    <div class="card">
+      <h1>Team Generator</h1>
+      <div class="sub">Paste names, choose number of teams, then generate fair random teams (Fisher–Yates shuffle).</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <label for="names">Names (one per line or comma-separated)</label>
+        <textarea id="names" placeholder="Ali
+Sara
+Ahmed
+Zain
+..."></textarea>
+
+        <div class="row">
+          <div>
+            <label for="teams">Number of teams</label>
+            <input id="teams" type="number" min="2" max="50" value="2" />
+          </div>
+          <div>
+            <label for="mode">Distribution</label>
+            <select id="mode">
+              <option value="roundrobin">Round-robin (balanced)</option>
+              <option value="chunks">Chunks (in order after shuffle)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="tog">
+          <label class="pill"><input id="trim" type="checkbox" checked /> Trim/clean names</label>
+          <label class="pill"><input id="keepOrder" type="checkbox" /> Don’t shuffle (keep order)</label>
+        </div>
+
+        <div class="controls">
+          <button class="primary" id="genBtn" type="button">Generate teams</button>
+          <button id="clearBtn" type="button">Clear</button>
+          <button class="primary" id="copyBtn" type="button">Copy output</button>
+          <button id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <div class="status" id="status">Ready.</div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:1000;margin-bottom:8px">Output</div>
+        <div class="out mono" id="out">—</div>
+      </div>
+    </div>
+  </div>
+
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Splits a list of names into random teams.</p>
+<ul>
+  <li>The list is shuffled (randomized order), then divided evenly into the number of teams.</li>
+  <li>If the players don’t divide perfectly, extra players are distributed one-by-one to the first teams.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const namesEl = $("names");
+  const teamsEl = $("teams");
+  const modeEl = $("mode");
+  const trimEl = $("trim");
+  const keepOrderEl = $("keepOrder");
+
+  const outEl = $("out");
+  const status = $("status");
+
+  const LS = "toolstack_team_gen_v1";
+
+  function setStatus(msg, ok=true){
+    status.textContent = msg;
+    status.style.borderColor = ok ? "rgba(104,240,178,.35)" : "rgba(255,122,122,.35)";
+  }
+
+  function save(){
+    try{
+      localStorage.setItem(LS, JSON.stringify({
+        names: namesEl.value,
+        teams: teamsEl.value,
+        mode: modeEl.value,
+        trim: trimEl.checked,
+        keepOrder: keepOrderEl.checked
+      }));
+    }catch(e){}
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(LS);
+      if(!raw) return;
+      const d = JSON.parse(raw);
+      if(typeof d.names === "string") namesEl.value = d.names;
+      if(d.teams != null) teamsEl.value = d.teams;
+      if(typeof d.mode === "string") modeEl.value = d.mode;
+      if(typeof d.trim === "boolean") trimEl.checked = d.trim;
+      if(typeof d.keepOrder === "boolean") keepOrderEl.checked = d.keepOrder;
+    }catch(e){}
+  }
+
+  function cryptoInt(maxExclusive){
+    if(maxExclusive <= 1) return 0;
+    if(window.crypto && crypto.getRandomValues){
+      const a = new Uint32Array(1);
+      crypto.getRandomValues(a);
+      return a[0] % maxExclusive;
+    }
+    return Math.floor(Math.random() * maxExclusive);
+  }
+
+  function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = cryptoInt(i+1);
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+  }
+
+  function parseNames(raw){
+    if(!raw) return [];
+    // split by newlines and commas
+    const parts = raw
+      .split(/\r?\n|,/g)
+      .map(x => x.trim())
+      .filter(Boolean);
+
+    if(!trimEl.checked) return parts;
+
+    // clean duplicates by exact match (case-insensitive)
+    const seen = new Set();
+    const out = [];
+    for(const p of parts){
+      const key = p.toLowerCase();
+      if(seen.has(key)) continue;
+      seen.add(key);
+      out.push(p);
+    }
+    return out;
+  }
+
+  function generate(){
+    const names = parseNames(namesEl.value);
+    let t = Math.floor(Number(teamsEl.value));
+    if(!Number.isFinite(t) || t < 2) t = 2;
+    if(t > 50) t = 50;
+
+    if(names.length < t){
+      setStatus(`Need at least ${t} names to make ${t} teams.`, false);
+      outEl.textContent = "—";
+      return;
+    }
+
+    const list = names.slice();
+    if(!keepOrderEl.checked) shuffle(list);
+
+    const teams = Array.from({length: t}, () => []);
+
+    if(modeEl.value === "chunks"){
+      // split into chunks as evenly as possible
+      const base = Math.floor(list.length / t);
+      let extra = list.length % t;
+      let idx = 0;
+      for(let i=0;i<t;i++){
+        const size = base + (extra > 0 ? 1 : 0);
+        extra = Math.max(0, extra - 1);
+        teams[i] = list.slice(idx, idx + size);
+        idx += size;
+      }
+    }else{
+      // round-robin
+      for(let i=0;i<list.length;i++){
+        teams[i % t].push(list[i]);
+      }
+    }
+
+    let text = "";
+    for(let i=0;i<teams.length;i++){
+      text += `Team ${i+1} (${teams[i].length}):\n`;
+      text += teams[i].map(n => `- ${n}`).join("\n") + "\n\n";
+    }
+
+    outEl.textContent = text.trim();
+    setStatus(`Generated ${t} team(s) from ${names.length} name(s).`, true);
+    save();
+  }
+
+  function clear(){
+    namesEl.value = "";
+    outEl.textContent = "—";
+    setStatus("Cleared.", true);
+    save();
+  }
+
+  function reset(){
+    namesEl.value = "";
+    teamsEl.value = 2;
+    modeEl.value = "roundrobin";
+    trimEl.checked = true;
+    keepOrderEl.checked = false;
+    outEl.textContent = "—";
+    try{ localStorage.removeItem(LS); }catch(e){}
+    setStatus("Reset.", true);
+  }
+
+  async function copy(){
+    const txt = outEl.textContent.trim();
+    if(!txt || txt === "—"){
+      setStatus("Nothing to copy.", false);
+      return;
+    }
+    try{
+      await navigator.clipboard.writeText(txt);
+      setStatus("Copied to clipboard.", true);
+    }catch(e){
+      setStatus("Copy failed (browser blocked clipboard).", false);
+    }
+  }
+
+  $("genBtn").addEventListener("click", generate);
+  $("clearBtn").addEventListener("click", clear);
+  $("resetBtn").addEventListener("click", reset);
+  $("copyBtn").addEventListener("click", copy);
+
+  [namesEl, teamsEl, modeEl, trimEl, keepOrderEl].forEach(el => el.addEventListener("change", save));
+  namesEl.addEventListener("input", () => { /* don't spam save */ });
+
+  load();
+})();
+</script>
+</body>
+</html>

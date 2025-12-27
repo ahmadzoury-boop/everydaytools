@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Tabata Timer – 20/10 HIIT Intervals | ToolStack</title>
+  <meta name="description" content="Train with the classic 20/10 Tabata protocol. Customize rounds, work/rest durations, and get sound cues for each phase. Perfect for HIIT, cardio, and fat‑burning workouts." />
+
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/time/tabata.html" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    :root{
+      --ts-bg:#0b1220;
+      --ts-card:#0f1a33;
+      --ts-border:rgba(255,255,255,.10);
+      --ts-text:rgba(255,255,255,.92);
+      --ts-muted:rgba(255,255,255,.70);
+      --ts-accent:#7dd3fc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+        var(--ts-bg);
+      color:var(--ts-text);
+    }
+    a{color:var(--ts-accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .ts-header{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--ts-border);
+      position:sticky;top:0;backdrop-filter:blur(10px);
+      background:rgba(11,18,32,.65);
+    }
+    .ts-header .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .ts-badge{
+      font-size:12px;padding:6px 10px;border:1px solid var(--ts-border);
+      border-radius:999px;color:var(--ts-muted)
+    }
+
+    .ts-container{max-width:900px;margin:0 auto;padding:22px 16px 44px}
+    h1{font-size:32px;margin:10px 0 6px}
+    .ts-sub{margin:0 0 18px;color:var(--ts-muted)}
+
+    .ts-card{
+      background:rgba(15,26,51,.86);
+      border:1px solid var(--ts-border);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+      text-align:center;
+    }
+
+    .timer-display{
+      font-size:64px;
+      font-weight:900;
+      letter-spacing:2px;
+      margin:20px 0;
+    }
+
+    .phase-label{
+      font-size:20px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .round-label{
+      font-size:14px;
+      color:var(--ts-muted);
+      margin-bottom:20px;
+    }
+
+    .input-row{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .input-row input{
+      width:110px;
+      text-align:center;
+      font-size:18px;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid var(--ts-border);
+      background:rgba(0,0,0,.18);
+      color:var(--ts-text);
+    }
+
+    .ts-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:20px;
+    }
+    button{
+      cursor:pointer;
+      background:rgba(125,211,252,.18);
+      border:1px solid rgba(125,211,252,.35);
+      color:var(--ts-text);
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+    }
+    button.secondary{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--ts-border);
+    }
+
+    .ts-note{
+      margin-top:14px;
+      color:var(--ts-muted);
+      font-size:12px;
+      text-align:center;
+    }
+
+    .ts-footer{
+      padding:18px 16px;
+      border-top:1px solid var(--ts-border);
+      color:var(--ts-muted);
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Time Tools</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="./index.html">⬅ Back to Time Tools</a>
+  </div>
+</header>
+
+<main class="ts-container">
+  <h1>Tabata Timer</h1>
+  <p class="ts-sub">Classic 20s work / 10s rest — fully customizable with sound cues.</p>
+
+  <div class="ts-card">
+
+    <!-- PHASE + ROUND -->
+    <div class="phase-label" id="phaseLabel">Ready</div>
+    <div class="round-label" id="roundLabel">Round: 0 / 0</div>
+
+    <!-- TIMER DISPLAY -->
+    <div class="timer-display" id="display">00:00</div>
+
+    <!-- INPUTS -->
+    <div class="input-row">
+      <input id="workInput" type="number" min="1" max="999" placeholder="Work (sec)" value="20">
+      <input id="restInput" type="number" min="1" max="999" placeholder="Rest (sec)" value="10">
+      <input id="roundsInput" type="number" min="1" max="99" placeholder="Rounds" value="8">
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="ts-actions">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn" class="secondary">Pause</button>
+      <button id="resumeBtn" class="secondary">Resume</button>
+      <button id="resetBtn" class="secondary">Reset</button>
+    </div>
+
+    <div class="ts-note">Settings are saved automatically.</div>
+  </div>
+
+  <!-- EXPLANATION -->
+  <section style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">How it works</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        <p>This Tabata timer supports:</p>
+        <ul>
+          <li>Default 20s work / 10s rest</li>
+          <li>Custom durations</li>
+          <li>Custom number of rounds</li>
+          <li>Pause and resume</li>
+          <li>Sound cues at transitions</li>
+          <li>Automatic saving of your settings</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<footer class="ts-footer">
+  ToolStack Time Tools • Works offline • Single‑file utilities
+</footer>
+<script>
+  const $ = id => document.getElementById(id);
+
+  const displayEl = $("display");
+  const phaseLabel = $("phaseLabel");
+  const roundLabel = $("roundLabel");
+
+  const workInput = $("workInput");
+  const restInput = $("restInput");
+  const roundsInput = $("roundsInput");
+
+  const startBtn = $("startBtn");
+  const pauseBtn = $("pauseBtn");
+  const resumeBtn = $("resumeBtn");
+  const resetBtn = $("resetBtn");
+
+  let phase = "ready";        // "work", "rest", "ready"
+  let currentRound = 0;
+  let totalRounds = 0;
+
+  let remaining = 0;
+  let intervalId = null;
+  let isRunning = false;
+
+  const LS = "toolstack_tabata_v1";
+
+  function saveSettings(){
+    try{
+      localStorage.setItem(LS, JSON.stringify({
+        work: workInput.value,
+        rest: restInput.value,
+        rounds: roundsInput.value
+      }));
+    }catch(e){}
+  }
+
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem(LS);
+      if(!raw) return;
+      const d = JSON.parse(raw);
+      if(d.work) workInput.value = d.work;
+      if(d.rest) restInput.value = d.rest;
+      if(d.rounds) roundsInput.value = d.rounds;
+    }catch(e){}
+  }
+
+  function beep(){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 880;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.0);
+      osc.stop(ctx.currentTime + 1.0);
+    }catch(e){}
+  }
+
+  function format(sec){
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+  }
+
+  function updateDisplay(){
+    displayEl.textContent = format(remaining);
+  }
+
+  function stopTimer(){
+    if(intervalId){
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+    isRunning = false;
+  }
+
+  function startPhase(newPhase){
+    phase = newPhase;
+    phaseLabel.textContent = newPhase === "work" ? "Work" : "Rest";
+
+    if(newPhase === "work"){
+      remaining = Number(workInput.value);
+    } else {
+      remaining = Number(restInput.value);
+    }
+
+    updateDisplay();
+    beep();
+  }
+
+  function nextPhase(){
+    if(phase === "work"){
+      startPhase("rest");
+    } else {
+      currentRound++;
+      if(currentRound > totalRounds){
+        finishAll();
+        return;
+      }
+      roundLabel.textContent = `Round: ${currentRound} / ${totalRounds}`;
+      startPhase("work");
+    }
+  }
+
+  function finishAll(){
+    stopTimer();
+    phase = "ready";
+    phaseLabel.textContent = "Done!";
+    remaining = 0;
+    updateDisplay();
+    beep();
+  }
+
+  function startTimer(){
+    stopTimer();
+
+    const w = Number(workInput.value);
+    const r = Number(restInput.value);
+    const rounds = Number(roundsInput.value);
+
+    if(!w || !r || !rounds){
+      return;
+    }
+
+    totalRounds = rounds;
+    currentRound = 1;
+
+    roundLabel.textContent = `Round: ${currentRound} / ${totalRounds}`;
+    startPhase("work");
+
+    isRunning = true;
+
+    intervalId = setInterval(() => {
+      remaining--;
+      if(remaining <= 0){
+        nextPhase();
+      }
+      updateDisplay();
+    }, 1000);
+
+    saveSettings();
+  }
+
+  function pauseTimer(){
+    if(!isRunning) return;
+    stopTimer();
+  }
+
+  function resumeTimer(){
+    if(isRunning || remaining <= 0) return;
+
+    isRunning = true;
+    intervalId = setInterval(() => {
+      remaining--;
+      if(remaining <= 0){
+        nextPhase();
+      }
+      updateDisplay();
+    }, 1000);
+  }
+
+  function resetTimer(){
+    stopTimer();
+    phase = "ready";
+    phaseLabel.textContent = "Ready";
+    roundLabel.textContent = "Round: 0 / 0";
+    remaining = 0;
+    updateDisplay();
+  }
+
+  startBtn.addEventListener("click", startTimer);
+  pauseBtn.addEventListener("click", pauseTimer);
+  resumeBtn.addEventListener("click", resumeTimer);
+  resetBtn.addEventListener("click", resetTimer);
+
+  [workInput, restInput, roundsInput].forEach(el => {
+    el.addEventListener("change", saveSettings);
+    el.addEventListener("input", saveSettings);
+  });
+
+  loadSettings();
+  updateDisplay();
+</script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Days Between Dates — ToolStack</title>
+  <meta name="description" content="Calculate difference between two dates in days, weeks, and business days. Includes optional inclusive counting." />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
+    .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .topnav a{opacity:.9}
+    h1{margin:0;font-size:22px}
+    .sub{opacity:.8;margin-top:6px;line-height:1.6}
+
+    .card{padding:16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    label{display:block;font-size:.9rem;opacity:.9;margin-bottom:6px;font-weight:800}
+    input[type="date"]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.15);color:inherit}
+
+    .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+    @media (max-width:900px){.row{grid-template-columns:1fr}}
+
+    .tog{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);opacity:.92;font-weight:800}
+    .pill input{transform:translateY(1px)}
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    button{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.2);color:inherit;cursor:pointer;font-weight:800}
+    button.primary{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+
+    .outGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+    @media (max-width:900px){.outGrid{grid-template-columns:1fr}}
+    .stat{padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.12)}
+    .k{opacity:.8;font-size:.9rem;margin-bottom:6px}
+    .v{font-size:24px;font-weight:900;letter-spacing:.3px}
+    .small{opacity:.85;margin-top:6px;line-height:1.5}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="./index.html">← Back to Date Tools</a>
+      <div style="opacity:.8;font-weight:800">Days Between Dates</div>
+    </div>
+
+    <div class="card">
+      <h1>Days Between Dates</h1>
+      <div class="sub">Get the difference in days, weeks, and business days (Mon–Fri). Use “inclusive” to include both start and end dates.</div>
+
+      <div class="row">
+        <div>
+          <label for="start">Start date</label>
+          <input id="start" type="date" />
+        </div>
+        <div>
+          <label for="end">End date</label>
+          <input id="end" type="date" />
+        </div>
+      </div>
+
+      <div class="tog">
+        <label class="pill"><input id="inclusive" type="checkbox" /> Count inclusive</label>
+        <label class="pill"><input id="autoSwap" type="checkbox" checked /> Auto-swap if start &gt; end</label>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="calcBtn" type="button">Calculate</button>
+        <button id="swapBtn" type="button">Swap</button>
+        <button class="primary" id="copyBtn" type="button">Copy results</button>
+        <button id="resetBtn" type="button">Reset</button>
+      </div>
+
+      <div class="outGrid">
+        <div class="stat">
+          <div class="k">Days</div>
+          <div class="v mono" id="daysOut">—</div>
+          <div class="small" id="daysMeta"></div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Weeks</div>
+          <div class="v mono" id="weeksOut">—</div>
+          <div class="small" id="weeksMeta"></div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Business days</div>
+          <div class="v mono" id="bizOut">—</div>
+          <div class="small" id="bizMeta"></div>
+        </div>
+      </div>
+
+      <div class="stat" style="margin-top:12px">
+        <div class="k">Calendar difference (Y / M / D)</div>
+        <div class="v mono" id="ymdOut">—</div>
+        <div class="small">Calendar-style difference (not the same as total days).</div>
+      </div>
+
+      <div class="pill" id="status" style="margin-top:12px">Enter dates to calculate.</div>
+    </div>
+  </div>
+
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Calculates how far apart two dates are.</p>
+<ul>
+  <li><b>Standard</b> mode counts the difference with the end date excluded.</li>
+  <li><b>Inclusive</b> adds 1 day so both start and end are counted.</li>
+  <li><b>Business days</b> counts Monday–Friday between the dates (also respects inclusive mode).</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const startEl = $("start");
+  const endEl = $("end");
+  const inclusiveEl = $("inclusive");
+  const autoSwapEl = $("autoSwap");
+
+  const daysOut = $("daysOut");
+  const weeksOut = $("weeksOut");
+  const bizOut = $("bizOut");
+  const ymdOut = $("ymdOut");
+
+  const daysMeta = $("daysMeta");
+  const weeksMeta = $("weeksMeta");
+  const bizMeta = $("bizMeta");
+  const status = $("status");
+
+  const LS = "toolstack_days_between_v1";
+
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const fmtISO = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+
+  function parseDateLocal(iso){
+    if(!iso) return null;
+    const [y,m,da] = iso.split("-").map(Number);
+    if(!y || !m || !da) return null;
+    return new Date(y, m-1, da);
+  }
+
+  function midnight(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function diffDays(a, b){
+    const ms = midnight(b) - midnight(a);
+    return Math.round(ms / 86400000);
+  }
+  function daysInMonth(y, m0){ return new Date(y, m0+1, 0).getDate(); }
+
+  function diffYMD(from, to){
+    if(to < from) return null;
+    const fy = from.getFullYear(), fm = from.getMonth(), fd = from.getDate();
+    const ty = to.getFullYear(), tm = to.getMonth(), td = to.getDate();
+
+    let y = ty - fy;
+    let m = tm - fm;
+    let d = td - fd;
+
+    if(d < 0){
+      m -= 1;
+      const prevMonth = (tm - 1 + 12) % 12;
+      const prevYear = ty + (tm === 0 ? -1 : 0);
+      d += daysInMonth(prevYear, prevMonth);
+    }
+    if(m < 0){
+      y -= 1;
+      m += 12;
+    }
+    return {y,m,d};
+  }
+
+  // Count business days (Mon-Fri) from start. Includes end if inclusive=true.
+  function businessDays(start, end, inclusive){
+    let total = diffDays(start, end);
+    if(inclusive) total += 1;
+    if(total <= 0) return 0;
+
+    const s = midnight(start);
+    const fullWeeks = Math.floor(total / 7);
+    let biz = fullWeeks * 5;
+    const rem = total % 7;
+
+    // JS getDay(): 0=Sun ... 6=Sat
+    const dow = s.getDay();
+    for(let i=0;i<rem;i++){
+      const d = (dow + i) % 7;
+      if(d !== 0 && d !== 6) biz++;
+    }
+    return biz;
+  }
+
+  function setStatus(msg, ok=true){
+    status.textContent = msg;
+    status.style.borderColor = ok ? "rgba(104,240,178,.35)" : "rgba(255,122,122,.35)";
+  }
+
+  function save(){
+    try{
+      localStorage.setItem(LS, JSON.stringify({
+        start: startEl.value || "",
+        end: endEl.value || "",
+        inclusive: inclusiveEl.checked,
+        autoSwap: autoSwapEl.checked
+      }));
+    }catch(e){}
+  }
+
+  function load(){
+    const t = new Date();
+    startEl.value = fmtISO(t);
+    endEl.value = fmtISO(t);
+
+    try{
+      const raw = localStorage.getItem(LS);
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      if(typeof data.start === "string" && data.start) startEl.value = data.start;
+      if(typeof data.end === "string" && data.end) endEl.value = data.end;
+      if(typeof data.inclusive === "boolean") inclusiveEl.checked = data.inclusive;
+      if(typeof data.autoSwap === "boolean") autoSwapEl.checked = data.autoSwap;
+    }catch(e){}
+  }
+
+  function swap(){
+    const a = startEl.value;
+    startEl.value = endEl.value;
+    endEl.value = a;
+    save();
+  }
+
+  function calc(){
+    let s = parseDateLocal(startEl.value);
+    let e = parseDateLocal(endEl.value);
+    if(!s || !e){
+      setStatus("Enter both dates to calculate.", true);
+      return;
+    }
+
+    if(e < s){
+      if(autoSwapEl.checked){
+        const tmp = s; s = e; e = tmp;
+        setStatus("Start was after end — auto-swapped.", true);
+      }else{
+        setStatus("End date must be after start date (or enable auto-swap).", false);
+        return;
+      }
+    }else{
+      setStatus("Calculated.", true);
+    }
+
+    const inclusive = inclusiveEl.checked;
+    const raw = diffDays(s, e); // exclusive end
+    const totalDays = raw + (inclusive ? 1 : 0);
+
+    const weeks = totalDays / 7;
+    const fullWeeks = Math.floor(totalDays / 7);
+    const rem = totalDays % 7;
+
+    const biz = businessDays(s, e, inclusive);
+    const ymd = diffYMD(s, e);
+
+    daysOut.textContent = totalDays.toLocaleString();
+    daysMeta.textContent = inclusive ? "Includes start & end." : "Standard difference (end not included).";
+
+    weeksOut.textContent = weeks.toFixed(2);
+    weeksMeta.textContent = `${fullWeeks} full week(s) + ${rem} day(s)`;
+
+    bizOut.textContent = biz.toLocaleString();
+    bizMeta.textContent = "Mon–Fri only.";
+
+    ymdOut.textContent = ymd ? `${ymd.y}y ${ymd.m}m ${ymd.d}d` : "—";
+
+    save();
+  }
+
+  async function copy(){
+    const txt =
+`Days Between Dates
+Start: ${startEl.value || "—"}
+End: ${endEl.value || "—"}
+Inclusive: ${inclusiveEl.checked ? "YES" : "NO"}
+Days: ${daysOut.textContent}
+Weeks: ${weeksOut.textContent}
+Business days: ${bizOut.textContent}
+Calendar diff: ${ymdOut.textContent}`;
+    try{
+      await navigator.clipboard.writeText(txt);
+      setStatus("Copied to clipboard.", true);
+    }catch(e){
+      setStatus("Copy failed (browser blocked clipboard).", false);
+    }
+  }
+
+  $("calcBtn").addEventListener("click", calc);
+  $("swapBtn").addEventListener("click", () => { swap(); calc(); });
+  $("copyBtn").addEventListener("click", copy);
+  $("resetBtn").addEventListener("click", () => {
+    try{ localStorage.removeItem(LS); }catch(e){}
+    const t = new Date();
+    startEl.value = fmtISO(t);
+    endEl.value = fmtISO(t);
+    inclusiveEl.checked = false;
+    autoSwapEl.checked = true;
+    calc();
+  });
+
+  startEl.addEventListener("change", save);
+  endEl.addEventListener("change", save);
+  inclusiveEl.addEventListener("change", save);
+  autoSwapEl.addEventListener("change", save);
+
+  load();
+  calc();
+})();
+</script>
+</body>
+</html>

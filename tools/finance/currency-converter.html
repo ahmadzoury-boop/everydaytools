@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Live Currency Converter | Real-Time Exchange Rates</title>
+  <meta name="description" content="Convert currencies instantly with real-time exchange rates. Auto-convert, charts, trending currency pairs, and daily or weekly email updates.">
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/finance/currency-converter.html">
+
+  <!-- SEO keywords for broad search phrases -->
+  <meta name="keywords" content="
+currency converter, money converter, live currency converter, real-time currency converter,
+dollar to euro, usd to eur, eur to usd, gbp to usd, usd to gbp,
+inr to usd, usd to inr, try to usd, usd to try, aed to usd, usd to aed,
+sar to usd, usd to sar, cny to usd, usd to cny,
+exchange rate calculator, forex calculator, foreign exchange calculator,
+online currency tool, convert money online, currency conversion tool
+">
+
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #d1d5db;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --shadow-soft: 0 8px 24px rgba(0,0,0,0.06);
+      --danger: #b91c1c;
+      --success: #15803d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .page-wrap {
+      min-height: 100vh;
+      padding: 32px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .layout {
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .converter-card,
+    .side-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 24px 20px;
+    }
+
+    .converter-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .converter-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .amount-input,
+    .currency-select {
+      width: 100%;
+      padding: 14px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      font-size: 1rem;
+    }
+
+    .amount-input:focus,
+    .currency-select:focus {
+      border-color: var(--accent);
+      outline: none;
+      background: #ffffff;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .swap-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      gap: 8px;
+    }
+
+    .swap-button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: #e5edff;
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .primary-btn {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 16px;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .primary-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .result-panel {
+      margin-top: 16px;
+      padding: 16px 14px;
+      border-radius: var(--radius-md);
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .result-main-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .result-main {
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-main);
+    }
+
+    .copy-btn {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .result-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .rate-line,
+    .reverse-line {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .reverse-line {
+      margin-top: 2px;
+    }
+
+    .status-line {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    .error-line {
+      font-size: 0.85rem;
+      color: var(--danger);
+      margin-top: 4px;
+    }
+
+    .side-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .chart-canvas {
+      width: 100%;
+      height: 160px;
+      border-radius: var(--radius-md);
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .chart-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .trend-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+      font-size: 0.9rem;
+    }
+
+    .trend-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .trend-pair {
+      color: #374151;
+    }
+
+    .trend-change {
+      font-weight: 600;
+    }
+
+    .trend-change.up {
+      color: var(--success);
+    }
+
+    .trend-change.down {
+      color: var(--danger);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e5edff;
+      color: #1d4ed8;
+      font-size: 0.75rem;
+      margin-left: 6px;
+    }
+
+    /* Subscribe box */
+    .subscribe-box {
+      margin-top: 18px;
+      padding: 14px 14px 12px;
+      border-radius: var(--radius-md);
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .subscribe-box h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .subscribe-box p {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Dynamic expanding subscribe fields (Option B) */
+    .subscribe-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Prevent shrinking + smooth animation */
+    .subscribe-row > * {
+      min-width: 0;
+      transition: all 0.25s ease;
+    }
+
+    .subscribe-input,
+    .subscribe-select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-size: 0.85rem;
+    }
+
+    .subscribe-btn {
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    .subscribe-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Email expands full width on focus */
+    .subscribe-input:focus {
+      grid-column: 1 / 4;
+    }
+
+    /* Frequency expands full width on focus */
+    .subscribe-select:focus {
+      grid-column: 1 / 4;
+    }
+
+    /* Button expands full width on focus */
+    .subscribe-btn:focus {
+      grid-column: 1 / 4;
+    }
+
+    .subscribe-note {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 640px) {
+      .subscribe-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Hidden SEO block (for Google only) */
+    .seo-hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrap">
+    <div class="layout">
+      <!-- LEFT: Converter -->
+      <main class="converter-card">
+        <h1 class="converter-title">Live Currency Converter</h1>
+        <p class="converter-subtitle">
+          Convert currencies instantly using real-time exchange rates.
+          Auto‑convert, reverse rate, 7‑day trend, trending pairs, and email alerts.
+        </p>
+
+        <!-- Hidden SEO block: Google can read, users don't see -->
+        <div class="seo-hidden">
+          <h2>Currency Converter – Money Converter, Dollar to Euro and More</h2>
+          <p>
+            Use this live currency converter to convert money between USD, EUR, GBP, INR, TRY, AED, SAR, CNY,
+            and many more currencies. Convert dollar to euro (USD to EUR), euro to dollar (EUR to USD),
+            pound to dollar (GBP to USD), rupee to dollar (INR to USD), and other foreign exchange pairs
+            with real-time exchange rates, charts, and auto-conversion.
+          </p>
+        </div>
+
+        <label class="field-label">Amount</label>
+        <input id="amountInput" class="amount-input" type="number" value="1" min="0" step="0.01" />
+
+        <label class="field-label" style="margin-top:10px;">Currencies</label>
+        <div class="input-row">
+          <select id="fromCurrency" class="currency-select"></select>
+          <select id="toCurrency" class="currency-select"></select>
+        </div>
+
+        <div class="swap-row">
+          <button id="swapButton" class="swap-button">⇆ Swap</button>
+          <button id="convertButton" class="primary-btn">Convert</button>
+        </div>
+
+        <div class="result-panel">
+          <div class="result-main-row">
+            <div id="resultMain" class="result-main">Enter an amount</div>
+            <button id="copyButton" class="copy-btn" disabled>Copy</button>
+          </div>
+          <div id="resultSub" class="result-sub">Your result will appear here.</div>
+          <div id="rateLine" class="rate-line"></div>
+          <div id="reverseLine" class="reverse-line"></div>
+          <div id="statusLine" class="status-line"></div>
+          <div id="errorLine" class="error-line"></div>
+        </div>
+      </main>
+
+      <!-- RIGHT: Chart + Trending + Subscribe -->
+      <aside class="side-card">
+        <div>
+          <div class="side-title">
+            7‑day rate trend <span id="chartPairLabel" class="pill">USD → EUR</span>
+          </div>
+          <canvas id="rateChart" class="chart-canvas"></canvas>
+          <div id="chartMeta" class="chart-meta"></div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div class="side-title">
+            Trending pairs <span class="pill">vs USD (24h)</span>
+          </div>
+          <ul id="trendList" class="trend-list">
+            <li class="trend-item"><span class="trend-pair">Loading...</span><span class="trend-change">–</span></li>
+          </ul>
+        </div>
+
+        <!-- Subscribe box -->
+        <div class="subscribe-box">
+          <h3>Get Daily or Weekly Rate Emails</h3>
+          <p>
+            Subscribe to receive updates for this currency pair plus key USD markets
+            (USD→EUR, USD→GBP, USD→TRY, USD→AED, and more).
+          </p>
+
+          <form id="subscribeForm" action="/api/rate-subscribe" method="POST">
+            <div class="subscribe-row">
+              <input
+                class="subscribe-input"
+                type="email"
+                name="email"
+                placeholder="Your email address"
+                required
+              >
+              <select class="subscribe-select" name="frequency" required>
+                <option value="daily">Daily updates</option>
+                <option value="weekly">Weekly updates</option>
+              </select>
+              <button class="subscribe-btn" type="submit">Subscribe</button>
+            </div>
+
+            <!-- Hidden fields for user-chosen pair -->
+            <input type="hidden" name="from" id="subFrom">
+            <input type="hidden" name="to" id="subTo">
+
+            <div class="subscribe-note">
+              You’ll get emails from noreply@mytools-56j.pages.dev.
+              One-click unsubscribe link is included in every email.
+            </div>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const currencyList = [
+      { code: "USD", name: "United States Dollar", flag: "🇺🇸" },
+      { code: "EUR", name: "Euro", flag: "🇪🇺" },
+      { code: "GBP", name: "British Pound", flag: "🇬🇧" },
+      { code: "JPY", name: "Japanese Yen", flag: "🇯🇵" },
+      { code: "AUD", name: "Australian Dollar", flag: "🇦🇺" },
+      { code: "CAD", name: "Canadian Dollar", flag: "🇨🇦" },
+      { code: "TRY", name: "Turkish Lira", flag: "🇹🇷" },
+      { code: "AED", name: "UAE Dirham", flag: "🇦🇪" },
+      { code: "SAR", name: "Saudi Riyal", flag: "🇸🇦" },
+      { code: "INR", name: "Indian Rupee", flag: "🇮🇳" },
+      { code: "CNY", name: "Chinese Yuan", flag: "🇨🇳" },
+      { code: "ZAR", name: "South African Rand", flag: "🇿🇦" },
+      { code: "BRL", name: "Brazilian Real", flag: "🇧🇷" },
+      { code: "MXN", name: "Mexican Peso", flag: "🇲🇽" },
+      { code: "SGD", name: "Singapore Dollar", flag: "🇸🇬" }
+    ];
+
+    const amountInput = document.getElementById("amountInput");
+    const fromSelect = document.getElementById("fromCurrency");
+    const toSelect = document.getElementById("toCurrency");
+    const convertButton = document.getElementById("convertButton");
+    const swapButton = document.getElementById("swapButton");
+    const copyButton = document.getElementById("copyButton");
+
+    const resultMain = document.getElementById("resultMain");
+    const resultSub = document.getElementById("resultSub");
+    const rateLine = document.getElementById("rateLine");
+    const reverseLine = document.getElementById("reverseLine");
+    const statusLine = document.getElementById("statusLine");
+    const errorLine = document.getElementById("errorLine");
+
+    const chartCanvas = document.getElementById("rateChart");
+    const chartPairLabel = document.getElementById("chartPairLabel");
+    const chartMeta = document.getElementById("chartMeta");
+    const trendList = document.getElementById("trendList");
+
+    const subscribeForm = document.getElementById("subscribeForm");
+    const subFromInput = document.getElementById("subFrom");
+    const subToInput = document.getElementById("subTo");
+
+    let chartCtx = chartCanvas.getContext("2d");
+    let chartData = null;
+
+    function populateDropdowns() {
+      currencyList.forEach(c => {
+        const label = `${c.flag} ${c.code} — ${c.name}`;
+        const opt1 = new Option(label, c.code);
+        const opt2 = new Option(label, c.code);
+        fromSelect.add(opt1);
+        toSelect.add(opt2);
+      });
+
+      fromSelect.value = "USD";
+      toSelect.value = "EUR";
+      syncSubscribePair();
+    }
+
+    function syncSubscribePair() {
+      subFromInput.value = fromSelect.value;
+      subToInput.value = toSelect.value;
+    }
+
+    function setLoadingState(msg = "Fetching live rate…") {
+      resultMain.textContent = "Converting…";
+      resultSub.textContent = "";
+      rateLine.textContent = "";
+      reverseLine.textContent = "";
+      statusLine.textContent = msg;
+      errorLine.textContent = "";
+      copyButton.disabled = true;
+    }
+
+    function setErrorState(message) {
+      errorLine.textContent = message;
+      statusLine.textContent = "Please try again.";
+      copyButton.disabled = true;
+    }
+
+    // Uses your /api/currency Worker
+    async function convertCurrency(auto = false) {
+      const amount = parseFloat(amountInput.value);
+      const from = fromSelect.value;
+      const to = toSelect.value;
+
+      syncSubscribePair();
+
+      if (!amount || amount <= 0) {
+        resultMain.textContent = "Enter a valid amount";
+        resultSub.textContent = "Amount must be greater than zero.";
+        rateLine.textContent = "";
+        reverseLine.textContent = "";
+        statusLine.textContent = "";
+        errorLine.textContent = "";
+        copyButton.disabled = true;
+        return;
+      }
+
+      if (from === to) {
+        resultMain.textContent = `${amount.toFixed(2)} ${from} = ${amount.toFixed(2)} ${to}`;
+        resultSub.textContent = "Same currency selected.";
+        rateLine.textContent = `1 ${from} = 1 ${to}`;
+        reverseLine.textContent = `1 ${to} = 1 ${from}`;
+        statusLine.textContent = "No conversion needed.";
+        errorLine.textContent = "";
+        copyButton.disabled = false;
+        updateChart(from, to);
+        return;
+      }
+
+      setLoadingState(auto ? "Updating rate…" : "Fetching live rate…");
+
+      try {
+        const url = `/api/currency?from=${from}&to=${to}&amount=${amount}`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!res.ok || data.error) {
+          throw new Error(data.error || "Conversion failed");
+        }
+
+        const converted = data.result;
+        const forward = data.rate;
+        const reverse = 1 / forward;
+
+        resultMain.textContent = `${amount} ${from} = ${converted} ${to}`;
+        resultSub.textContent = "Live mid‑market rate";
+        copyButton.disabled = false;
+
+        rateLine.textContent = `1 ${from} ≈ ${forward} ${to}`;
+        reverseLine.textContent = `1 ${to} ≈ ${reverse.toFixed(6)} ${from}`;
+        statusLine.textContent = "Updated just now";
+        errorLine.textContent = "";
+
+        updateChart(from, to);
+      } catch (err) {
+        setErrorState(err.message || "Error fetching rate");
+      }
+    }
+
+    function swapCurrencies() {
+      const temp = fromSelect.value;
+      fromSelect.value = toSelect.value;
+      toSelect.value = temp;
+      convertCurrency(true);
+    }
+
+    async function updateChart(from, to) {
+      chartPairLabel.textContent = `${from} → ${to}`;
+      chartMeta.textContent = "Loading 7‑day history…";
+
+      try {
+        const today = new Date();
+        const end = formatDate(today);
+        const startDate = new Date(today);
+        startDate.setDate(startDate.getDate() - 6);
+        const start = formatDate(startDate);
+
+        const url = `https://api.frankfurter.app/${start}..${end}?from=${from}&to=${to}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("History fetch error");
+        const data = await res.json();
+
+        const dates = Object.keys(data.rates).sort();
+        const values = dates.map(d => data.rates[d][to]);
+
+        chartData = { dates, values };
+        drawChart();
+        if (dates.length > 0) {
+          chartMeta.textContent = `Last 7 days • ${dates[0]} → ${dates[dates.length - 1]}`;
+        } else {
+          chartMeta.textContent = "No history data available.";
+        }
+      } catch (err) {
+        chartMeta.textContent = "Could not load history.";
+      }
+
+      updateTrending();
+    }
+
+    function formatDate(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function drawChart() {
+      if (!chartData || chartData.values.length === 0) {
+        chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+        return;
+      }
+
+      const { values } = chartData;
+      const w = chartCanvas.width;
+      const h = chartCanvas.height;
+      chartCtx.clearRect(0, 0, w, h);
+
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const padding = 20;
+
+      const xStep = (w - padding * 2) / Math.max(values.length - 1, 1);
+      const yScale = max === min ? 1 : (h - padding * 2) / (max - min);
+
+      chartCtx.beginPath();
+      chartCtx.strokeStyle = "#2563eb";
+      chartCtx.lineWidth = 2;
+
+      values.forEach((val, i) => {
+        const x = padding + i * xStep;
+        const y = h - padding - (val - min) * yScale;
+        if (i === 0) chartCtx.moveTo(x, y);
+        else chartCtx.lineTo(x, y);
+      });
+
+      chartCtx.stroke();
+
+      chartCtx.fillStyle = "#2563eb";
+      values.forEach((val, i) => {
+        const x = padding + i * xStep;
+        const y = h - padding - (val - min) * yScale;
+        chartCtx.beginPath();
+        chartCtx.arc(x, y, 3, 0, Math.PI * 2);
+        chartCtx.fill();
+      });
+    }
+
+    async function updateTrending() {
+      const base = "USD";
+      const majors = ["EUR", "GBP", "JPY", "AUD", "CAD", "TRY", "INR", "CNY", "BRL", "MXN"];
+
+      try {
+        const today = new Date();
+        const todayStr = formatDate(today);
+        const yest = new Date(today);
+        yest.setDate(yest.getDate() - 1);
+        const yestStr = formatDate(yest);
+
+        const latestUrl = `https://api.frankfurter.app/latest?from=${base}&to=${majors.join(",")}`;
+        const prevUrl = `https://api.frankfurter.app/${yestStr}?from=${base}&to=${majors.join(",")}`;
+
+        const [latestRes, prevRes] = await Promise.all([fetch(latestUrl), fetch(prevUrl)]);
+        if (!latestRes.ok || !prevRes.ok) throw new Error("Trending fetch error");
+
+        const latestData = await latestRes.json();
+        const prevData = await prevRes.json();
+
+        const changes = majors.map(code => {
+          const todayRate = latestData.rates[code];
+          const prevRate = prevData.rates[code];
+          if (!todayRate || !prevRate) return null;
+          const diff = todayRate - prevRate;
+          const pct = (diff / prevRate) * 100;
+          return { code, todayRate, prevRate, diff, pct };
+        }).filter(Boolean);
+
+        changes.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+        const top = changes.slice(0, 5);
+
+        trendList.innerHTML = "";
+        top.forEach(item => {
+          const li = document.createElement("li");
+          li.className = "trend-item";
+
+          const pairSpan = document.createElement("span");
+          pairSpan.className = "trend-pair";
+          pairSpan.textContent = `${base} → ${item.code}`;
+
+          const changeSpan = document.createElement("span");
+          changeSpan.className = "trend-change " + (item.pct >= 0 ? "up" : "down");
+          const sign = item.pct >= 0 ? "▲" : "▼";
+          changeSpan.textContent = `${sign} ${item.pct.toFixed(2)}%`;
+
+          li.appendChild(pairSpan);
+          li.appendChild(changeSpan);
+          trendList.appendChild(li);
+        });
+      } catch (err) {
+        trendList.innerHTML = "";
+        const li = document.createElement("li");
+        li.className = "trend-item";
+        li.innerHTML = `<span class="trend-pair">Unable to load trends</span><span class="trend-change">–</span>`;
+        trendList.appendChild(li);
+      }
+    }
+
+    function copyResult() {
+      const text = resultMain.textContent;
+      if (!text || text === "Enter an amount") return;
+      navigator.clipboard.writeText(text).then(() => {
+        const prev = copyButton.textContent;
+        copyButton.textContent = "Copied!";
+        setTimeout(() => (copyButton.textContent = "Copy"), 1200);
+      });
+    }
+
+    // Event wiring
+    convertButton.onclick = () => convertCurrency(false);
+    swapButton.onclick = swapCurrencies;
+    copyButton.onclick = copyResult;
+
+    amountInput.addEventListener("input", () => {
+      convertCurrency(true);
+    });
+
+    fromSelect.addEventListener("change", () => {
+      syncSubscribePair();
+      convertCurrency(true);
+    });
+
+    toSelect.addEventListener("change", () => {
+      syncSubscribePair();
+      convertCurrency(true);
+    });
+
+    // On subscribe submit, ensure pair is synced
+    subscribeForm.addEventListener("submit", () => {
+      syncSubscribePair();
+    });
+
+    // Init
+    populateDropdowns();
+    convertCurrency(true);
+
+    function handleResize() {
+      const rect = chartCanvas.getBoundingClientRect();
+      chartCanvas.width = rect.width * window.devicePixelRatio;
+      chartCanvas.height = rect.height * window.devicePixelRatio;
+      drawChart();
+    }
+    window.addEventListener("resize", handleResize);
+    handleResize();
+  </script>
+
+  <!-- FAQ Schema for Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I convert USD to EUR?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Enter the amount in USD, select USD as the from currency and EUR as the to currency, and the Live Currency Converter will calculate the real-time exchange rate for you."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this a real-time currency converter?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. This currency converter uses live exchange rates and automatically updates results when you change the amount or currencies."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I get daily or weekly exchange rate updates by email?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. You can subscribe on this page for daily or weekly email updates for your chosen currency pair, plus a summary of major USD currency pairs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which currencies does this money converter support?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The tool supports popular currencies like USD, EUR, GBP, JPY, TRY, AED, SAR, INR, CNY, BRL, MXN, ZAR, and more."
+        }
+      }
+    ]
+  }
+  </script>
+</body>
+</html>

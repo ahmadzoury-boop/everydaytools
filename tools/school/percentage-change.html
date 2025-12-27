@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Percentage Increase / Decrease Calculator</title>
+  <meta name="description" content="Calculate percentage increase/decrease, absolute change, and reverse calculations." />
+
+  <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1630;
+      --card: rgba(255,255,255,.07);
+      --card2: rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.70);
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 16px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --accent: #7aa7ff;
+      --ok: #68f0b2;
+      --warn: #ffd36e;
+      --bad: #ff7a7a;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(122,167,255,.35), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(104,240,178,.20), transparent 60%),
+        radial-gradient(900px 500px at 60% 85%, rgba(255,211,110,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display:flex;
+      justify-content:center;
+      padding:28px 14px;
+    }
+
+    .wrap{width:min(1100px, 100%);}
+
+    header{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+
+    .title h1{
+      font-size: clamp(22px, 3vw, 34px);
+      margin:0 0 6px 0;
+      letter-spacing:.2px;
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+      max-width: 75ch;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      margin-top:2px;
+    }
+
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:13px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .btn:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      background: rgba(122,167,255,.16);
+      border-color: rgba(122,167,255,.35);
+    }
+    .btn.primary:hover{background: rgba(122,167,255,.22)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    @media (max-width: 950px){
+      .grid{grid-template-columns: 1fr;}
+      .top-actions{justify-content:flex-start}
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .card .hd .label{
+      font-weight:950;
+      letter-spacing:.2px;
+      font-size:14px;
+    }
+    .card .bd{padding:14px 16px;}
+
+    .row{display:flex; gap:12px; flex-wrap:wrap;}
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 220px;
+      flex:1;
+    }
+    .field label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
+    input[type="number"], select{
+      width:100%;
+      padding:10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    input[type="number"]:focus, select:focus{
+      border-color: rgba(122,167,255,.55);
+      box-shadow: 0 0 0 4px rgba(122,167,255,.16);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 420px){ .stats{grid-template-columns: 1fr;} }
+
+    .stat{
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding:12px;
+    }
+    .stat .k{
+      color: var(--muted);
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .stat .v{
+      font-size:18px;
+      font-weight:950;
+      letter-spacing:.2px;
+      word-break: break-word;
+    }
+
+    .banner{
+      margin-top:10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      border-radius: 14px;
+      padding:12px;
+      line-height:1.55;
+      color: var(--muted);
+      font-size:13px;
+      font-weight:800;
+    }
+    .banner strong{color:var(--text)}
+    .banner.ok{border-color: rgba(104,240,178,.35); background: rgba(104,240,178,.10);}
+    .banner.warn{border-color: rgba(255,211,110,.35); background: rgba(255,211,110,.10);}
+    .banner.bad{border-color: rgba(255,122,122,.35); background: rgba(255,122,122,.10);}
+
+    .note{
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.55;
+      margin-top:10px;
+    }
+
+    .formula{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      color: rgba(234,240,255,.85);
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+      overflow:auto;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.70);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.55);
+      font-size: 13px;
+      font-weight: 900;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show{opacity:1; transform: translateX(-50%) translateY(-2px);}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Percentage Increase / Decrease Calculator</h1>
+        <p>
+          Calculate percent change (old → new), or reverse it (find the new value from a percent, or find the original).
+        </p>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn" href="../index.html">← Back to Tools</a>
+        <button class="btn" id="btnReset" type="button">Reset</button>
+        <button class="btn primary" id="btnCopy" type="button">Copy result</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- INPUTS -->
+      <section class="card">
+        <div class="hd">
+          <div class="label">Inputs</div>
+          <div style="color:var(--muted);font-size:12px;font-weight:900" id="status">Ready</div>
+        </div>
+
+        <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="row">
+            <div class="field" style="min-width: 260px;">
+              <label for="mode">Mode</label>
+              <select id="mode">
+                <option value="change" selected>Percent change (Old → New)</option>
+                <option value="newFromPercent">Find New (Old + %)</option>
+                <option value="oldFromPercent">Find Old (New and %)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="decimals">Decimals</label>
+              <select id="decimals">
+                <option value="0">0</option>
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" id="rowOldNew">
+            <div class="field">
+              <label for="old">Old value</label>
+              <input id="old" type="number" step="any" value="100" />
+            </div>
+            <div class="field">
+              <label for="new">New value</label>
+              <input id="new" type="number" step="any" value="120" />
+            </div>
+          </div>
+
+          <div class="row" id="rowOldPct" style="display:none;">
+            <div class="field">
+              <label for="old2">Old value</label>
+              <input id="old2" type="number" step="any" value="100" />
+            </div>
+            <div class="field">
+              <label for="pct2">Percent change % (e.g. 15 or -10)</label>
+              <input id="pct2" type="number" step="any" value="20" />
+            </div>
+          </div>
+
+          <div class="row" id="rowNewPct" style="display:none;">
+            <div class="field">
+              <label for="new3">New value</label>
+              <input id="new3" type="number" step="any" value="120" />
+            </div>
+            <div class="field">
+              <label for="pct3">Percent change % (e.g. 15 or -10)</label>
+              <input id="pct3" type="number" step="any" value="20" />
+            </div>
+          </div>
+
+          <div class="note">
+            Works with negatives too. In “Percent change (Old → New)”, percent change is:<br/>
+            <strong>(New − Old) ÷ Old × 100</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESULTS -->
+      <aside class="card">
+        <div class="hd">
+          <div class="label">Results</div>
+          <div style="color:var(--muted);font-size:12px;font-weight:900">Auto-saves in URL</div>
+        </div>
+
+        <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Percent change</div>
+              <div class="v" id="pctOut">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Absolute change</div>
+              <div class="v" id="absOut">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Direction</div>
+              <div class="v" id="dirOut">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Computed value</div>
+              <div class="v" id="valueOut">—</div>
+            </div>
+          </div>
+
+          <div class="banner" id="banner">Enter values to see results.</div>
+
+          <div>
+            <div class="note" style="margin:0 0 8px 0; font-weight:900;">Formula used</div>
+            <div class="formula" id="formulaOut">—</div>
+          </div>
+
+          <div class="note">
+            Tip: Share links like <strong>?mode=change&old=100&new=120</strong> or <strong>?mode=newFromPercent&old=100&pct=20</strong>.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+  
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Measures how much a value increased or decreased compared to the original.</p>
+<ul>
+  <li>Absolute change: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">Δ = new − old</code>.</li>
+  <li>Percent change: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">% = (Δ ÷ old) × 100</code>.</li>
+  <li>Reverse: given old and % change, new = <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">old × (1 + %/100)</code>.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+    const $ = (id) => document.getElementById(id);
+
+    const modeEl = $("mode");
+    const decimalsEl = $("decimals");
+
+    const rowOldNew = $("rowOldNew");
+    const rowOldPct = $("rowOldPct");
+    const rowNewPct = $("rowNewPct");
+
+    const oldEl = $("old");
+    const newEl = $("new");
+
+    const old2El = $("old2");
+    const pct2El = $("pct2");
+
+    const new3El = $("new3");
+    const pct3El = $("pct3");
+
+    const pctOut = $("pctOut");
+    const absOut = $("absOut");
+    const dirOut = $("dirOut");
+    const valueOut = $("valueOut");
+    const banner = $("banner");
+    const formulaOut = $("formulaOut");
+    const status = $("status");
+
+    const btnReset = $("btnReset");
+    const btnCopy = $("btnCopy");
+    const toast = $("toast");
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 1100);
+    }
+
+    function num(el, fallback = 0){
+      const v = Number(el.value);
+      return Number.isFinite(v) ? v : fallback;
+    }
+
+    function fmt(n, d){
+      if (!Number.isFinite(n)) return "—";
+      const pow = Math.pow(10, d);
+      const rounded = Math.round(n * pow) / pow;
+      return rounded.toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d });
+    }
+
+    function fmtPct(n, d){
+      if (!Number.isFinite(n)) return "—";
+      return `${fmt(n, d)}%`;
+    }
+
+    function setUrl(params){
+      const url = new URL(window.location.href);
+      // clear known params first
+      ["mode","old","new","pct","decimals"].forEach(k => url.searchParams.delete(k));
+      Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
+      history.replaceState({}, "", url);
+    }
+
+    function loadFromUrl(){
+      const url = new URL(window.location.href);
+      const mode = url.searchParams.get("mode");
+      const decimals = url.searchParams.get("decimals");
+      const oldV = url.searchParams.get("old");
+      const newV = url.searchParams.get("new");
+      const pctV = url.searchParams.get("pct");
+
+      if (mode && ["change","newFromPercent","oldFromPercent"].includes(mode)) modeEl.value = mode;
+      if (decimals !== null && ["0","1","2","3"].includes(decimals)) decimalsEl.value = decimals;
+
+      if (oldV !== null && oldV !== "") { oldEl.value = oldV; old2El.value = oldV; }
+      if (newV !== null && newV !== "") { newEl.value = newV; new3El.value = newV; }
+      if (pctV !== null && pctV !== "") { pct2El.value = pctV; pct3El.value = pctV; }
+    }
+
+    function syncRows(){
+      const mode = modeEl.value;
+      rowOldNew.style.display = mode === "change" ? "" : "none";
+      rowOldPct.style.display = mode === "newFromPercent" ? "" : "none";
+      rowNewPct.style.display = mode === "oldFromPercent" ? "" : "none";
+    }
+
+    function update(){
+      syncRows();
+
+      const d = Number(decimalsEl.value) || 1;
+      const mode = modeEl.value;
+
+      let percent = NaN;
+      let absChange = NaN;
+      let dir = "—";
+      let computedValue = NaN;
+      let formula = "—";
+
+      banner.className = "banner";
+      status.textContent = "Updated";
+
+      if (mode === "change"){
+        const oldVal = num(oldEl, NaN);
+        const newVal = num(newEl, NaN);
+
+        // keep mirrors updated for other modes (nice UX)
+        if (Number.isFinite(oldVal)) old2El.value = oldVal;
+        if (Number.isFinite(newVal)) new3El.value = newVal;
+
+        absChange = (Number.isFinite(oldVal) && Number.isFinite(newVal)) ? (newVal - oldVal) : NaN;
+
+        if (!Number.isFinite(oldVal) || !Number.isFinite(newVal)){
+          banner.textContent = "Enter valid numbers.";
+        } else if (oldVal === 0){
+          banner.classList.add("bad");
+          banner.innerHTML = `❌ Percent change is undefined when <strong>Old = 0</strong>. (Absolute change is still shown.)`;
+        } else {
+          percent = (absChange / oldVal) * 100;
+          computedValue = newVal;
+          formula = `Percent = (New - Old) / Old × 100 = (${newVal} - ${oldVal}) / ${oldVal} × 100`;
+          if (absChange > 0) dir = "Increase";
+          else if (absChange < 0) dir = "Decrease";
+          else dir = "No change";
+
+          if (Math.abs(percent) >= 100) banner.classList.add("warn");
+          else banner.classList.add("ok");
+
+          banner.innerHTML = `✅ From <strong>${fmt(oldVal,d)}</strong> to <strong>${fmt(newVal,d)}</strong> is <strong>${fmtPct(percent,d)}</strong> (${dir.toLowerCase()}).`;
+        }
+
+        setUrl({ mode, decimals: d, old: oldEl.value, new: newEl.value });
+
+      } else if (mode === "newFromPercent"){
+        const oldVal = num(old2El, NaN);
+        const pct = num(pct2El, NaN);
+
+        // keep mirrors updated
+        if (Number.isFinite(oldVal)) oldEl.value = oldVal;
+
+        if (!Number.isFinite(oldVal) || !Number.isFinite(pct)){
+          banner.textContent = "Enter valid numbers.";
+        } else {
+          percent = pct;
+          computedValue = oldVal * (1 + pct/100);
+          absChange = computedValue - oldVal;
+
+          formula = `New = Old × (1 + %/100) = ${oldVal} × (1 + ${pct}/100)`;
+
+          if (absChange > 0) { dir = "Increase"; banner.classList.add("ok"); }
+          else if (absChange < 0) { dir = "Decrease"; banner.classList.add("warn"); }
+          else { dir = "No change"; banner.classList.add("ok"); }
+
+          banner.innerHTML = `✅ New value = <strong>${fmt(computedValue,d)}</strong> (change: <strong>${fmt(absChange,d)}</strong>, ${dir.toLowerCase()}).`;
+        }
+
+        setUrl({ mode, decimals: d, old: old2El.value, pct: pct2El.value });
+
+      } else if (mode === "oldFromPercent"){
+        const newVal = num(new3El, NaN);
+        const pct = num(pct3El, NaN);
+
+        // keep mirrors updated
+        if (Number.isFinite(newVal)) newEl.value = newVal;
+
+        const factor = 1 + (pct/100);
+
+        if (!Number.isFinite(newVal) || !Number.isFinite(pct)){
+          banner.textContent = "Enter valid numbers.";
+        } else if (factor === 0){
+          banner.classList.add("bad");
+          banner.innerHTML = `❌ Not possible when <strong>% = -100</strong> (division by zero).`;
+        } else {
+          percent = pct;
+          computedValue = newVal / factor; // Old
+          absChange = newVal - computedValue;
+
+          formula = `Old = New ÷ (1 + %/100) = ${newVal} ÷ (1 + ${pct}/100)`;
+
+          if (absChange > 0) { dir = "Increase"; banner.classList.add("ok"); }
+          else if (absChange < 0) { dir = "Decrease"; banner.classList.add("warn"); }
+          else { dir = "No change"; banner.classList.add("ok"); }
+
+          banner.innerHTML = `✅ Old value = <strong>${fmt(computedValue,d)}</strong> (to reach New: <strong>${fmt(newVal,d)}</strong> at <strong>${fmtPct(pct,d)}</strong>).`;
+        }
+
+        setUrl({ mode, decimals: d, new: new3El.value, pct: pct3El.value });
+      }
+
+      pctOut.textContent = Number.isFinite(percent) ? fmtPct(percent, d) : "—";
+      absOut.textContent = Number.isFinite(absChange) ? fmt(absChange, d) : "—";
+      dirOut.textContent = dir;
+      valueOut.textContent = Number.isFinite(computedValue) ? fmt(computedValue, d) : "—";
+      formulaOut.textContent = formula;
+    }
+
+    // Events
+    [modeEl, decimalsEl, oldEl, newEl, old2El, pct2El, new3El, pct3El].forEach(el => {
+      el.addEventListener("input", update);
+      el.addEventListener("change", update);
+    });
+
+    btnReset.addEventListener("click", () => {
+      modeEl.value = "change";
+      decimalsEl.value = "1";
+      oldEl.value = 100;
+      newEl.value = 120;
+      old2El.value = 100;
+      pct2El.value = 20;
+      new3El.value = 120;
+      pct3El.value = 20;
+      update();
+      showToast("Reset");
+    });
+
+    btnCopy.addEventListener("click", async () => {
+      const text =
+        `Mode: ${modeEl.options[modeEl.selectedIndex].text}\n` +
+        `Percent change: ${pctOut.textContent}\n` +
+        `Absolute change: ${absOut.textContent}\n` +
+        `Direction: ${dirOut.textContent}\n` +
+        `Computed: ${valueOut.textContent}\n` +
+        `Link: ${window.location.href}`;
+
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast("Copied ✅");
+      }catch{
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        showToast("Copied ✅");
+      }
+    });
+
+    // Init
+    loadFromUrl();
+    update();
+  </script>
+</body>
+</html>

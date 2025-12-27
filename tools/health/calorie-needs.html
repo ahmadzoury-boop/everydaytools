@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Calorie Needs Calculator – BMR & TDEE (Mifflin–St Jeor)</title>
+  <meta name="description" content="Calculate your daily calorie needs using BMR (Mifflin–St Jeor) and activity level. Get TDEE, cutting/bulking targets, and macro estimates. Fast, accurate, offline." />
+
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/health/calorie-needs.html" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    :root{
+      --ts-bg:#0b1220;
+      --ts-card:#0f1a33;
+      --ts-border:rgba(255,255,255,.10);
+      --ts-text:rgba(255,255,255,.92);
+      --ts-muted:rgba(255,255,255,.70);
+      --ts-accent:#7dd3fc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+        var(--ts-bg);
+      color:var(--ts-text);
+    }
+    a{color:var(--ts-accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .ts-header{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--ts-border);
+      position:sticky;top:0;backdrop-filter:blur(10px);
+      background:rgba(11,18,32,.65);
+    }
+    .ts-header .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .ts-badge{
+      font-size:12px;padding:6px 10px;border:1px solid var(--ts-border);
+      border-radius:999px;color:var(--ts-muted)
+    }
+
+    .ts-container{max-width:980px;margin:0 auto;padding:22px 16px 44px}
+    h1{font-size:28px;margin:10px 0 6px}
+    .ts-sub{margin:0 0 18px;color:var(--ts-muted)}
+
+    .ts-grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:900px){.ts-grid.cols-2{grid-template-columns:1fr 1fr}}
+
+    .ts-card{
+      background:rgba(15,26,51,.86);
+      border:1px solid var(--ts-border);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+    }
+
+    label{display:block;font-size:13px;color:var(--ts-muted);margin:8px 0 6px}
+    input,select{
+      width:100%;background:rgba(0,0,0,.18);
+      border:1px solid var(--ts-border);
+      border-radius:12px;padding:10px 12px;color:var(--ts-text);
+      outline:none;font-size:16px;
+    }
+
+    .ts-row{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:700px){
+      .ts-row.cols-2{grid-template-columns:1fr 1fr}
+    }
+
+    .ts-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{
+      cursor:pointer;background:rgba(125,211,252,.18);
+      border:1px solid rgba(125,211,252,.35);
+      color:var(--ts-text);padding:10px 12px;border-radius:12px;
+      font-weight:700;
+    }
+    button.secondary{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--ts-border);
+    }
+
+    .ts-kpi{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .ts-pill{
+      padding:10px 12px;border-radius:14px;border:1px solid var(--ts-border);
+      background:rgba(0,0,0,.16);min-width:160px;
+    }
+    .ts-pill b{display:block;font-size:18px}
+    .ts-pill span{display:block;font-size:12px;color:var(--ts-muted);margin-top:4px}
+
+    .ts-note{margin-top:10px;color:var(--ts-muted);font-size:12px}
+
+    .ts-footer{
+      padding:18px 16px;border-top:1px solid var(--ts-border);
+      color:var(--ts-muted);text-align:center
+    }
+  </style>
+</head>
+<body>
+
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Health</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="index.html">⬅ Back to Health Tools</a>
+  </div>
+</header>
+
+<main class="ts-container">
+  <h1>Calorie Needs Calculator</h1>
+  <p class="ts-sub">Calculate BMR (Mifflin–St Jeor), TDEE, and calorie targets.</p>
+
+  <div class="ts-grid cols-2">
+
+    <!-- LEFT CARD: INPUTS -->
+    <div class="ts-card">
+
+      <label for="sex">Sex</label>
+      <select id="sex">
+        <option value="male" selected>Male</option>
+        <option value="female">Female</option>
+      </select>
+
+      <div class="ts-row cols-2">
+        <div>
+          <label for="age">Age</label>
+          <input id="age" type="number" min="10" max="120">
+        </div>
+        <div>
+          <label for="height">Height (cm)</label>
+          <input id="height" type="number" min="100" max="250" step="0.1">
+        </div>
+      </div>
+
+      <div class="ts-row cols-2">
+        <div>
+          <label for="weight">Weight (kg)</label>
+          <input id="weight" type="number" min="20" max="300" step="0.1">
+        </div>
+        <div>
+          <label for="activity">Activity level</label>
+          <select id="activity">
+            <option value="1.2">Sedentary</option>
+            <option value="1.375">Lightly active</option>
+            <option value="1.55">Moderately active</option>
+            <option value="1.725">Very active</option>
+            <option value="1.9">Extremely active</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ts-actions">
+        <button id="calcBtn">Calculate</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div class="ts-note">Uses the Mifflin–St Jeor BMR formula + activity multiplier.</div>
+    </div>
+
+    <!-- RIGHT CARD: RESULTS -->
+    <div class="ts-card">
+      <h3 style="margin:0 0 10px">Results</h3>
+      <div class="ts-kpi" id="kpiBox"></div>
+      <div class="ts-note">These are estimates. Adjust based on real‑world progress.</div>
+    </div>
+
+  </div>
+
+  <!-- EXPLANATION SECTION -->
+  <section style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        <p>This calculator estimates your daily calorie needs using:</p>
+        <ul>
+          <li><b>BMR</b> – Mifflin–St Jeor equation</li>
+          <li><b>TDEE</b> – BMR × activity multiplier</li>
+          <li><b>Cutting/Bulking</b>
+            <script>
+  const $ = (id) => document.getElementById(id);
+
+  function round(x){
+    return Math.round(x);
+  }
+
+  function calcBmr(sex, weightKg, heightCm, age){
+    // Mifflin–St Jeor
+    if(sex === "male"){
+      return 10 * weightKg + 6.25 * heightCm - 5 * age + 5;
+    }else{
+      return 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+    }
+  }
+
+  function buildKpi(label, value, note){
+    return `
+      <div class="ts-pill">
+        <b>${value}</b>
+        <span>${label}${note ? " – " + note : ""}</span>
+      </div>
+    `;
+  }
+
+  function calculate(){
+    const sex = $("sex").value;
+    const age = Number($("age").value);
+    const height = Number($("height").value);
+    const weight = Number($("weight").value);
+    const activity = Number($("activity").value);
+    const kpiBox = $("kpiBox");
+
+    if(!age || !height || !weight || !activity){
+      kpiBox.innerHTML = "";
+      return;
+    }
+
+    const bmr = calcBmr(sex, weight, height, age);
+    const tdee = bmr * activity;
+
+    const cut = tdee * 0.85;   // ~15% deficit
+    const bulk = tdee * 1.15;  // ~15% surplus
+
+    const kpis = [];
+    kpis.push(buildKpi("BMR", round(bmr) + " kcal", "Resting daily calories"));
+    kpis.push(buildKpi("TDEE", round(tdee) + " kcal", "Maintain weight"));
+    kpis.push(buildKpi("Cutting target", round(cut) + " kcal", "~15% deficit"));
+    kpis.push(buildKpi("Bulking target", round(bulk) + " kcal", "~15% surplus"));
+
+    kpiBox.innerHTML = kpis.join("");
+  }
+
+  function resetForm(){
+    $("sex").value = "male";
+    $("age").value = "";
+    $("height").value = "";
+    $("weight").value = "";
+    $("activity").value = "1.2";
+    $("kpiBox").innerHTML = "";
+  }
+
+  $("calcBtn").addEventListener("click", calculate);
+  $("resetBtn").addEventListener("click", resetForm);
+
+  ["sex","age","height","weight","activity"].forEach(id => {
+    $(id).addEventListener("change", calculate);
+    $(id).addEventListener("input", () => {
+      // Only auto-calc when all fields have something
+      const sex = $("sex").value;
+      const age = Number($("age").value);
+      const height = Number($("height").value);
+      const weight = Number($("weight").value);
+      const activity = Number($("activity").value);
+      if(sex && age && height && weight && activity){
+        calculate();
+      }
+    });
+  });
+</script>
+</body>
+</html>

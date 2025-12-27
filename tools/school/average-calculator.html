@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Average Calculator</title>
+  <meta name="description" content="Average calculator: mean, median, mode, min/max, range, standard deviation, and weighted mean." />
+
+  <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1630;
+      --card: rgba(255,255,255,.07);
+      --card2: rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.70);
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 16px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --accent: #7aa7ff;
+      --ok: #68f0b2;
+      --warn: #ffd36e;
+      --bad: #ff7a7a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(122,167,255,.35), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(104,240,178,.20), transparent 60%),
+        radial-gradient(900px 500px at 60% 85%, rgba(255,211,110,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display:flex;
+      justify-content:center;
+      padding:28px 14px;
+    }
+    .wrap{width:min(1100px, 100%);}
+    header{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+    .title h1{
+      font-size: clamp(22px, 3vw, 34px);
+      margin:0 0 6px 0;
+      letter-spacing:.2px;
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+      max-width: 80ch;
+    }
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      margin-top:2px;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .btn:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background: rgba(122,167,255,.16); border-color: rgba(122,167,255,.35);}
+    .btn.primary:hover{background: rgba(122,167,255,.22)}
+    .btn.ghost{background: transparent}
+
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;}
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr;} .top-actions{justify-content:flex-start} }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom: 1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .card .hd .label{font-weight:950; letter-spacing:.2px; font-size:14px;}
+    .card .bd{padding:14px 16px;}
+    .note{color:var(--muted); font-size:12px; line-height:1.5;}
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    .tab{
+      font-size:12px; font-weight:950; letter-spacing:.2px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.12);
+      padding:7px 10px; border-radius: 999px;
+      cursor:pointer; user-select:none;
+      opacity:.9;
+    }
+    .tab.active{background: rgba(122,167,255,.18); border-color: rgba(122,167,255,.35); opacity:1;}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center;}
+    .field{display:flex; flex-direction:column; gap:6px; min-width: 220px; flex:1;}
+    label{font-size:12px; color:var(--muted); font-weight:800;}
+    select, textarea, input{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding:12px 12px;
+      outline:none;
+      font-size:14px;
+    }
+    textarea{min-height: 260px; resize: vertical; line-height:1.65;}
+    textarea:focus, input:focus, select:focus{border-color: rgba(122,167,255,.55); box-shadow: 0 0 0 4px rgba(122,167,255,.16);}
+
+    .stats{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width: 520px){ .stats{grid-template-columns:1fr;} }
+    .stat{
+      padding:12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.12);
+    }
+    .k{color:var(--muted); font-weight:800; font-size:12px;}
+    .v{font-weight:1000; font-size:16px; margin-top:6px; word-break: break-word;}
+    .banner{
+      padding:12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.12);
+      color: var(--muted);
+      line-height:1.6;
+      font-size:13px;
+    }
+    table{width:100%; border-collapse:separate; border-spacing:0 10px;}
+    th{color:var(--muted); font-size:12px; text-align:left; padding:0 6px;}
+    td{padding:0 6px;}
+    .wrow{
+      display:grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+    .iconbtn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:9px 10px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:12px;
+    }
+    .iconbtn:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18)}
+    .iconbtn.danger{border-color: rgba(255,122,122,.35); background: rgba(255,122,122,.10);}
+    .iconbtn.danger:hover{background: rgba(255,122,122,.16);}
+    .mono{font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;}
+    .footer{
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:center;
+      opacity:.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Average Calculator</h1>
+        <p>Compute mean, median, mode, min/max, range, and sample standard deviation. Switch to weighted mean when you have values with weights.</p>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn ghost" href="./index.html">← Back to School Tools</a>
+        <a class="btn ghost" href="../../index.html">🏠 Home</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-label="Inputs">
+        <div class="hd">
+          <div class="label">Inputs</div>
+          <div class="tabs" id="tabs">
+            <div class="tab active" data-mode="basic">Basic stats</div>
+            <div class="tab" data-mode="weighted">Weighted mean</div>
+          </div>
+        </div>
+
+        <div class="bd" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="row">
+            <div class="field" style="min-width: 240px;">
+              <label for="modeSel">Mode</label>
+              <select id="modeSel">
+                <option value="basic" selected>Basic stats</option>
+                <option value="weighted">Weighted mean</option>
+              </select>
+            </div>
+            <div class="field" style="min-width: 240px;">
+              <label for="decimals">Decimals</label>
+              <select id="decimals">
+                <option value="0">0</option>
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="panel-basic">
+            <div class="field" style="min-width:unset;">
+              <label for="data">Numbers (comma / space / new line)</label>
+              <textarea id="data" placeholder="Example: 10, 20, 20, 30&#10;You can paste from Excel too.">10, 20, 20, 30, 40</textarea>
+            </div>
+            <div class="note">Parsing rules: accepts commas, spaces, and new lines. Ignores empty items.</div>
+          </div>
+
+          <div id="panel-weighted" style="display:none;">
+            <div class="banner" style="margin:0;">
+              Weighted mean = <span class="mono">Σ(value×weight) ÷ Σ(weight)</span>
+            </div>
+
+            <div class="row" style="justify-content:space-between;">
+              <button class="btn primary" id="addRowBtn" type="button">+ Add row</button>
+              <button class="btn" id="resetWBtn" type="button">Reset rows</button>
+            </div>
+
+            <div style="overflow:auto;">
+              <table aria-label="Weighted mean table">
+                <thead>
+                  <tr>
+                    <th>Value</th>
+                    <th>Weight</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="wbody"></tbody>
+              </table>
+            </div>
+
+            <div class="note">Weights can be credits, points, or any positive numbers.</div>
+          </div>
+
+          <div class="row" style="justify-content:space-between;">
+            <button class="btn" id="resetBtn" type="button">Reset</button>
+            <button class="btn primary" id="copyBtn" type="button">Copy results</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card" aria-label="Results">
+        <div class="hd">
+          <div class="label">Results</div>
+          <div class="note" style="margin:0;font-weight:950;" id="status">Ready</div>
+        </div>
+
+        <div class="bd" style="display:flex;flex-direction:column;gap:12px;">
+          <div class="stats">
+            <div class="stat"><div class="k">Count</div><div class="v" id="countOut">—</div></div>
+            <div class="stat"><div class="k">Sum</div><div class="v" id="sumOut">—</div></div>
+            <div class="stat"><div class="k">Mean (average)</div><div class="v" id="meanOut">—</div></div>
+            <div class="stat"><div class="k">Median</div><div class="v" id="medianOut">—</div></div>
+            <div class="stat"><div class="k">Mode</div><div class="v" id="modeOut">—</div></div>
+            <div class="stat"><div class="k">Min / Max</div><div class="v" id="minmaxOut">—</div></div>
+            <div class="stat"><div class="k">Range</div><div class="v" id="rangeOut">—</div></div>
+            <div class="stat"><div class="k">Std dev (sample)</div><div class="v" id="sdOut">—</div></div>
+          </div>
+
+          <div class="banner" id="banner">Enter numbers to calculate.</div>
+          <div class="note">Tip: For large lists, paste from Excel — each line is accepted.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">ToolStack • Works offline • Single-file tool</div>
+  </div>
+
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Computes common statistics from a list of numbers.</p>
+<ul>
+  <li>Mean: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">Σx ÷ n</code></li>
+  <li>Median: middle value (or average of two middle values after sorting).</li>
+  <li>Mode: most frequent value(s).</li>
+  <li>Sample standard deviation: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">sqrt( Σ(x−mean)^2 ÷ (n−1) )</code></li>
+  <li>Weighted mean: <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">Σ(value×weight) ÷ Σ(weight)</code></li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  const modeSel = $("modeSel");
+  const decimalsSel = $("decimals");
+  const dataEl = $("data");
+  const panelBasic = $("panel-basic");
+  const panelWeighted = $("panel-weighted");
+  const tabs = $("tabs");
+
+  const countOut = $("countOut");
+  const sumOut = $("sumOut");
+  const meanOut = $("meanOut");
+  const medianOut = $("medianOut");
+  const modeOut = $("modeOut");
+  const minmaxOut = $("minmaxOut");
+  const rangeOut = $("rangeOut");
+  const sdOut = $("sdOut");
+  const banner = $("banner");
+  const status = $("status");
+
+  const wbody = $("wbody");
+  const addRowBtn = $("addRowBtn");
+  const resetWBtn = $("resetWBtn");
+  const resetBtn = $("resetBtn");
+  const copyBtn = $("copyBtn");
+
+  const fmt = (x, d) => {
+    if (!Number.isFinite(x)) return "—";
+    return Number(x).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d });
+  };
+
+  function parseNumbers(text){
+    const parts = String(text)
+      .replace(/\r/g, "\n")
+      .split(/[^0-9eE+\-\.]+/g)
+      .filter(Boolean);
+    const nums = parts.map(s => Number(s)).filter(n => Number.isFinite(n));
+    return nums;
+  }
+
+  function mean(nums){ return nums.reduce((a,b)=>a+b,0)/nums.length; }
+
+  function median(nums){
+    const s=[...nums].sort((a,b)=>a-b);
+    const n=s.length;
+    if(n===0) return NaN;
+    const mid=Math.floor(n/2);
+    return (n%2===1) ? s[mid] : (s[mid-1]+s[mid])/2;
+  }
+
+  function mode(nums){
+    const m = new Map();
+    for(const x of nums) m.set(x, (m.get(x)||0)+1);
+    let best = 0;
+    for(const v of m.values()) best = Math.max(best, v);
+    if(best <= 1) return null; // no mode
+    const modes = [...m.entries()].filter(([k,v])=>v===best).map(([k])=>k);
+    return {modes, freq: best};
+  }
+
+  function sampleStdDev(nums){
+    const n = nums.length;
+    if(n < 2) return NaN;
+    const mu = mean(nums);
+    let ss = 0;
+    for(const x of nums) ss += (x - mu) * (x - mu);
+    return Math.sqrt(ss / (n - 1));
+  }
+
+  function updateBasic(){
+    const d = Number(decimalsSel.value) || 0;
+    const nums = parseNumbers(dataEl.value);
+    if(nums.length === 0){
+      countOut.textContent = "—";
+      sumOut.textContent = "—";
+      meanOut.textContent = "—";
+      medianOut.textContent = "—";
+      modeOut.textContent = "—";
+      minmaxOut.textContent = "—";
+      rangeOut.textContent = "—";
+      sdOut.textContent = "—";
+      banner.textContent = "Enter numbers to calculate.";
+      status.textContent = "Waiting";
+      status.style.color = "var(--muted)";
+      return;
+    }
+
+    const n = nums.length;
+    const s = nums.reduce((a,b)=>a+b,0);
+    const mu = s / n;
+    const med = median(nums);
+    const mn = Math.min(...nums);
+    const mx = Math.max(...nums);
+    const rng = mx - mn;
+    const md = mode(nums);
+    const sd = sampleStdDev(nums);
+
+    countOut.textContent = n.toLocaleString();
+    sumOut.textContent = fmt(s, d);
+    meanOut.textContent = fmt(mu, d);
+    medianOut.textContent = fmt(med, d);
+    minmaxOut.textContent = `${fmt(mn,d)} / ${fmt(mx,d)}`;
+    rangeOut.textContent = fmt(rng, d);
+    sdOut.textContent = Number.isFinite(sd) ? fmt(sd, d) : "—";
+
+    if(md === null){
+      modeOut.textContent = "No mode";
+    }else{
+      const modes = md.modes.map(x => fmt(x,d));
+      modeOut.textContent = modes.join(", ");
+    }
+
+    banner.textContent = "Calculated from your list.";
+    status.textContent = "Updated";
+    status.style.color = "var(--ok)";
+  }
+
+  function makeRow(value="", weight=""){
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td colspan="3">
+        <div class="wrow">
+          <input class="val" type="number" step="any" placeholder="Value" value="${String(value).replace(/"/g,"&quot;")}" />
+          <input class="wgt" type="number" step="any" min="0" placeholder="Weight" value="${String(weight).replace(/"/g,"&quot;")}" />
+          <button class="iconbtn danger" type="button" title="Remove">Del</button>
+        </div>
+      </td>
+    `;
+    tr.querySelector("button").addEventListener("click", () => {
+      tr.remove();
+      updateWeighted();
+    });
+    tr.querySelectorAll("input").forEach(inp => inp.addEventListener("input", updateWeighted));
+    return tr;
+  }
+
+  function resetWeightedRows(){
+    wbody.innerHTML = "";
+    wbody.appendChild(makeRow(10,1));
+    wbody.appendChild(makeRow(20,1));
+    wbody.appendChild(makeRow(30,1));
+  }
+
+  function updateWeighted(){
+    const d = Number(decimalsSel.value) || 0;
+    const rows = [...wbody.querySelectorAll("tr")];
+    const pairs = rows.map(tr => {
+      const v = Number(tr.querySelector(".val").value);
+      const w = Number(tr.querySelector(".wgt").value);
+      return {v,w};
+    }).filter(p => Number.isFinite(p.v) && Number.isFinite(p.w) && p.w > 0);
+
+    if(pairs.length === 0){
+      // clear outputs
+      countOut.textContent = "—";
+      sumOut.textContent = "—";
+      meanOut.textContent = "—";
+      medianOut.textContent = "—";
+      modeOut.textContent = "—";
+      minmaxOut.textContent = "—";
+      rangeOut.textContent = "—";
+      sdOut.textContent = "—";
+      banner.textContent = "Add values and weights to calculate weighted mean.";
+      status.textContent = "Waiting";
+      status.style.color = "var(--muted)";
+      return;
+    }
+
+    const sumW = pairs.reduce((a,p)=>a+p.w,0);
+    const sumVW = pairs.reduce((a,p)=>a+p.v*p.w,0);
+    const wmean = sumVW / sumW;
+
+    countOut.textContent = pairs.length.toLocaleString();
+    sumOut.textContent = fmt(sumVW, d);
+    meanOut.textContent = fmt(wmean, d);
+    medianOut.textContent = "—";
+    modeOut.textContent = "—";
+    minmaxOut.textContent = "—";
+    rangeOut.textContent = "—";
+    sdOut.textContent = "—";
+
+    banner.textContent = `Weighted mean calculated. Σw = ${fmt(sumW,d)}.`;
+    status.textContent = "Updated";
+    status.style.color = "var(--ok)";
+  }
+
+  function setMode(mode){
+    modeSel.value = mode;
+    [...tabs.querySelectorAll(".tab")].forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
+    panelBasic.style.display = (mode === "basic") ? "block" : "none";
+    panelWeighted.style.display = (mode === "weighted") ? "block" : "none";
+    if(mode === "basic") updateBasic(); else updateWeighted();
+  }
+
+  // events
+  dataEl.addEventListener("input", () => { if(modeSel.value==="basic") updateBasic(); });
+  modeSel.addEventListener("change", () => setMode(modeSel.value));
+  decimalsSel.addEventListener("change", () => { if(modeSel.value==="basic") updateBasic(); else updateWeighted(); });
+
+  tabs.addEventListener("click", (e) => {
+    const t = e.target.closest(".tab");
+    if(!t) return;
+    setMode(t.dataset.mode);
+  });
+
+  addRowBtn.addEventListener("click", () => {
+    wbody.appendChild(makeRow("",""));
+    updateWeighted();
+  });
+
+  resetWBtn.addEventListener("click", () => {
+    resetWeightedRows();
+    updateWeighted();
+  });
+
+  resetBtn.addEventListener("click", () => {
+    dataEl.value = "";
+    resetWeightedRows();
+    setMode("basic");
+    dataEl.focus();
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    const lines = [
+      `Count: ${countOut.textContent}`,
+      `Sum: ${sumOut.textContent}`,
+      `Mean: ${meanOut.textContent}`,
+      `Median: ${medianOut.textContent}`,
+      `Mode: ${modeOut.textContent}`,
+      `Min/Max: ${minmaxOut.textContent}`,
+      `Range: ${rangeOut.textContent}`,
+      `Std dev (sample): ${sdOut.textContent}`
+    ].join("\n");
+    try{
+      await navigator.clipboard.writeText(lines);
+      status.textContent = "Copied";
+      status.style.color = "var(--ok)";
+      setTimeout(()=>{ status.textContent="Updated"; status.style.color="var(--ok)"; }, 900);
+    }catch{
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = lines;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      status.textContent = "Copied";
+      status.style.color = "var(--ok)";
+    }
+  });
+
+  // init
+  resetWeightedRows();
+  setMode("basic");
+})();
+</script>
+</body>
+</html>

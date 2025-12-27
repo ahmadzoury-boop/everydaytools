@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Coin Flip — ToolStack</title>
+  <meta name="description" content="Flip a coin online (heads or tails). Includes history, streaks, and copyable results." />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
+    .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .topnav a{opacity:.9}
+    h1{margin:0;font-size:22px}
+    .sub{opacity:.8;margin-top:6px;line-height:1.6}
+
+    .card{padding:16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    .grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px}
+    @media (max-width:900px){.grid2{grid-template-columns:1fr}}
+
+    .coinWrap{display:grid;place-items:center;padding:10px 0}
+
+    /* ===== Realistic Gold Coin ===== */
+    .coin{
+      width:170px;
+      height:170px;
+      border-radius:50%;
+      position:relative;
+      display:grid;
+      place-items:center;
+      transform-style:preserve-3d;
+      transition:transform .65s ease;
+      user-select:none;
+
+      /* GOLD METAL */
+      background:radial-gradient(circle at 30% 30%, #ffe9a3, #d4a73b 60%, #b8860b 90%);
+      border:3px solid #f7d774;
+
+      /* 3D RIM / DEPTH */
+      box-shadow:
+        inset 0 0 12px rgba(0,0,0,.35),
+        inset 0 0 25px rgba(255,255,255,.25),
+        0 18px 50px rgba(0,0,0,.45);
+    }
+    .coin::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      background:radial-gradient(circle at 70% 30%, rgba(255,255,255,.45), transparent 70%);
+      pointer-events:none;
+    }
+
+    .coinInner{
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+
+      /* INNER METAL */
+      background:radial-gradient(circle at 40% 40%, #fff3c4, #d4a73b 70%);
+      border:2px solid #f7d774;
+
+      font-weight:900;
+      font-size:26px;
+      letter-spacing:1px;
+      color:#5a3d00;
+      text-shadow:
+        0 1px 2px rgba(255,255,255,.6),
+        0 2px 4px rgba(0,0,0,.4);
+    }
+
+    /* Flip animation */
+    .coin.flip{
+      transform:rotateY(720deg);
+    }
+
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;justify-content:center}
+    button{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.2);color:inherit;cursor:pointer;font-weight:900}
+    button.primary{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+
+    .stat{padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.12)}
+    .k{opacity:.8;font-size:.9rem;margin-bottom:6px}
+    .v{font-size:18px;font-weight:1000;letter-spacing:.2px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:520px){.row{grid-template-columns:1fr}}
+    .history{margin-top:10px;line-height:1.7;opacity:.9}
+    .pill{display:inline-block;margin-top:12px;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.14);opacity:.9;font-weight:900}
+    .muted{opacity:.8}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topnav">
+      <a href="./index.html">← Back to Random Tools</a>
+      <div style="opacity:.8;font-weight:800">Coin Flip</div>
+    </div>
+
+    <div class="card">
+      <h1>Coin Flip</h1>
+      <div class="sub">Get a fair <b>Heads / Tails</b> result. Includes history and streak tracking.</div>
+
+      <div class="grid2">
+        <div class="stat">
+          <div class="coinWrap">
+            <div class="coin" id="coin">
+              <div class="coinInner" id="face">—</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="primary" id="flipBtn" type="button">Flip</button>
+            <button id="resetBtn" type="button">Reset</button>
+            <button class="primary" id="copyBtn" type="button">Copy</button>
+          </div>
+
+          <div class="pill" id="status">Ready.</div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Stats</div>
+          <div class="row" style="margin-top:8px">
+            <div class="stat">
+              <div class="k">Total flips</div>
+              <div class="v mono" id="total">0</div>
+            </div>
+            <div class="stat">
+              <div class="k">Heads / Tails</div>
+              <div class="v mono" id="ht">0 / 0</div>
+            </div>
+            <div class="stat">
+              <div class="k">Current streak</div>
+              <div class="v mono" id="streak">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Heads rate</div>
+              <div class="v mono" id="rate">—</div>
+            </div>
+          </div>
+
+          <div class="k" style="margin-top:12px">Last 10 flips</div>
+          <div class="history mono" id="history">—</div>
+          <div class="muted" style="margin-top:8px">Tip: press <span class="mono">Space</span> to flip.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    const $ = (id) => document.getElementById(id);
+    const coin = $("coin");
+    const face = $("face");
+    const status = $("status");
+    const totalEl = $("total");
+    const htEl = $("ht");
+    const streakEl = $("streak");
+    const rateEl = $("rate");
+    const historyEl = $("history");
+
+    const LS = "toolstack_coin_v1";
+
+    let state = {
+      total: 0,
+      heads: 0,
+      tails: 0,
+      last: null,
+      streak: 0,
+      history: []
+    };
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(LS);
+        if(!raw) return;
+        const s = JSON.parse(raw);
+        if(s && typeof s === "object"){
+          state = Object.assign(state, s);
+          if(!Array.isArray(state.history)) state.history = [];
+        }
+      }catch(e){}
+    }
+
+    function save(){
+      try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){}
+    }
+
+    function setStatus(msg){ status.textContent = msg; }
+
+    function render(){
+      totalEl.textContent = String(state.total);
+      htEl.textContent = `${state.heads} / ${state.tails}`;
+
+      if(!state.last){
+        streakEl.textContent = "—";
+        face.textContent = "—";
+      }else{
+        streakEl.textContent = `${state.streak} × ${state.last === "H" ? "Heads" : "Tails"}`;
+        face.textContent = state.last === "H" ? "HEADS" : "TAILS";
+      }
+
+      const rate = state.total ? (state.heads / state.total) * 100 : 0;
+      rateEl.textContent = state.total ? `${rate.toFixed(1)}%` : "—";
+
+      const last10 = state.history.slice(0, 10).map(x => x === "H" ? "H" : "T");
+      historyEl.textContent = last10.length ? last10.join("  ") : "—";
+    }
+
+    function randFlip(){
+      if(window.crypto && crypto.getRandomValues){
+        const a = new Uint32Array(1);
+        crypto.getRandomValues(a);
+        return (a[0] % 2) === 0 ? "H" : "T";
+      }
+      return Math.random() < 0.5 ? "H" : "T";
+    }
+
+    let busy = false;
+    function flip(){
+      if(busy) return;
+      busy = true;
+
+      coin.classList.add("flip");
+      setStatus("Flipping…");
+
+      const result = randFlip();
+
+      setTimeout(() => {
+        coin.classList.remove("flip");
+
+        state.total += 1;
+        if(result === "H") state.heads += 1; else state.tails += 1;
+
+        if(state.last === result){
+          state.streak += 1;
+        }else{
+          state.last = result;
+          state.streak = 1;
+        }
+
+        state.history.unshift(result);
+        if(state.history.length > 200) state.history.length = 200;
+
+        save();
+        render();
+        setStatus(`Result: ${result === "H" ? "Heads" : "Tails"}`);
+        busy = false;
+      }, 680);
+    }
+
+    function reset(){
+      state = { total:0, heads:0, tails:0, last:null, streak:0, history:[] };
+      save();
+      render();
+      setStatus("Reset.");
+    }
+
+    async function copy(){
+      const txt =
+`Coin Flip
+Total: ${state.total}
+Heads: ${state.heads}
+Tails: ${state.tails}
+Last: ${state.last ? (state.last === "H" ? "Heads" : "Tails") : "—"}
+Streak: ${state.last ? `${state.streak} × ${state.last === "H" ? "Heads" : "Tails"}` : "—"}
+Last 10: ${state.history.slice(0,10).join(" ") || "—"}`;
+      try{
+        await navigator.clipboard.writeText(txt);
+        setStatus("Copied to clipboard.");
+      }catch(e){
+        setStatus("Copy failed.");
+      }
+    }
+
+    $("flipBtn").addEventListener("click", flip);
+    $("resetBtn").addEventListener("click", reset);
+    $("copyBtn").addEventListener("click", copy);
+
+    document.addEventListener("keydown", (e) => {
+      if(e.code === "Space"){
+        e.preventDefault();
+        flip();
+      }
+    });
+
+    load();
+    render();
+  })();
+  </script>
+</body>
+</html>

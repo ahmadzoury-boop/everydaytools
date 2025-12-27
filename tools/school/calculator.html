@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculator (Simple & Scientific)</title>
+
+  <!-- Your site theme -->
+  <link rel="stylesheet" href="/assets/css/style.css" />
+
+  <style>
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .card{background:rgba(255,255,255,.04);border-radius:16px;padding:16px}
+    .tabs{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .tab{padding:9px 12px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.14);background:transparent}
+    .tab.active{background:rgba(255,255,255,.10)}
+    .mini{opacity:.85;font-size:.95em}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+    .display{display:flex;flex-direction:column;gap:8px}
+    .expr{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.15);
+      font-size:1.1rem;
+      outline:none;
+    }
+    .result{
+      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .result .big{font-weight:800;font-size:1.15rem}
+    .error{opacity:.9}
+    .ok{opacity:.9}
+
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+    .btn{
+      padding:14px 10px;
+      border-radius:14px;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      user-select:none;
+      text-align:center;
+      font-size:1.05rem;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn.wide{grid-column:span 2}
+    .btn.equal{grid-column:span 2;font-weight:800}
+    .muted{opacity:.8}
+    .pill{
+      padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);cursor:pointer
+    }
+    .pill.active{background:rgba(255,255,255,.14)}
+    .foot{margin-top:10px;opacity:.75;font-size:.92em;line-height:1.4}
+    @media (max-width:520px){
+      .btn{padding:13px 8px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1 style="margin:0;">Calculator</h1>
+        <div class="mini">Switch between <b>Simple</b> and <b>Scientific</b> mode.</div>
+      </div>
+
+      <div class="row">
+        <a class="tab" href="/tools/school/index.html" style="text-decoration:none;">← Back</a>
+
+        <div class="tabs" role="tablist" aria-label="Calculator mode">
+          <button id="tabSimple" class="tab active" type="button">Simple</button>
+          <button id="tabSci" class="tab" type="button">Scientific</button>
+        </div>
+
+        <div class="row" aria-label="Angle mode" style="margin-left:4px;">
+          <button id="degBtn" class="pill active" type="button" title="Degrees">DEG</button>
+          <button id="radBtn" class="pill" type="button" title="Radians">RAD</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <div class="display">
+        <input id="expr" class="expr" type="text" inputmode="text" autocomplete="off"
+               placeholder="Type… e.g. (12+3)*4, sin(30), log(100), 2^8" />
+        <div class="result">
+          <div class="muted">Live result</div>
+          <div id="liveOut" class="big ok">0</div>
+        </div>
+      </div>
+
+      <div id="btnGrid" class="grid" aria-label="Calculator buttons">
+
+        <!-- Scientific buttons (hidden in Simple mode) -->
+        <div class="btn sci" data-insert="sin(" title="sin(x)">sin</div>
+        <div class="btn sci" data-insert="cos(" title="cos(x)">cos</div>
+        <div class="btn sci" data-insert="tan(" title="tan(x)">tan</div>
+        <div class="btn sci" data-action="factorial" title="factorial of last term">x!</div>
+
+        <div class="btn sci" data-insert="ln(" title="natural log">ln</div>
+        <div class="btn sci" data-insert="log(" title="log base 10">log</div>
+        <div class="btn sci" data-insert="sqrt(" title="square root">√</div>
+        <div class="btn sci" data-action="square" title="square last term">x²</div>
+
+        <div class="btn sci" data-insert="pi" title="π">π</div>
+        <div class="btn sci" data-insert="e" title="e">e</div>
+        <div class="btn sci" data-insert="^" title="power">xʸ</div>
+        <div class="btn sci" data-insert="(" title="(">(</div>
+
+        <!-- Common -->
+        <div class="btn" data-action="clear">AC</div>
+        <div class="btn" data-action="del">DEL</div>
+        <div class="btn" data-insert="%">%</div>
+        <div class="btn" data-insert="/">÷</div>
+
+        <div class="btn" data-insert="7">7</div>
+        <div class="btn" data-insert="8">8</div>
+        <div class="btn" data-insert="9">9</div>
+        <div class="btn" data-insert="*">×</div>
+
+        <div class="btn" data-insert="4">4</div>
+        <div class="btn" data-insert="5">5</div>
+        <div class="btn" data-insert="6">6</div>
+        <div class="btn" data-insert="-">−</div>
+
+        <div class="btn" data-insert="1">1</div>
+        <div class="btn" data-insert="2">2</div>
+        <div class="btn" data-insert="3">3</div>
+        <div class="btn" data-insert="+">+</div>
+
+        <div class="btn wide" data-insert="0">0</div>
+        <div class="btn" data-insert=".">.</div>
+        <div class="btn" data-insert=")">)</div>
+        <div class="btn equal" data-action="equals">=</div>
+      </div>
+
+      <div class="foot">
+        <div class="muted">
+          Keyboard: <b>Enter</b>=equals, <b>Backspace</b>=delete, <b>Esc</b>=clear.<br />
+          Scientific supports: sin/cos/tan + asin/acos/atan, sqrt, ln, log, power using <b>^</b>, constants π and e.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "tool_calc_mode_v1";
+    const STORAGE_ANGLE = "tool_calc_angle_v1";
+    let mode = localStorage.getItem(STORAGE_KEY) || "simple"; // simple | scientific
+    let angleMode = localStorage.getItem(STORAGE_ANGLE) || "DEG"; // DEG | RAD
+
+    const exprEl = document.getElementById("expr");
+    const liveOut = document.getElementById("liveOut");
+    const tabSimple = document.getElementById("tabSimple");
+    const tabSci = document.getElementById("tabSci");
+    const degBtn = document.getElementById("degBtn");
+    const radBtn = document.getElementById("radBtn");
+
+    function setMode(next) {
+      mode = next;
+      localStorage.setItem(STORAGE_KEY, mode);
+      tabSimple.classList.toggle("active", mode === "simple");
+      tabSci.classList.toggle("active", mode === "scientific");
+      document.querySelectorAll(".sci").forEach(el => {
+        el.style.display = (mode === "scientific") ? "block" : "none";
+      });
+      updateLive();
+    }
+
+    function setAngle(next) {
+      angleMode = next;
+      localStorage.setItem(STORAGE_ANGLE, angleMode);
+      degBtn.classList.toggle("active", angleMode === "DEG");
+      radBtn.classList.toggle("active", angleMode === "RAD");
+      updateLive();
+    }
+
+    function insertAtCursor(text) {
+      const start = exprEl.selectionStart ?? exprEl.value.length;
+      const end = exprEl.selectionEnd ?? exprEl.value.length;
+      const before = exprEl.value.slice(0, start);
+      const after = exprEl.value.slice(end);
+      exprEl.value = before + text + after;
+      const pos = start + text.length;
+      exprEl.setSelectionRange(pos, pos);
+      exprEl.focus();
+      updateLive();
+    }
+
+    function deleteOne() {
+      const start = exprEl.selectionStart ?? exprEl.value.length;
+      const end = exprEl.selectionEnd ?? exprEl.value.length;
+
+      if (start !== end) {
+        const before = exprEl.value.slice(0, start);
+        const after = exprEl.value.slice(end);
+        exprEl.value = before + after;
+        exprEl.setSelectionRange(start, start);
+      } else if (start > 0) {
+        const before = exprEl.value.slice(0, start - 1);
+        const after = exprEl.value.slice(start);
+        exprEl.value = before + after;
+        exprEl.setSelectionRange(start - 1, start - 1);
+      }
+      exprEl.focus();
+      updateLive();
+    }
+
+    function wrapLastTerm(fnName) {
+      const s = exprEl.value;
+      if (!s.trim()) return;
+
+      let i = s.length - 1;
+      while (i >= 0 && /\s/.test(s[i])) i--;
+      if (i < 0) return;
+
+      if (s[i] === ")") {
+        let depth = 0;
+        let j = i;
+        for (; j >= 0; j--) {
+          if (s[j] === ")") depth++;
+          else if (s[j] === "(") {
+            depth--;
+            if (depth === 0) break;
+          }
+        }
+        if (j >= 0) {
+          const before = s.slice(0, j);
+          const term = s.slice(j, i + 1);
+          const after = s.slice(i + 1);
+          exprEl.value = before + fnName + "(" + term + ")" + after;
+          exprEl.focus();
+          updateLive();
+          return;
+        }
+      }
+
+      let j = i;
+      while (j >= 0 && /[0-9.\w]/.test(s[j])) j--;
+      const before = s.slice(0, j + 1);
+      const term = s.slice(j + 1, i + 1);
+      const after = s.slice(i + 1);
+
+      if (!term) return;
+      exprEl.value = before + fnName + "(" + term + ")" + after;
+      exprEl.focus();
+      updateLive();
+    }
+
+    function factorial(n) {
+      if (!Number.isFinite(n)) return NaN;
+      if (n < 0) return NaN;
+      if (Math.floor(n) !== n) return NaN;
+      if (n > 170) return Infinity;
+      let r = 1;
+      for (let i = 2; i <= n; i++) r *= i;
+      return r;
+    }
+
+    function normalizeExpression(raw) {
+      let e = (raw || "")
+        .replace(/×/g, "*")
+        .replace(/÷/g, "/")
+        .replace(/−/g, "-")
+        .replace(/π/g, "pi")
+        .replace(/√/g, "sqrt")
+        .trim();
+
+      e = e.replace(/\^/g, "**");
+
+      e = e.replace(/(\d|\))\s*(?=\()/g, "$1*");
+      e = e.replace(/(\d|\))\s*(?=[A-Za-z_])/g, "$1*");
+      e = e.replace(/\b(pi|e)\b\s*(?=(\d|\(|[A-Za-z_]))/g, "$1*");
+      e = e.replace(/\)\s*(?=\()/g, ")*(");
+
+      return e;
+    }
+
+    function validateExpression(expr) {
+      if (/[;{}[\]=`$\\]/.test(expr)) throw new Error("Invalid characters");
+      if (!/^[0-9+\-*/%().,\sA-Za-z_]*$/.test(expr)) throw new Error("Invalid characters");
+
+      const allowed = new Set([
+        "sin","cos","tan","asin","acos","atan",
+        "sqrt","cbrt","abs","floor","ceil","round",
+        "min","max","pow","log","ln","exp",
+        "pi","e","fact"
+      ]);
+
+      const tokens = expr.match(/[A-Za-z_]\w*/g) || [];
+      for (const t of tokens) {
+        if (!allowed.has(t)) throw new Error("Unknown: " + t);
+      }
+    }
+
+    function evalExpression(raw) {
+      const expr = normalizeExpression(raw);
+      if (!expr) return 0;
+
+      validateExpression(expr);
+
+      const toRad = (x) => angleMode === "DEG" ? (x * Math.PI / 180) : x;
+      const fromRad = (x) => angleMode === "DEG" ? (x * 180 / Math.PI) : x;
+
+      const log10 = (x) => (Math.log10 ? Math.log10(x) : Math.log(x) / Math.LN10);
+      const cbrt = (x) => (Math.cbrt ? Math.cbrt(x) : Math.pow(x, 1/3));
+
+      const ctx = Object.create(null);
+      Object.assign(ctx, {
+        pi: Math.PI,
+        e: Math.E,
+
+        sin: (x) => Math.sin(toRad(x)),
+        cos: (x) => Math.cos(toRad(x)),
+        tan: (x) => Math.tan(toRad(x)),
+        asin: (x) => fromRad(Math.asin(x)),
+        acos: (x) => fromRad(Math.acos(x)),
+        atan: (x) => fromRad(Math.atan(x)),
+
+        sqrt: Math.sqrt,
+        cbrt,
+        abs: Math.abs,
+        floor: Math.floor,
+        ceil: Math.ceil,
+        round: Math.round,
+        min: Math.min,
+        max: Math.max,
+        pow: Math.pow,
+        exp: Math.exp,
+        ln: Math.log,
+        log: log10,
+        fact: factorial,
+      });
+
+      const fn = new Function("ctx", "with(ctx){ return (" + expr + "); }");
+      const out = fn(ctx);
+
+      if (typeof out !== "number" || !Number.isFinite(out)) throw new Error("Math error");
+      return out;
+    }
+
+    function formatNumber(n) {
+      const s = n.toString();
+      if (s.includes("e")) return s;
+      const rounded = Math.round(n * 1e12) / 1e12;
+      return rounded.toString();
+    }
+
+    function updateLive() {
+      try {
+        const r = evalExpression(exprEl.value);
+        liveOut.textContent = formatNumber(r);
+        liveOut.classList.remove("error");
+        liveOut.classList.add("ok");
+      } catch {
+        liveOut.textContent = "Error";
+        liveOut.classList.remove("ok");
+        liveOut.classList.add("error");
+      }
+    }
+
+    function equals() {
+      try {
+        const r = evalExpression(exprEl.value);
+        exprEl.value = formatNumber(r);
+        exprEl.focus();
+        updateLive();
+      } catch {}
+    }
+
+    tabSimple.addEventListener("click", () => setMode("simple"));
+    tabSci.addEventListener("click", () => setMode("scientific"));
+    degBtn.addEventListener("click", () => setAngle("DEG"));
+    radBtn.addEventListener("click", () => setAngle("RAD"));
+
+    document.getElementById("btnGrid").addEventListener("click", (e) => {
+      const b = e.target.closest(".btn");
+      if (!b) return;
+
+      const ins = b.getAttribute("data-insert");
+      const act = b.getAttribute("data-action");
+
+      if (ins) return insertAtCursor(ins);
+
+      if (act === "clear") {
+        exprEl.value = "";
+        exprEl.focus();
+        updateLive();
+      } else if (act === "del") {
+        deleteOne();
+      } else if (act === "equals") {
+        equals();
+      } else if (act === "square") {
+        wrapLastTerm("pow");
+        const s = exprEl.value;
+        const idx = s.lastIndexOf("pow(");
+        if (idx !== -1) {
+          const lastClose = s.lastIndexOf(")");
+          if (lastClose !== -1 && lastClose > idx) {
+            exprEl.value = s.slice(0, lastClose) + ",2" + s.slice(lastClose);
+          }
+        }
+        exprEl.focus();
+        updateLive();
+      } else if (act === "factorial") {
+        wrapLastTerm("fact");
+      }
+    });
+
+    exprEl.addEventListener("input", updateLive);
+
+    document.addEventListener("keydown", (e) => {
+      if (document.activeElement !== exprEl) return;
+      if (e.key === "Enter") { e.preventDefault(); equals(); }
+      else if (e.key === "Escape") { e.preventDefault(); exprEl.value = ""; updateLive(); }
+    });
+
+    setMode(mode);
+    setAngle(angleMode);
+    updateLive();
+  </script>
+</body>
+</html>

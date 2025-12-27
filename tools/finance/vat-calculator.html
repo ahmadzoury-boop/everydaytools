@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>VAT Calculator | Add & Remove VAT Online</title>
+  <meta name="description" content="Free online VAT calculator. Add VAT, remove VAT, or use a custom VAT rate. Supports popular country VAT presets with clear breakdown.">
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/finance/vat-calculator.html" />
+
+  <!-- Basic OG / Twitter - minimal but useful -->
+  <meta property="og:title" content="VAT Calculator | Add & Remove VAT" />
+  <meta property="og:description" content="Add VAT, remove VAT, or use a custom VAT rate with a clear breakdown." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mytools-56j.pages.dev/tools/finance/vat-calculator.html" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="VAT Calculator | Add & Remove VAT" />
+  <meta name="twitter:description" content="Free online VAT calculator with add/remove VAT options and custom rates." />
+
+  <!-- FAQ Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I add VAT to a price?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Select the Add VAT mode, choose your VAT rate or country preset, enter the price without VAT, and the calculator will show the VAT amount and total price including VAT."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I remove VAT from a price?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Select the Remove VAT mode, choose your VAT rate or country preset, enter the price including VAT, and the calculator will show the VAT amount and the price without VAT."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use a custom VAT rate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Select Custom rate from the VAT rate list, enter your own VAT percentage, and the calculator will use it for all calculations."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* Ultra-minimal, Google-style layout: no cards, no shadows */
+    :root {
+      --text-main: #202124;
+      --text-muted: #5f6368;
+      --border: #dadce0;
+      --accent: #1a73e8;
+      --accent-soft: #e8f0fe;
+      --error: #d93025;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #ffffff;
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    .page h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .page p.page-intro {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Layout */
+    .vat-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 768px) {
+      .vat-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Section titles */
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* Modes (radio buttons) */
+    .modes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .mode-pill input {
+      margin: 0;
+    }
+
+    .mode-pill.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* Inputs */
+    .field-group {
+      margin-bottom: 16px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .text-input,
+    .select-input {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 2px;
+      font-size: 1rem;
+      outline: none;
+      background: transparent;
+      color: var(--text-main);
+    }
+
+    .text-input:focus,
+    .select-input:focus {
+      border-bottom-color: var(--accent);
+    }
+
+    .text-inline {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    /* Custom rate field toggle */
+    .custom-rate-wrap {
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* Calculate button */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--border);
+      background: #f8f9fa;
+      color: #202124;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover {
+      background: #f1f3f4;
+    }
+
+    /* Results */
+    .results-main {
+      margin-bottom: 18px;
+    }
+
+    .results-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .results-value {
+      font-size: 2.4rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .results-breakdown {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .results-breakdown p {
+      margin: 2px 0;
+    }
+
+    .results-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .results-error {
+      font-size: 0.85rem;
+      color: var(--error);
+      margin-top: 4px;
+    }
+
+    /* Copy result */
+    .copy-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-copy {
+      border: none;
+      background: #f1f3f4;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #202124;
+    }
+
+    .btn-copy:hover {
+      background: #e8eaed;
+    }
+
+    .copy-status {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Right column text */
+    .side-text h2 {
+      font-size: 1.1rem;
+      margin: 0 0 6px;
+    }
+
+    .side-text p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin: 0 0 8px;
+    }
+
+    .side-text ul {
+      margin: 0 0 10px 18px;
+      padding: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .side-text li {
+      margin-bottom: 4px;
+    }
+
+    .side-text small {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>VAT Calculator</h1>
+      <p class="page-intro">
+        Add VAT, remove VAT, or use a custom VAT rate. Choose a country preset, enter an amount, and get a clear breakdown instantly.
+      </p>
+    </header>
+
+    <div class="vat-layout">
+      <!-- Left: Calculator -->
+      <section aria-label="VAT calculator">
+        <div class="field-group">
+          <div class="section-title">Mode</div>
+          <div class="modes" id="modeContainer">
+            <label class="mode-pill active">
+              <input type="radio" name="mode" value="add" checked />
+              <span>Add VAT</span>
+            </label>
+            <label class="mode-pill">
+              <input type="radio" name="mode" value="remove" />
+              <span>Remove VAT</span>
+            </label>
+            <label class="mode-pill">
+              <input type="radio" name="mode" value="custom" />
+              <span>Custom VAT</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" id="amountLabel" for="amountInput">
+            Amount (price without VAT)
+          </label>
+          <input
+            id="amountInput"
+            class="text-input"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="0.01"
+            placeholder="e.g. 100"
+          />
+          <div class="text-inline" id="amountHelp">
+            Enter the net price before VAT is added.
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="vatPreset">
+            VAT rate
+          </label>
+          <div class="row">
+            <div>
+              <select id="vatPreset" class="select-input">
+                <option value="UK_20">UK – 20%</option>
+                <option value="EU_19">EU (example) – 19%</option>
+                <option value="EU_21">EU (example) – 21%</option>
+                <option value="EU_23">EU (example) – 23%</option>
+                <option value="TR_18">Turkey – 18%</option>
+                <option value="UAE_5">UAE – 5%</option>
+                <option value="SA_15">Saudi Arabia – 15%</option>
+                <option value="ZA_15">South Africa – 15%</option>
+                <option value="IN_18">India – 18%</option>
+                <option value="CUSTOM">Custom rate…</option>
+              </select>
+              <div class="text-inline">
+                Choose a preset or select “Custom rate…” to enter your own percentage.
+              </div>
+            </div>
+          </div>
+
+          <div class="custom-rate-wrap" id="customRateWrap">
+            <label class="field-label" for="customRateInput">Custom VAT rate (%)</label>
+            <input
+              id="customRateInput"
+              class="text-input"
+              type="number"
+              inputmode="decimal"
+              min="0"
+              step="0.1"
+              placeholder="e.g. 17.5"
+            />
+          </div>
+        </div>
+
+        <button type="button" class="btn-primary" id="calculateButton">
+          Calculate VAT
+        </button>
+
+        <div class="results-main" aria-live="polite">
+          <div class="results-label">
+            Result
+          </div>
+          <div class="results-value" id="resultMain">
+            –
+          </div>
+        </div>
+
+        <div class="results-breakdown" id="resultsBreakdown">
+          <!-- Filled by JS -->
+        </div>
+
+        <div class="copy-row">
+          <button type="button" class="btn-copy" id="copyButton">Copy result</button>
+          <span class="copy-status" id="copyStatus"></span>
+        </div>
+
+        <div class="results-meta" id="resultsMeta">
+          VAT calculations are rounded to 2 decimal places and provided for general guidance only.
+        </div>
+        <div class="results-error" id="resultsError"></div>
+      </section>
+
+      <!-- Right: Text / SEO content -->
+      <aside class="side-text" aria-label="VAT calculator information">
+        <h2>How this VAT calculator works</h2>
+        <p>
+          This tool helps you quickly work with VAT using three modes:
+        </p>
+        <ul>
+          <li><strong>Add VAT:</strong> Start with a net price and add VAT.</li>
+          <li><strong>Remove VAT:</strong> Start with a gross price and remove VAT.</li>
+          <li><strong>Custom VAT:</strong> Use your own VAT percentage for any region.</li>
+        </ul>
+
+        <p>
+          Choose a country preset to auto-fill a common VAT rate, or select “Custom rate…” to enter a specific percentage.
+          The calculator then shows the VAT amount, the price without VAT, and the total price including VAT.
+        </p>
+
+        <h2>Common VAT questions</h2>
+        <p><strong>What is VAT?</strong></p>
+        <p>
+          VAT (Value Added Tax) is a consumption tax added to most goods and services. Businesses often need to calculate
+          prices with and without VAT for invoices, quotes, and accounting.
+        </p>
+
+        <p><strong>Is this calculator suitable for my country?</strong></p>
+        <p>
+          You can use this VAT calculator for any country by selecting a preset or entering a custom rate. Always confirm
+          current VAT rules with your local tax authority.
+        </p>
+
+        <small>
+          Important: This tool is for informational purposes only and does not replace professional accounting or tax advice.
+        </small>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const modeContainer = document.getElementById("modeContainer");
+    const amountInput = document.getElementById("amountInput");
+    const amountLabel = document.getElementById("amountLabel");
+    const amountHelp = document.getElementById("amountHelp");
+
+    const vatPreset = document.getElementById("vatPreset");
+    const customRateWrap = document.getElementById("customRateWrap");
+    const customRateInput = document.getElementById("customRateInput");
+
+    const calculateButton = document.getElementById("calculateButton");
+    const resultMain = document.getElementById("resultMain");
+    const resultsBreakdown = document.getElementById("resultsBreakdown");
+    const resultsMeta = document.getElementById("resultsMeta");
+    const resultsError = document.getElementById("resultsError");
+
+    const copyButton = document.getElementById("copyButton");
+    const copyStatus = document.getElementById("copyStatus");
+
+    function getSelectedMode() {
+      const radio = modeContainer.querySelector("input[name='mode']:checked");
+      return radio ? radio.value : "add";
+    }
+
+    function setModeUI(mode) {
+      // Update pill styles
+      modeContainer.querySelectorAll(".mode-pill").forEach((pill) => {
+        const input = pill.querySelector("input");
+        if (input && input.value === mode) {
+          pill.classList.add("active");
+        } else {
+          pill.classList.remove("active");
+        }
+      });
+
+      // Update labels and help text based on mode
+      if (mode === "add") {
+        amountLabel.textContent = "Amount (price without VAT)";
+        amountHelp.textContent = "Enter the net price before VAT is added.";
+      } else if (mode === "remove") {
+        amountLabel.textContent = "Amount (price including VAT)";
+        amountHelp.textContent = "Enter the gross price that already includes VAT.";
+      } else {
+        amountLabel.textContent = "Amount";
+        amountHelp.textContent = "Enter the amount you want to calculate VAT on.";
+      }
+    }
+
+    function getPresetRate(code) {
+      switch (code) {
+        case "UK_20": return 20;
+        case "EU_19": return 19;
+        case "EU_21": return 21;
+        case "EU_23": return 23;
+        case "TR_18": return 18;
+        case "UAE_5": return 5;
+        case "SA_15": return 15;
+        case "ZA_15": return 15;
+        case "IN_18": return 18;
+        default: return null; // For CUSTOM
+      }
+    }
+
+    function getRate() {
+      const presetValue = vatPreset.value;
+      if (presetValue === "CUSTOM") {
+        const val = parseFloat(customRateInput.value);
+        if (isNaN(val) || val < 0) {
+          return null;
+        }
+        return val;
+      } else {
+        return getPresetRate(presetValue);
+      }
+    }
+
+    function updateCustomRateVisibility() {
+      if (vatPreset.value === "CUSTOM") {
+        customRateWrap.style.display = "block";
+      } else {
+        customRateWrap.style.display = "none";
+      }
+    }
+
+    function formatMoney(value) {
+      if (!isFinite(value)) return "0.00";
+      return value.toFixed(2);
+    }
+
+    function calculateVAT() {
+      resultsError.textContent = "";
+      copyStatus.textContent = "";
+
+      const mode = getSelectedMode();
+      const amount = parseFloat(amountInput.value);
+      const rate = getRate();
+
+      if (isNaN(amount) || amount < 0) {
+        resultsError.textContent = "Please enter a valid amount greater than or equal to 0.";
+        resultMain.textContent = "–";
+        resultsBreakdown.innerHTML = "";
+        return;
+      }
+
+      if (rate === null || isNaN(rate) || rate < 0) {
+        resultsError.textContent = "Please enter a valid VAT rate.";
+        resultMain.textContent = "–";
+        resultsBreakdown.innerHTML = "";
+        return;
+      }
+
+      const r = rate / 100;
+      let net = 0;
+      let vat = 0;
+      let total = 0;
+
+      if (mode === "add") {
+        net = amount;
+        vat = net * r;
+        total = net + vat;
+        resultMain.textContent = formatMoney(total);
+        resultsBreakdown.innerHTML = `
+          <p>Price without VAT: ${formatMoney(net)}</p>
+          <p>VAT (${rate.toFixed(2)}%): ${formatMoney(vat)}</p>
+          <p>Total price (including VAT): ${formatMoney(total)}</p>
+        `;
+      } else if (mode === "remove") {
+        total = amount;
+        net = total / (1 + r);
+        vat = total - net;
+        resultMain.textContent = formatMoney(net);
+        resultsBreakdown.innerHTML = `
+          <p>Price without VAT: ${formatMoney(net)}</p>
+          <p>VAT (${rate.toFixed(2)}%): ${formatMoney(vat)}</p>
+          <p>Total price (including VAT): ${formatMoney(total)}</p>
+        `;
+      } else {
+        // custom mode: treat like add VAT on given amount
+        net = amount;
+        vat = net * r;
+        total = net + vat;
+        resultMain.textContent = formatMoney(total);
+        resultsBreakdown.innerHTML = `
+          <p>Original amount: ${formatMoney(net)}</p>
+          <p>VAT (${rate.toFixed(2)}%): ${formatMoney(vat)}</p>
+          <p>Total after VAT: ${formatMoney(total)}</p>
+        `;
+      }
+    }
+
+    function copyResult() {
+      const main = resultMain.textContent.trim();
+      const breakdown = resultsBreakdown.innerText.trim();
+      if (!main || main === "–") {
+        copyStatus.textContent = "Nothing to copy yet.";
+        return;
+      }
+
+      const textToCopy = breakdown
+        ? `Result: ${main}\n${breakdown}`
+        : `Result: ${main}`;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => {
+            copyStatus.textContent = "Copied to clipboard.";
+          })
+          .catch(() => {
+            copyStatus.textContent = "Unable to copy. You can copy manually.";
+          });
+      } else {
+        copyStatus.textContent = "Copy not supported in this browser.";
+      }
+    }
+
+    // Event listeners
+    modeContainer.addEventListener("change", (e) => {
+      if (e.target.name === "mode") {
+        const mode = e.target.value;
+        setModeUI(mode);
+      }
+    });
+
+    vatPreset.addEventListener("change", () => {
+      updateCustomRateVisibility();
+    });
+
+    calculateButton.addEventListener("click", calculateVAT);
+
+    amountInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        calculateVAT();
+      }
+    });
+
+    customRateInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        calculateVAT();
+      }
+    });
+
+    copyButton.addEventListener("click", copyResult);
+
+    // Initialize
+    setModeUI(getSelectedMode());
+    updateCustomRateVisibility();
+  </script>
+</body>
+</html>

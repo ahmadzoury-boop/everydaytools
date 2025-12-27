@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- SEO -->
+  <title>Body Fat Calculator – US Navy Method (Tape Measurement Estimate)</title>
+  <meta name="description" content="Estimate body fat percentage using the U.S. Navy method with height, neck, waist, and hip measurements. Fast, offline, and ideal for tracking fitness trends." />
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/health/body-fat-us-navy.html" />
+
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    :root{
+      --ts-bg:#0b1220;
+      --ts-card:#0f1a33;
+      --ts-border:rgba(255,255,255,.10);
+      --ts-text:rgba(255,255,255,.92);
+      --ts-muted:rgba(255,255,255,.70);
+      --ts-accent:#7dd3fc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+        var(--ts-bg);
+      color:var(--ts-text);
+    }
+    a{color:var(--ts-accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .ts-header{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--ts-border);
+      position:sticky;top:0;backdrop-filter:blur(10px);
+      background:rgba(11,18,32,.65);
+    }
+    .ts-header .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .ts-badge{
+      font-size:12px;padding:6px 10px;border:1px solid var(--ts-border);
+      border-radius:999px;color:var(--ts-muted)
+    }
+
+    .ts-container{max-width:980px;margin:0 auto;padding:22px 16px 44px}
+    h1{font-size:28px;margin:10px 0 6px}
+    .ts-sub{margin:0 0 18px;color:var(--ts-muted)}
+
+    .ts-grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:900px){.ts-grid.cols-2{grid-template-columns:1fr 1fr}}
+
+    .ts-card{
+      background:rgba(15,26,51,.86);
+      border:1px solid var(--ts-border);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+    }
+
+    label{display:block;font-size:13px;color:var(--ts-muted);margin:8px 0 6px}
+    input,select{
+      width:100%;background:rgba(0,0,0,.18);
+      border:1px solid var(--ts-border);
+      border-radius:12px;padding:10px 12px;color:var(--ts-text);
+      outline:none;font-size:16px;
+    }
+
+    .ts-row{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:700px){
+      .ts-row.cols-2{grid-template-columns:1fr 1fr}
+    }
+
+    .ts-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{
+      cursor:pointer;background:rgba(125,211,252,.18);
+      border:1px solid rgba(125,211,252,.35);
+      color:var(--ts-text);padding:10px 12px;border-radius:12px;
+      font-weight:700;
+    }
+    button.secondary{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--ts-border);
+    }
+
+    .ts-kpi{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .ts-pill{
+      padding:10px 12px;border-radius:14px;border:1px solid var(--ts-border);
+      background:rgba(0,0,0,.16);min-width:160px;
+    }
+    .ts-pill b{display:block;font-size:18px}
+    .ts-pill span{display:block;font-size:12px;color:var(--ts-muted);margin-top:4px}
+
+    .ts-note{margin-top:10px;color:var(--ts-muted);font-size:12px}
+
+    .ts-footer{
+      padding:18px 16px;border-top:1px solid var(--ts-border);
+      color:var(--ts-muted);text-align:center
+    }
+  </style>
+</head>
+
+<body>
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Health</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="index.html">⬅ Back to Health tools</a>
+  </div>
+</header>
+
+<main class="ts-container">
+  <h1>Body Fat Estimate (US Navy)</h1>
+  <p class="ts-sub">Estimate body fat percentage using height + tape measurements.</p>
+
+  <div class="ts-grid cols-2">
+    <div class="ts-card">
+      <label for="bfSex">Sex</label>
+      <select id="bfSex">
+        <option value="male" selected>Male</option>
+        <option value="female">Female</option>
+      </select>
+
+      <div class="ts-row cols-2">
+        <div>
+          <label for="bfHeight">Height (cm)</label>
+          <input id="bfHeight" type="number" min="100" max="250" step="0.1">
+        </div>
+        <div>
+          <label for="bfNeck">Neck (cm)</label>
+          <input id="bfNeck" type="number" min="10" max="80" step="0.1">
+        </div>
+      </div>
+
+      <div class="ts-row cols-2">
+        <div>
+          <label for="bfWaist">Waist (cm)</label>
+          <input id="bfWaist" type="number" min="20" max="200" step="0.1">
+        </div>
+        <div id="hipWrap" style="display:none">
+          <label for="bfHip">Hip (cm) (female only)</label>
+          <input id="bfHip" type="number" min="20" max="200" step="0.1">
+        </div>
+      </div>
+
+      <div class="ts-actions">
+        <button id="bfCalc">Calculate</button>
+        <button id="bfReset" class="secondary">Reset</button>
+      </div>
+
+      <div class="ts-note">Uses the U.S. Navy method (tape measurements). Estimates only.</div>
+    </div>
+
+    <div class="ts-card">
+      <h3 style="margin:0 0 10px">Results</h3>
+      <div class="ts-kpi" id="bfKpis"></div>
+      <div class="ts-note">If measurements look wrong, double-check units (cm) and where you measured.</div>
+    </div>
+  </div>
+
+  <section style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        <p>Estimates body-fat % using the <b>U.S. Navy tape method</b>.</p>
+        <ul>
+          <li>Measurements are entered in cm, converted to inches internally.</li>
+          <li>Uses the Navy logarithmic equations (different for male vs female).</li>
+          <li>Best used to track trends over time.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+</main>
+
+<footer class="ts-footer">Toolstack add-on pages • Works offline • Single-file tools</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function cmToIn(cm){ return cm / 2.54; }
+function round1(x){ return Math.round((x + Number.EPSILON) * 10) / 10; }
+
+function category(sex, bf){
+  if(!isFinite(bf)) return "—";
+  if(sex==="male"){
+    if(bf < 6) return "Essential fat";
+    if(bf < 14) return "Athletic";
+    if(bf < 18) return "Fitness";
+    if(bf < 25) return "Average";
+    return "Obese";
+  } else {
+    if(bf < 14) return "Essential fat";
+    if(bf < 21) return "Athletic";
+    if(bf < 25) return "Fitness";
+    if(bf < 32) return "Average";
+    return "Obese";
+  }
+}
+
+function navy(sex, h, n, w, hip){
+  const height = cmToIn(h);
+  const neck = cmToIn(n);
+  const waist = cmToIn(w);
+
+  if(sex==="male"){
+    if(waist - neck <= 0) return NaN;
+    return 86.010 * Math.log10(waist - neck) - 70.041 * Math.log10(height) + 36.76;
+  } else {
+    const hipIn = cmToIn(hip);
+    if(waist + hipIn - neck <= 0) return NaN;
+    return 163.205 * Math.log10(waist + hipIn - neck) - 97.684 * Math.log10(height) - 78.387;
+  }
+}
+
+function toggleHip(){
+  hipWrap.style.display = bfSex.value === "female" ? "block" : "none";
+}
+
+function calc(){
+  const sex = bfSex.value;
+  const h = Number(bfHeight.value);
+  const neck = Number(bfNeck.value);
+  const waist = Number(bfWaist.value);
+  const hip = Number(bfHip.value);
+
+  if(!h || !neck || !waist || (sex==="female" && !hip)){
+    bfKpis.innerHTML = "";
+    return;
+  }
+
+  const bf = navy(sex, h, neck, waist, hip);
+  const bfRounded = round1(bf);
+
+  const kpis = [
+    {label:"Body fat % (est.)", value: isFinite(bfRounded) ? bfRounded + "%" : "—"},
+    {label:"Category", value: isFinite(bfRounded) ? category(sex, bfRounded) : "—"}
+  ];
+
+  bfKpis.innerHTML = kpis.map(k => `
+    <div class="ts-pill"><b>${k.value}</b><span>${k.label}</span></div>
+  `).join("");
+}
+
+bfSex.addEventListener("change", () => { toggleHip(); calc(); });
+["bfHeight","bfNeck","bfWaist","bfHip"].forEach(id => {
+  $(id).addEventListener("input", calc);
+});
+
+bfCalc.addEventListener("click", calc);
+
+bfReset.addEventListener("click", () => {
+  bfHeight.value = "";
+  bfNeck.value = "";
+  bfWaist.value = "";
+  bfHip.value = "";
+  bfSex.value = "male";
+  toggleHip();
+  bfKpis.innerHTML = "";
+});
+
+toggleHip();
+</script>
+
+</body>
+</html>

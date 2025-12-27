@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Strong SEO -->
+  <title>Pomodoro Timer – 25/5 Focus Technique | Free Online Productivity Tool</title>
+  <meta name="description" content="Boost productivity with this free Pomodoro Timer. Use 25/5 focus cycles, long breaks, sound alerts, and session tracking for deep work." />
+
+  <!-- Optional but recommended: canonical -->
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/time/pomodoro-timer.html" />
+
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="../../index.html" aria-label="ToolStack Home">
+        <span class="brand-mark">⧉</span>
+        <span class="brand-name">ToolStack</span>
+      </a>
+
+      <nav class="nav">
+        <a href="../index.html">Tools</a>
+        <a href="./index.html">Time</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" style="padding-bottom: 10px;">
+      <h1>Pomodoro Timer</h1>
+      <p class="lead">Focus sessions + breaks. Settings are saved in your browser.</p>
+    </section>
+
+    <section class="section">
+      <div class="grid">
+        <div class="card" style="grid-column: span 12;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <div>
+              <div style="color:var(--muted); font-weight:700;">Current</div>
+              <div id="modeLabel" style="font-weight:900; font-size:18px;">Focus</div>
+            </div>
+            <div id="sessionLabel" style="color:var(--muted); font-weight:700;">Session: 1</div>
+          </div>
+
+          <div id="time" style="font-size: clamp(46px, 8vw, 88px); font-weight: 900; letter-spacing: 1px; text-align:center; margin: 18px 0;">
+            25:00
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button id="startPauseBtn" class="btn" type="button">Start</button>
+            <button id="resetBtn" class="btn btn-secondary" type="button">Reset</button>
+            <button id="skipBtn" class="btn btn-secondary" type="button" title="Skip to next">Skip</button>
+          </div>
+
+          <div style="margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; color:var(--muted);">
+            <span><b>Space</b> start/pause</span>
+            <span>·</span>
+            <span><b>R</b> reset</span>
+            <span>·</span>
+            <span><b>N</b> next</span>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column: span 12;">
+          <div class="card-title">Settings</div>
+          <div class="card-desc">Change minutes. Saved automatically.</div>
+
+          <div style="display:grid; grid-template-columns: repeat(12, 1fr); gap:12px; margin-top:12px;">
+            <label style="grid-column: span 12;">
+              <div style="color:var(--muted); font-weight:700; margin-bottom:6px;">Focus (minutes)</div>
+              <input id="focusMin" type="number" min="1" max="180" value="25"
+                style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,.25); color:var(--text);" />
+            </label>
+
+            <label style="grid-column: span 12;">
+              <div style="color:var(--muted); font-weight:700; margin-bottom:6px;">Short break (minutes)</div>
+              <input id="shortMin" type="number" min="1" max="60" value="5"
+                style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,.25); color:var(--text);" />
+            </label>
+
+            <label style="grid-column: span 12;">
+              <div style="color:var(--muted); font-weight:700; margin-bottom:6px;">Long break (minutes)</div>
+              <input id="longMin" type="number" min="1" max="90" value="15"
+                style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,.25); color:var(--text);" />
+            </label>
+
+            <label style="grid-column: span 12;">
+              <div style="color:var(--muted); font-weight:700; margin-bottom:6px;">Long break every (focus sessions)</div>
+              <input id="longEvery" type="number" min="2" max="12" value="4"
+                style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); background:rgba(0,0,0,.25); color:var(--text);" />
+            </label>
+          </div>
+
+          <div style="margin-top:12px; color:var(--muted); line-height:1.5;">
+            Tip: If you change settings while running, press <b>Reset</b> to apply.
+          </div>
+        </div>
+
+        <div class="card" style="grid-column: span 12;">
+          <div class="card-title">How it works</div>
+          <div class="card-desc" style="line-height:1.6;">
+            Work in focused sessions, then take a short break. After a set number of focus sessions,
+            take a longer break. This tool saves your settings locally in your browser.
+          </div>
+        </div>
+      </div>
+
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Pomodoro uses focused work blocks with scheduled breaks.</p>
+<ul>
+  <li>Cycle: Focus → Short break, and after N focus sessions → Long break.</li>
+  <li>Settings are stored in your browser (local storage) so they persist.</li>
+  <li>Keyboard shortcuts let you control it hands-free.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+
+<footer class="site-footer">
+  <div class="footer-row">
+    <div class="footer-links">
+      <a href="../../privacy.html">Privacy</a>
+      <a href="../../terms.html">Terms</a>
+      <a href="../../contact.html">Contact</a>
+    </div>
+    <div class="footer-note">© <span id="year"></span> ToolStack</div>
+  </div>
+</footer>
+
+  </main>
+
+  <script src="../../assets/js/main.js"></script>
+  <script src="./pomodoro.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Profit Margin Calculator – Cost, Revenue & Margin % | ToolStack</title>
+  <meta name="description" content="Calculate profit margin instantly from cost and revenue. Get gross profit, margin percentage, markup, and net profit. Perfect for business, ecommerce, and pricing decisions." />
+
+  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/finance/profit-margin-calculator.html" />
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    :root{
+      --ts-bg:#0b1220;
+      --ts-card:#0f1a33;
+      --ts-border:rgba(255,255,255,.10);
+      --ts-text:rgba(255,255,255,.92);
+      --ts-muted:rgba(255,255,255,.70);
+      --ts-accent:#7dd3fc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
+        var(--ts-bg);
+      color:var(--ts-text);
+    }
+    a{color:var(--ts-accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .ts-header{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:16px 20px;border-bottom:1px solid var(--ts-border);
+      position:sticky;top:0;backdrop-filter:blur(10px);
+      background:rgba(11,18,32,.65);
+    }
+    .ts-header .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .ts-badge{
+      font-size:12px;padding:6px 10px;border:1px solid var(--ts-border);
+      border-radius:999px;color:var(--ts-muted)
+    }
+
+    .ts-container{max-width:900px;margin:0 auto;padding:22px 16px 44px}
+    h1{font-size:32px;margin:10px 0 6px}
+    .ts-sub{margin:0 0 18px;color:var(--ts-muted)}
+
+    .ts-card{
+      background:rgba(15,26,51,.86);
+      border:1px solid var(--ts-border);
+      border-radius:16px;
+      padding:20px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+    }
+
+    label{display:block;font-size:13px;color:var(--ts-muted);margin:8px 0 6px}
+    input{
+      width:100%;
+      background:rgba(0,0,0,.18);
+      border:1px solid var(--ts-border);
+      border-radius:12px;
+      padding:10px 12px;
+      color:var(--ts-text);
+      font-size:16px;
+    }
+
+    .ts-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    @media(min-width:900px){
+      .ts-grid.cols-2{grid-template-columns:1fr 1fr}
+    }
+
+    .result-box{
+      margin-top:20px;
+      padding:18px;
+      border-radius:14px;
+      border:1px dashed var(--ts-border);
+      background:rgba(255,255,255,.05);
+      text-align:center;
+    }
+    .result-big{
+      font-size:32px;
+      font-weight:900;
+      letter-spacing:1px;
+    }
+    .ts-note{
+      margin-top:10px;
+      color:var(--ts-muted);
+      font-size:12px;
+    }
+
+    .ts-footer{
+      padding:18px 16px;
+      border-top:1px solid var(--ts-border);
+      color:var(--ts-muted);
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+<header class="ts-header">
+  <div class="left">
+    <a href="../../index.html" class="ts-badge">🏠 Home</a>
+    <span class="ts-badge">Finance Tools</span>
+  </div>
+  <div class="right">
+    <a class="ts-badge" href="./index.html">⬅ Back to Finance Tools</a>
+  </div>
+</header>
+
+<main class="ts-container">
+  <h1>Profit Margin Calculator</h1>
+  <p class="ts-sub">Enter cost and revenue to get profit, margin %, and markup instantly.</p>
+
+  <div class="ts-card">
+
+    <!-- Inputs -->
+    <div class="ts-grid cols-2">
+      <div>
+        <label for="cost">Cost</label>
+        <input id="cost" type="number" step="0.01" placeholder="0.00">
+      </div>
+
+      <div>
+        <label for="revenue">Revenue</label>
+        <input id="revenue" type="number" step="0.01" placeholder="0.00">
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="result-box">
+      <div class="result-big" id="profitDisplay">0.00</div>
+      <div class="ts-note" id="marginDisplay"></div>
+      <div class="ts-note" id="markupDisplay"></div>
+    </div>
+
+  </div>
+
+  <!-- Explanation -->
+  <section style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">How it works</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        <p>This calculator gives you:</p>
+        <ul>
+          <li><strong>Profit</strong> = Revenue − Cost</li>
+          <li><strong>Margin %</strong> = Profit ÷ Revenue</li>
+          <li><strong>Markup %</strong> = Profit ÷ Cost</li>
+          <li>Live updates as you type</li>
+          <li>Works fully offline</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<footer class="ts-footer">
+  ToolStack Finance Tools • Works offline • Single‑file utilities
+</footer>
+<script>
+  const $ = id => document.getElementById(id);
+
+  const costInput = $("cost");
+  const revenueInput = $("revenue");
+
+  const profitDisplay = $("profitDisplay");
+  const marginDisplay = $("marginDisplay");
+  const markupDisplay = $("markupDisplay");
+
+  function format(num){
+    if(isNaN(num)) return "0.00";
+    return Number(num).toFixed(2);
+  }
+
+  function calculate(){
+    const cost = Number(costInput.value);
+    const revenue = Number(revenueInput.value);
+
+    if(cost <= 0 && revenue <= 0){
+      profitDisplay.textContent = "0.00";
+      marginDisplay.textContent = "";
+      markupDisplay.textContent = "";
+      return;
+    }
+
+    const profit = revenue - cost;
+    const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+    const markup = cost > 0 ? (profit / cost) * 100 : 0;
+
+    profitDisplay.textContent = `${format(profit)} profit`;
+    marginDisplay.textContent = `Margin: ${margin.toFixed(2)}%`;
+    markupDisplay.textContent = `Markup: ${markup.toFixed(2)}%`;
+  }
+
+  costInput.addEventListener("input", calculate);
+  revenueInput.addEventListener("input", calculate);
+
+  // Initialize
+  calculate();
+</script>
+</body>
+</html>

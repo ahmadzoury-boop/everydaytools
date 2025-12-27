@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ratio & Proportion Calculator</title>
+  <meta name="description" content="Ratio and proportion calculator: simplify ratios, scale up/down, and solve for x in proportions." />
+
+  <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1630;
+      --card: rgba(255,255,255,.07);
+      --card2: rgba(255,255,255,.10);
+      --text:#eaf0ff;
+      --muted: rgba(234,240,255,.70);
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 16px 50px rgba(0,0,0,.45);
+      --radius: 18px;
+      --ok: #68f0b2;
+      --warn: #ffd36e;
+      --bad: #ff7a7a;
+      --accent: #7aa7ff;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(122,167,255,.35), transparent 60%),
+        radial-gradient(900px 500px at 80% 30%, rgba(104,240,178,.20), transparent 60%),
+        radial-gradient(900px 500px at 60% 85%, rgba(255,211,110,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display:flex;
+      justify-content:center;
+      padding:28px 14px;
+    }
+
+    .wrap{width:min(1200px, 100%);}
+
+    header{
+      display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
+      margin-bottom:14px; flex-wrap:wrap;
+    }
+    .title h1{
+      font-size: clamp(22px, 3vw, 34px);
+      margin:0 0 6px 0;
+      letter-spacing:.2px;
+    }
+    .title p{margin:0; color:var(--muted); line-height:1.5; font-size:14px; max-width: 85ch;}
+
+    .top-actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; margin-top:2px;}
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:950;
+      font-size:13px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .btn:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background: rgba(122,167,255,.16); border-color: rgba(122,167,255,.35);}
+    .btn.primary:hover{background: rgba(122,167,255,.22)}
+    .btn.danger{background: rgba(255,122,122,.12); border-color: rgba(255,122,122,.35);}
+    .btn.danger:hover{background: rgba(255,122,122,.18)}
+
+    .grid{display:grid; grid-template-columns: 1.25fr .75fr; gap:14px;}
+    @media (max-width: 1000px){ .grid{grid-template-columns: 1fr;} .top-actions{justify-content:flex-start} }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 16px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .card .hd .label{font-weight:1000; letter-spacing:.2px; font-size:14px;}
+    .card .bd{padding:14px 16px;}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap;}
+    .tab{
+      padding:8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+      font-weight:1000;
+      font-size:12px;
+      user-select:none;
+    }
+    .tab:hover{background: rgba(255,255,255,.10)}
+    .tab.active{background: rgba(104,240,178,.14); border-color: rgba(104,240,178,.35);}
+
+    .row{display:flex; gap:12px; flex-wrap:wrap;}
+    .field{display:flex; flex-direction:column; gap:6px; min-width: 190px; flex:1;}
+    .field label{font-size:12px; color:var(--muted); font-weight:950; letter-spacing:.2px;}
+    input[type="number"], select{
+      width:100%;
+      padding:10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    input[type="number"]:focus, select:focus{
+      border-color: rgba(122,167,255,.55);
+      box-shadow: 0 0 0 4px rgba(122,167,255,.16);
+    }
+
+    .stats{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+    @media (max-width: 420px){ .stats{grid-template-columns: 1fr;} }
+    .stat{background: var(--card2); border: 1px solid var(--line); border-radius: 14px; padding:12px;}
+    .stat .k{color: var(--muted); font-size:12px; font-weight:1000; margin-bottom:6px;}
+    .stat .v{font-size:18px; font-weight:1100; letter-spacing:.2px; word-break: break-word;}
+
+    .banner{
+      margin-top:10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      border-radius: 14px;
+      padding:12px;
+      line-height:1.55;
+      color: var(--muted);
+      font-size:13px;
+      font-weight:950;
+    }
+    .banner strong{color:var(--text)}
+    .banner.ok{border-color: rgba(104,240,178,.35); background: rgba(104,240,178,.10);}
+    .banner.warn{border-color: rgba(255,211,110,.35); background: rgba(255,211,110,.10);}
+    .banner.bad{border-color: rgba(255,122,122,.35); background: rgba(255,122,122,.10);}
+
+    .note{color: var(--muted); font-size:12px; line-height:1.55; margin-top:10px;}
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      color: rgba(234,240,255,.88);
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+      overflow:auto;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.70);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.55);
+      font-size: 13px;
+      font-weight: 1000;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show{opacity:1; transform: translateX(-50%) translateY(-2px);}
+
+    .ratio{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      padding:10px 12px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      font-weight:1100;
+    }
+    .ratio span{color: var(--muted); font-weight:950}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Ratio & Proportion Calculator</h1>
+        <p>
+          Simplify ratios, scale up/down, and solve proportions like <strong>a:b = c:x</strong>.
+          Auto-saves your inputs in the URL.
+        </p>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn" href="index.html">← Back to School Tools</a>
+        <button class="btn danger" id="btnReset" type="button">Reset</button>
+        <button class="btn primary" id="btnCopy" type="button">Copy</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <section class="card">
+        <div class="hd">
+          <div class="label">Choose</div>
+          <div class="tabs" id="tabs">
+            <div class="tab active" data-mode="simplify">Simplify ratio</div>
+            <div class="tab" data-mode="scale">Scale ratio</div>
+            <div class="tab" data-mode="solve">Solve proportion</div>
+          </div>
+        </div>
+
+        <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="row">
+            <div class="field">
+              <label for="mode">Mode</label>
+              <select id="mode">
+                <option value="simplify" selected>Simplify ratio</option>
+                <option value="scale">Scale ratio</option>
+                <option value="solve">Solve proportion</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="decimals">Decimals</label>
+              <select id="decimals">
+                <option value="0">0</option>
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Simplify -->
+          <div id="panel-simplify" style="display:block;">
+            <div class="row">
+              <div class="field">
+                <label for="a1">A</label>
+                <input id="a1" type="number" step="any" value="150" />
+              </div>
+              <div class="field">
+                <label for="b1">B</label>
+                <input id="b1" type="number" step="any" value="100" />
+              </div>
+            </div>
+            <div class="note">Simplifies A:B by dividing by the greatest common divisor (for integers) or by reducing proportionally.</div>
+          </div>
+
+          <!-- Scale -->
+          <div id="panel-scale" style="display:none;">
+            <div class="row">
+              <div class="field">
+                <label for="a2">A</label>
+                <input id="a2" type="number" step="any" value="3" />
+              </div>
+              <div class="field">
+                <label for="b2">B</label>
+                <input id="b2" type="number" step="any" value="5" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="factor">Scale factor</label>
+                <input id="factor" type="number" step="any" value="2" />
+              </div>
+            </div>
+            <div class="note">Scaled ratio = (A×factor) : (B×factor)</div>
+          </div>
+
+          <!-- Solve -->
+          <div id="panel-solve" style="display:none;">
+            <div class="note" style="margin-top:0;">Solve: <strong>a : b = c : x</strong> (or change the unknown position).</div>
+
+            <div class="row">
+              <div class="field">
+                <label for="unk">Unknown</label>
+                <select id="unk">
+                  <option value="x" selected>x in c:x</option>
+                  <option value="c">c in c:x</option>
+                  <option value="b">b in a:b</option>
+                  <option value="a">a in a:b</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="a3">a</label>
+                <input id="a3" type="number" step="any" value="2" />
+              </div>
+              <div class="field">
+                <label for="b3">b</label>
+                <input id="b3" type="number" step="any" value="3" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="c3">c</label>
+                <input id="c3" type="number" step="any" value="10" />
+              </div>
+              <div class="field">
+                <label for="x3">x</label>
+                <input id="x3" type="number" step="any" value="" placeholder="unknown" />
+              </div>
+            </div>
+
+            <div class="note">Uses cross-multiplication: a/b = c/x → a×x = b×c</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="card">
+        <div class="hd">
+          <div class="label">Results</div>
+          <div class="note" style="margin:0;font-weight:1000;" id="status">Auto-saves in URL</div>
+        </div>
+
+        <div class="bd" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Result</div>
+              <div class="v" id="resultOut">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">As ratio</div>
+              <div class="v" id="ratioOut">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">As fraction</div>
+              <div class="v" id="fracOut">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Share link</div>
+              <div class="v" style="font-size:12px; font-weight:1000;" id="linkOut">—</div>
+            </div>
+          </div>
+
+          <div class="banner" id="banner">Enter values to calculate.</div>
+
+          <div class="ratio" id="pretty">
+            <span>Preview:</span> <div id="prettyOut">—</div>
+          </div>
+
+          <div>
+            <div class="note" style="margin:0 0 8px 0; font-weight:1000;">Working</div>
+            <div class="mono" id="workOut">—</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+  
+  <section data-toolstack-explainer="true" style="max-width:1100px;margin:14px auto 0;padding:0 14px;">
+    <details style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px;">
+      <summary style="cursor:pointer;font-weight:950;letter-spacing:.2px;">Explanation</summary>
+      <div style="margin-top:10px;opacity:.88;line-height:1.7;font-size:14px;">
+        
+<p>Works with ratios in 3 modes: simplify, scale, and solve for x.</p>
+<ul>
+  <li><b>Simplify</b>: divide both sides by their GCD (greatest common divisor).</li>
+  <li><b>Scale</b>: multiply both sides by the same factor to resize the ratio.</li>
+  <li><b>Solve</b>: for <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">a:b = c:x</code> → <code style="padding:2px 6px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18);">x = (b×c) ÷ a</code>.</li>
+</ul>
+
+      </div>
+    </details>
+  </section>
+<script>
+    const $ = (id) => document.getElementById(id);
+
+    const tabs = $("tabs");
+    const modeSel = $("mode");
+    const decimalsSel = $("decimals");
+
+    const panelSimplify = $("panel-simplify");
+    const panelScale = $("panel-scale");
+    const panelSolve = $("panel-solve");
+
+    const a1 = $("a1"), b1 = $("b1");
+    const a2 = $("a2"), b2 = $("b2"), factor = $("factor");
+    const unk = $("unk"), a3 = $("a3"), b3 = $("b3"), c3 = $("c3"), x3 = $("x3");
+
+    const resultOut = $("resultOut");
+    const ratioOut = $("ratioOut");
+    const fracOut = $("fracOut");
+    const linkOut = $("linkOut");
+    const banner = $("banner");
+    const prettyOut = $("prettyOut");
+    const workOut = $("workOut");
+
+    const btnReset = $("btnReset");
+    const btnCopy = $("btnCopy");
+    const toast = $("toast");
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 1100);
+    }
+
+    function num(el, fallback = NaN){
+      const v = Number(el.value);
+      return Number.isFinite(v) ? v : fallback;
+    }
+
+    function roundTo(x, d){
+      const p = Math.pow(10, d);
+      return Math.round(x * p) / p;
+    }
+    function fmt(x, d){
+      if (!Number.isFinite(x)) return "—";
+      const r = roundTo(x, d);
+      return r.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+    }
+
+    // gcd for integers
+    function gcdInt(a,b){
+      a = Math.abs(a); b = Math.abs(b);
+      while (b){
+        const t = a % b;
+        a = b; b = t;
+      }
+      return a;
+    }
+
+    function simplifyPair(A,B){
+      // If near-integers, use integer GCD; else reduce by ratio
+      if (!Number.isFinite(A) || !Number.isFinite(B)) return null;
+      if (A === 0 && B === 0) return null;
+
+      const isIntish = (x) => Math.abs(x - Math.round(x)) < 1e-9;
+
+      if (isIntish(A) && isIntish(B)){
+        const ai = Math.round(A), bi = Math.round(B);
+        if (ai === 0 && bi === 0) return null;
+        const g = gcdInt(ai, bi) || 1;
+        return { a: ai / g, b: bi / g, method: `gcd(${ai},${bi})=${g}` };
+      }
+
+      // Non-integers: normalize by dividing by min nonzero magnitude and then reduce
+      const scale = Math.min(Math.abs(A) || Infinity, Math.abs(B) || Infinity);
+      const aN = A / (scale === Infinity ? 1 : scale);
+      const bN = B / (scale === Infinity ? 1 : scale);
+      return { a: aN, b: bN, method: `divide by ${scale}` };
+    }
+
+    function setMode(mode){
+      modeSel.value = mode;
+      panelSimplify.style.display = (mode === "simplify") ? "block" : "none";
+      panelScale.style.display = (mode === "scale") ? "block" : "none";
+      panelSolve.style.display = (mode === "solve") ? "block" : "none";
+
+      [...tabs.querySelectorAll(".tab")].forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
+      update();
+    }
+
+    function setUrl(params){
+      const url = new URL(window.location.href);
+      Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, String(v)));
+      history.replaceState({}, "", url);
+      linkOut.textContent = url.toString();
+    }
+
+    function loadFromUrl(){
+      const url = new URL(window.location.href);
+      const mode = url.searchParams.get("mode");
+      const d = url.searchParams.get("d");
+
+      if (mode && ["simplify","scale","solve"].includes(mode)) modeSel.value = mode;
+      if (d && ["0","1","2","3","4"].includes(d)) decimalsSel.value = d;
+
+      const get = (k) => url.searchParams.get(k);
+
+      if (get("a1") !== null) a1.value = get("a1");
+      if (get("b1") !== null) b1.value = get("b1");
+
+      if (get("a2") !== null) a2.value = get("a2");
+      if (get("b2") !== null) b2.value = get("b2");
+      if (get("f") !== null) factor.value = get("f");
+
+      if (get("unk") !== null) unk.value = get("unk");
+      if (get("a3") !== null) a3.value = get("a3");
+      if (get("b3") !== null) b3.value = get("b3");
+      if (get("c3") !== null) c3.value = get("c3");
+      if (get("x3") !== null) x3.value = get("x3");
+    }
+
+    function update(){
+      const d = Number(decimalsSel.value) || 1;
+      const mode = modeSel.value;
+
+      banner.className = "banner";
+      resultOut.textContent = "—";
+      ratioOut.textContent = "—";
+      fracOut.textContent = "—";
+      prettyOut.textContent = "—";
+      workOut.textContent = "—";
+
+      if (mode === "simplify"){
+        const A = num(a1), B = num(b1);
+
+        if (!Number.isFinite(A) || !Number.isFinite(B)){
+          banner.textContent = "Enter valid numbers.";
+          setUrl({ mode, d, a1: a1.value, b1: b1.value });
+          return;
+        }
+        if (A === 0 && B === 0){
+          banner.classList.add("bad");
+          banner.innerHTML = "❌ 0:0 ratio is undefined.";
+          setUrl({ mode, d, a1: a1.value, b1: b1.value });
+          return;
+        }
+
+        const s = simplifyPair(A,B);
+        if (!s){
+          banner.classList.add("bad");
+          banner.textContent = "Cannot simplify.";
+          setUrl({ mode, d, a1: a1.value, b1: b1.value });
+          return;
+        }
+
+        resultOut.textContent = `${fmt(s.a, d)} : ${fmt(s.b, d)}`;
+        ratioOut.textContent = `${fmt(s.a, d)}:${fmt(s.b, d)}`;
+        fracOut.textContent = (s.b === 0) ? "∞" : `${fmt(s.a / s.b, d)}`;
+        prettyOut.textContent = `${fmt(A, d)} : ${fmt(B, d)}  →  ${fmt(s.a, d)} : ${fmt(s.b, d)}`;
+
+        banner.classList.add("ok");
+        banner.innerHTML = `✅ Simplified ratio is <strong>${fmt(s.a, d)}:${fmt(s.b, d)}</strong>.`;
+
+        workOut.textContent =
+          `Input ratio: ${A}:${B}\n` +
+          `Method: ${s.method}\n` +
+          `Simplified: ${s.a}:${s.b}\n` +
+          `As fraction: ${s.b === 0 ? "∞" : (s.a/s.b)}`;
+
+        setUrl({ mode, d, a1: a1.value, b1: b1.value });
+
+      } else if (mode === "scale"){
+        const A = num(a2), B = num(b2), F = num(factor);
+
+        if (!Number.isFinite(A) || !Number.isFinite(B) || !Number.isFinite(F)){
+          banner.textContent = "Enter valid numbers.";
+          setUrl({ mode, d, a2: a2.value, b2: b2.value, f: factor.value });
+          return;
+        }
+
+        const A2 = A * F;
+        const B2 = B * F;
+
+        resultOut.textContent = `${fmt(A2, d)} : ${fmt(B2, d)}`;
+        ratioOut.textContent = `${fmt(A2, d)}:${fmt(B2, d)}`;
+        fracOut.textContent = (B2 === 0) ? "∞" : `${fmt(A2 / B2, d)}`;
+        prettyOut.textContent = `${fmt(A, d)}:${fmt(B, d)} × ${fmt(F, d)} → ${fmt(A2, d)}:${fmt(B2, d)}`;
+
+        banner.classList.add("ok");
+        banner.innerHTML = `✅ Scaled ratio is <strong>${fmt(A2, d)}:${fmt(B2, d)}</strong>.`;
+
+        workOut.textContent =
+          `A' = A×factor = ${A}×${F} = ${A2}\n` +
+          `B' = B×factor = ${B}×${F} = ${B2}\n` +
+          `Result: ${A2}:${B2}`;
+
+        setUrl({ mode, d, a2: a2.value, b2: b2.value, f: factor.value });
+
+      } else if (mode === "solve"){
+        const U = unk.value;
+
+        const A = num(a3), B = num(b3), C = num(c3);
+        const X = num(x3);
+
+        const params = { mode, d, unk: U, a3: a3.value, b3: b3.value, c3: c3.value, x3: x3.value };
+        setUrl(params);
+
+        // Proportion: a:b = c:x => a/b = c/x
+        // Cross-multiply: a*x = b*c
+        // Solve each:
+        // x = (b*c)/a
+        // c = (a*x)/b
+        // b = (a*x)/c
+        // a = (b*c)/x
+
+        function bad(msg){
+          banner.classList.add("bad");
+          banner.innerHTML = `❌ ${msg}`;
+        }
+
+        if (U === "x"){
+          if (!Number.isFinite(A) || !Number.isFinite(B) || !Number.isFinite(C)){
+            banner.textContent = "Enter valid a, b, c.";
+            return;
+          }
+          if (A === 0) return bad("Cannot solve x when a = 0.");
+          const xVal = (B * C) / A;
+          resultOut.textContent = fmt(xVal, d);
+          ratioOut.textContent = `${fmt(A, d)}:${fmt(B, d)} = ${fmt(C, d)}:${fmt(xVal, d)}`;
+          fracOut.textContent = (B === 0) ? "∞" : fmt(A/B, d);
+          prettyOut.textContent = `${fmt(A,d)}:${fmt(B,d)} = ${fmt(C,d)}:x  →  x = ${fmt(xVal,d)}`;
+          banner.classList.add("ok");
+          banner.innerHTML = `✅ x = <strong>${fmt(xVal, d)}</strong>`;
+          workOut.textContent = `a×x = b×c\nx = (b×c)/a = (${B}×${C})/${A} = ${xVal}`;
+        }
+
+        if (U === "c"){
+          if (!Number.isFinite(A) || !Number.isFinite(B) || !Number.isFinite(X)){
+            banner.textContent = "Enter valid a, b, x.";
+            return;
+          }
+          if (B === 0) return bad("Cannot solve c when b = 0.");
+          const cVal = (A * X) / B;
+          resultOut.textContent = fmt(cVal, d);
+          ratioOut.textContent = `${fmt(A, d)}:${fmt(B, d)} = ${fmt(cVal, d)}:${fmt(X, d)}`;
+          fracOut.textContent = (B === 0) ? "∞" : fmt(A/B, d);
+          prettyOut.textContent = `${fmt(A,d)}:${fmt(B,d)} = c:${fmt(X,d)}  →  c = ${fmt(cVal,d)}`;
+          banner.classList.add("ok");
+          banner.innerHTML = `✅ c = <strong>${fmt(cVal, d)}</strong>`;
+          workOut.textContent = `a/b = c/x\nc = (a×x)/b = (${A}×${X})/${B} = ${cVal}`;
+        }
+
+        if (U === "b"){
+          if (!Number.isFinite(A) || !Number.isFinite(C) || !Number.isFinite(X)){
+            banner.textContent = "Enter valid a, c, x.";
+            return;
+          }
+          if (X === 0) return bad("Cannot solve b when x = 0.");
+          const bVal = (A * X) / C;
+          if (C === 0) return bad("Cannot solve b when c = 0.");
+          resultOut.textContent = fmt(bVal, d);
+          ratioOut.textContent = `${fmt(A, d)}:${fmt(bVal, d)} = ${fmt(C, d)}:${fmt(X, d)}`;
+          fracOut.textContent = (bVal === 0) ? "∞" : fmt(A/bVal, d);
+          prettyOut.textContent = `${fmt(A,d)}:b = ${fmt(C,d)}:${fmt(X,d)}  →  b = ${fmt(bVal,d)}`;
+          banner.classList.add("ok");
+          banner.innerHTML = `✅ b = <strong>${fmt(bVal, d)}</strong>`;
+          workOut.textContent = `a/b = c/x\nb = (a×x)/c = (${A}×${X})/${C} = ${bVal}`;
+        }
+
+        if (U === "a"){
+          if (!Number.isFinite(B) || !Number.isFinite(C) || !Number.isFinite(X)){
+            banner.textContent = "Enter valid b, c, x.";
+            return;
+          }
+          if (X === 0) return bad("Cannot solve a when x = 0.");
+          const aVal = (B * C) / X;
+          resultOut.textContent = fmt(aVal, d);
+          ratioOut.textContent = `${fmt(aVal, d)}:${fmt(B, d)} = ${fmt(C, d)}:${fmt(X, d)}`;
+          fracOut.textContent = (B === 0) ? "∞" : fmt(aVal/B, d);
+          prettyOut.textContent = `a:${fmt(B,d)} = ${fmt(C,d)}:${fmt(X,d)}  →  a = ${fmt(aVal,d)}`;
+          banner.classList.add("ok");
+          banner.innerHTML = `✅ a = <strong>${fmt(aVal, d)}</strong>`;
+          workOut.textContent = `a×x = b×c\na = (b×c)/x = (${B}×${C})/${X} = ${aVal}`;
+        }
+      }
+    }
+
+    // Events
+    tabs.addEventListener("click", (e) => {
+      const t = e.target.closest(".tab");
+      if (!t) return;
+      setMode(t.dataset.mode);
+    });
+
+    modeSel.addEventListener("change", () => setMode(modeSel.value));
+    decimalsSel.addEventListener("change", update);
+
+    [a1,b1,a2,b2,factor,unk,a3,b3,c3,x3].forEach(el => el.addEventListener("input", update));
+    unk.addEventListener("change", update);
+
+    btnReset.addEventListener("click", () => {
+      decimalsSel.value = "1";
+      setMode("simplify");
+      a1.value = 150; b1.value = 100;
+      a2.value = 3; b2.value = 5; factor.value = 2;
+      unk.value = "x";
+      a3.value = 2; b3.value = 3; c3.value = 10; x3.value = "";
+      update();
+      showToast("Reset");
+    });
+
+    btnCopy.addEventListener("click", async () => {
+      const text =
+        `Ratio & Proportion Calculator\n` +
+        `Mode: ${modeSel.options[modeSel.selectedIndex].text}\n` +
+        `Result: ${resultOut.textContent}\n` +
+        `Ratio: ${ratioOut.textContent}\n` +
+        `Link: ${window.location.href}`;
+
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast("Copied ✅");
+      }catch{
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        showToast("Copied ✅");
+      }
+    });
+
+    // Init
+    loadFromUrl();
+    setMode(modeSel.value);
+  </script>
+</body>
+</html>
