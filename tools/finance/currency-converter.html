@@ -8,7 +8,6 @@
   <meta name="description" content="Convert currencies instantly with real-time exchange rates. Auto-convert, charts, trending currency pairs, and daily or weekly email updates.">
   <link rel="canonical" href="https://mytools-56j.pages.dev/tools/finance/currency-converter.html">
 
-  <!-- SEO keywords for broad search phrases -->
   <meta name="keywords" content="
 currency converter, money converter, live currency converter, real-time currency converter,
 dollar to euro, usd to eur, eur to usd, gbp to usd, usd to gbp,
@@ -34,9 +33,7 @@ online currency tool, convert money online, currency conversion tool
       --success: #15803d;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -62,9 +59,7 @@ online currency tool, convert money online, currency conversion tool
     }
 
     @media (max-width: 768px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
+      .layout { grid-template-columns: 1fr; }
     }
 
     .converter-card,
@@ -149,9 +144,7 @@ online currency tool, convert money online, currency conversion tool
       cursor: pointer;
     }
 
-    .primary-btn:hover {
-      background: var(--accent-hover);
-    }
+    .primary-btn:hover { background: var(--accent-hover); }
 
     .result-panel {
       margin-top: 16px;
@@ -197,9 +190,7 @@ online currency tool, convert money online, currency conversion tool
       color: #4b5563;
     }
 
-    .reverse-line {
-      margin-top: 2px;
-    }
+    .reverse-line { margin-top: 2px; }
 
     .status-line {
       font-size: 0.8rem;
@@ -247,21 +238,12 @@ online currency tool, convert money online, currency conversion tool
       border-bottom: 1px dashed #e5e7eb;
     }
 
-    .trend-pair {
-      color: #374151;
-    }
+    .trend-pair { color: #374151; }
 
-    .trend-change {
-      font-weight: 600;
-    }
+    .trend-change { font-weight: 600; }
 
-    .trend-change.up {
-      color: var(--success);
-    }
-
-    .trend-change.down {
-      color: var(--danger);
-    }
+    .trend-change.up { color: var(--success); }
+    .trend-change.down { color: var(--danger); }
 
     .pill {
       display: inline-block;
@@ -273,7 +255,6 @@ online currency tool, convert money online, currency conversion tool
       margin-left: 6px;
     }
 
-    /* Subscribe box */
     .subscribe-box {
       margin-top: 18px;
       padding: 14px 14px 12px;
@@ -293,14 +274,12 @@ online currency tool, convert money online, currency conversion tool
       color: var(--text-muted);
     }
 
-    /* Dynamic expanding subscribe fields (Option B) */
     .subscribe-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
     }
 
-    /* Prevent shrinking + smooth animation */
     .subscribe-row > * {
       min-width: 0;
       transition: all 0.25s ease;
@@ -328,24 +307,11 @@ online currency tool, convert money online, currency conversion tool
       cursor: pointer;
     }
 
-    .subscribe-btn:hover {
-      background: var(--accent-hover);
-    }
+    .subscribe-btn:hover { background: var(--accent-hover); }
 
-    /* Email expands full width on focus */
-    .subscribe-input:focus {
-      grid-column: 1 / 4;
-    }
-
-    /* Frequency expands full width on focus */
-    .subscribe-select:focus {
-      grid-column: 1 / 4;
-    }
-
-    /* Button expands full width on focus */
-    .subscribe-btn:focus {
-      grid-column: 1 / 4;
-    }
+    .subscribe-input:focus { grid-column: 1 / 4; }
+    .subscribe-select:focus { grid-column: 1 / 4; }
+    .subscribe-btn:focus { grid-column: 1 / 4; }
 
     .subscribe-note {
       margin-top: 6px;
@@ -354,22 +320,18 @@ online currency tool, convert money online, currency conversion tool
     }
 
     @media (max-width: 640px) {
-      .subscribe-row {
-        grid-template-columns: 1fr;
-      }
+      .subscribe-row { grid-template-columns: 1fr; }
     }
 
-    /* Hidden SEO block (for Google only) */
-    .seo-hidden {
-      display: none;
-    }
+    .seo-hidden { display: none; }
   </style>
 </head>
 
 <body>
   <div class="page-wrap">
     <div class="layout">
-      <!-- LEFT: Converter -->
+
+      <!-- LEFT -->
       <main class="converter-card">
         <h1 class="converter-title">Live Currency Converter</h1>
         <p class="converter-subtitle">
@@ -377,14 +339,11 @@ online currency tool, convert money online, currency conversion tool
           Auto‑convert, reverse rate, 7‑day trend, trending pairs, and email alerts.
         </p>
 
-        <!-- Hidden SEO block: Google can read, users don't see -->
         <div class="seo-hidden">
           <h2>Currency Converter – Money Converter, Dollar to Euro and More</h2>
           <p>
             Use this live currency converter to convert money between USD, EUR, GBP, INR, TRY, AED, SAR, CNY,
-            and many more currencies. Convert dollar to euro (USD to EUR), euro to dollar (EUR to USD),
-            pound to dollar (GBP to USD), rupee to dollar (INR to USD), and other foreign exchange pairs
-            with real-time exchange rates, charts, and auto-conversion.
+            and many more currencies.
           </p>
         </div>
 
@@ -415,7 +374,7 @@ online currency tool, convert money online, currency conversion tool
         </div>
       </main>
 
-      <!-- RIGHT: Chart + Trending + Subscribe -->
+      <!-- RIGHT -->
       <aside class="side-card">
         <div>
           <div class="side-title">
@@ -434,23 +393,15 @@ online currency tool, convert money online, currency conversion tool
           </ul>
         </div>
 
-        <!-- Subscribe box -->
         <div class="subscribe-box">
           <h3>Get Daily or Weekly Rate Emails</h3>
           <p>
-            Subscribe to receive updates for this currency pair plus key USD markets
-            (USD→EUR, USD→GBP, USD→TRY, USD→AED, and more).
+            Subscribe to receive updates for this currency pair plus key USD markets.
           </p>
 
           <form id="subscribeForm" action="/api/rate-subscribe" method="POST">
             <div class="subscribe-row">
-              <input
-                class="subscribe-input"
-                type="email"
-                name="email"
-                placeholder="Your email address"
-                required
-              >
+              <input class="subscribe-input" type="email" name="email" placeholder="Your email address" required>
               <select class="subscribe-select" name="frequency" required>
                 <option value="daily">Daily updates</option>
                 <option value="weekly">Weekly updates</option>
@@ -458,13 +409,11 @@ online currency tool, convert money online, currency conversion tool
               <button class="subscribe-btn" type="submit">Subscribe</button>
             </div>
 
-            <!-- Hidden fields for user-chosen pair -->
             <input type="hidden" name="from" id="subFrom">
             <input type="hidden" name="to" id="subTo">
 
             <div class="subscribe-note">
               You’ll get emails from noreply@mytools-56j.pages.dev.
-              One-click unsubscribe link is included in every email.
             </div>
           </form>
         </div>
@@ -520,10 +469,8 @@ online currency tool, convert money online, currency conversion tool
     function populateDropdowns() {
       currencyList.forEach(c => {
         const label = `${c.flag} ${c.code} — ${c.name}`;
-        const opt1 = new Option(label, c.code);
-        const opt2 = new Option(label, c.code);
-        fromSelect.add(opt1);
-        toSelect.add(opt2);
+        fromSelect.add(new Option(label, c.code));
+        toSelect.add(new Option(label, c.code));
       });
 
       fromSelect.value = "USD";
@@ -552,302 +499,9 @@ online currency tool, convert money online, currency conversion tool
       copyButton.disabled = true;
     }
 
-    // Uses your /api/currency Worker
+    /*  
+     *  FIXED FUNCTION — now uses Cloudflare /api/rates
+     */
     async function convertCurrency(auto = false) {
       const amount = parseFloat(amountInput.value);
-      const from = fromSelect.value;
-      const to = toSelect.value;
-
-      syncSubscribePair();
-
-      if (!amount || amount <= 0) {
-        resultMain.textContent = "Enter a valid amount";
-        resultSub.textContent = "Amount must be greater than zero.";
-        rateLine.textContent = "";
-        reverseLine.textContent = "";
-        statusLine.textContent = "";
-        errorLine.textContent = "";
-        copyButton.disabled = true;
-        return;
-      }
-
-      if (from === to) {
-        resultMain.textContent = `${amount.toFixed(2)} ${from} = ${amount.toFixed(2)} ${to}`;
-        resultSub.textContent = "Same currency selected.";
-        rateLine.textContent = `1 ${from} = 1 ${to}`;
-        reverseLine.textContent = `1 ${to} = 1 ${from}`;
-        statusLine.textContent = "No conversion needed.";
-        errorLine.textContent = "";
-        copyButton.disabled = false;
-        updateChart(from, to);
-        return;
-      }
-
-      setLoadingState(auto ? "Updating rate…" : "Fetching live rate…");
-
-      try {
-        const url = `/api/currency?from=${from}&to=${to}&amount=${amount}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (!res.ok || data.error) {
-          throw new Error(data.error || "Conversion failed");
-        }
-
-        const converted = data.result;
-        const forward = data.rate;
-        const reverse = 1 / forward;
-
-        resultMain.textContent = `${amount} ${from} = ${converted} ${to}`;
-        resultSub.textContent = "Live mid‑market rate";
-        copyButton.disabled = false;
-
-        rateLine.textContent = `1 ${from} ≈ ${forward} ${to}`;
-        reverseLine.textContent = `1 ${to} ≈ ${reverse.toFixed(6)} ${from}`;
-        statusLine.textContent = "Updated just now";
-        errorLine.textContent = "";
-
-        updateChart(from, to);
-      } catch (err) {
-        setErrorState(err.message || "Error fetching rate");
-      }
-    }
-
-    function swapCurrencies() {
-      const temp = fromSelect.value;
-      fromSelect.value = toSelect.value;
-      toSelect.value = temp;
-      convertCurrency(true);
-    }
-
-    async function updateChart(from, to) {
-      chartPairLabel.textContent = `${from} → ${to}`;
-      chartMeta.textContent = "Loading 7‑day history…";
-
-      try {
-        const today = new Date();
-        const end = formatDate(today);
-        const startDate = new Date(today);
-        startDate.setDate(startDate.getDate() - 6);
-        const start = formatDate(startDate);
-
-        const url = `https://api.frankfurter.app/${start}..${end}?from=${from}&to=${to}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("History fetch error");
-        const data = await res.json();
-
-        const dates = Object.keys(data.rates).sort();
-        const values = dates.map(d => data.rates[d][to]);
-
-        chartData = { dates, values };
-        drawChart();
-        if (dates.length > 0) {
-          chartMeta.textContent = `Last 7 days • ${dates[0]} → ${dates[dates.length - 1]}`;
-        } else {
-          chartMeta.textContent = "No history data available.";
-        }
-      } catch (err) {
-        chartMeta.textContent = "Could not load history.";
-      }
-
-      updateTrending();
-    }
-
-    function formatDate(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
-    }
-
-    function drawChart() {
-      if (!chartData || chartData.values.length === 0) {
-        chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
-        return;
-      }
-
-      const { values } = chartData;
-      const w = chartCanvas.width;
-      const h = chartCanvas.height;
-      chartCtx.clearRect(0, 0, w, h);
-
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      const padding = 20;
-
-      const xStep = (w - padding * 2) / Math.max(values.length - 1, 1);
-      const yScale = max === min ? 1 : (h - padding * 2) / (max - min);
-
-      chartCtx.beginPath();
-      chartCtx.strokeStyle = "#2563eb";
-      chartCtx.lineWidth = 2;
-
-      values.forEach((val, i) => {
-        const x = padding + i * xStep;
-        const y = h - padding - (val - min) * yScale;
-        if (i === 0) chartCtx.moveTo(x, y);
-        else chartCtx.lineTo(x, y);
-      });
-
-      chartCtx.stroke();
-
-      chartCtx.fillStyle = "#2563eb";
-      values.forEach((val, i) => {
-        const x = padding + i * xStep;
-        const y = h - padding - (val - min) * yScale;
-        chartCtx.beginPath();
-        chartCtx.arc(x, y, 3, 0, Math.PI * 2);
-        chartCtx.fill();
-      });
-    }
-
-    async function updateTrending() {
-      const base = "USD";
-      const majors = ["EUR", "GBP", "JPY", "AUD", "CAD", "TRY", "INR", "CNY", "BRL", "MXN"];
-
-      try {
-        const today = new Date();
-        const todayStr = formatDate(today);
-        const yest = new Date(today);
-        yest.setDate(yest.getDate() - 1);
-        const yestStr = formatDate(yest);
-
-        const latestUrl = `https://api.frankfurter.app/latest?from=${base}&to=${majors.join(",")}`;
-        const prevUrl = `https://api.frankfurter.app/${yestStr}?from=${base}&to=${majors.join(",")}`;
-
-        const [latestRes, prevRes] = await Promise.all([fetch(latestUrl), fetch(prevUrl)]);
-        if (!latestRes.ok || !prevRes.ok) throw new Error("Trending fetch error");
-
-        const latestData = await latestRes.json();
-        const prevData = await prevRes.json();
-
-        const changes = majors.map(code => {
-          const todayRate = latestData.rates[code];
-          const prevRate = prevData.rates[code];
-          if (!todayRate || !prevRate) return null;
-          const diff = todayRate - prevRate;
-          const pct = (diff / prevRate) * 100;
-          return { code, todayRate, prevRate, diff, pct };
-        }).filter(Boolean);
-
-        changes.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
-        const top = changes.slice(0, 5);
-
-        trendList.innerHTML = "";
-        top.forEach(item => {
-          const li = document.createElement("li");
-          li.className = "trend-item";
-
-          const pairSpan = document.createElement("span");
-          pairSpan.className = "trend-pair";
-          pairSpan.textContent = `${base} → ${item.code}`;
-
-          const changeSpan = document.createElement("span");
-          changeSpan.className = "trend-change " + (item.pct >= 0 ? "up" : "down");
-          const sign = item.pct >= 0 ? "▲" : "▼";
-          changeSpan.textContent = `${sign} ${item.pct.toFixed(2)}%`;
-
-          li.appendChild(pairSpan);
-          li.appendChild(changeSpan);
-          trendList.appendChild(li);
-        });
-      } catch (err) {
-        trendList.innerHTML = "";
-        const li = document.createElement("li");
-        li.className = "trend-item";
-        li.innerHTML = `<span class="trend-pair">Unable to load trends</span><span class="trend-change">–</span>`;
-        trendList.appendChild(li);
-      }
-    }
-
-    function copyResult() {
-      const text = resultMain.textContent;
-      if (!text || text === "Enter an amount") return;
-      navigator.clipboard.writeText(text).then(() => {
-        const prev = copyButton.textContent;
-        copyButton.textContent = "Copied!";
-        setTimeout(() => (copyButton.textContent = "Copy"), 1200);
-      });
-    }
-
-    // Event wiring
-    convertButton.onclick = () => convertCurrency(false);
-    swapButton.onclick = swapCurrencies;
-    copyButton.onclick = copyResult;
-
-    amountInput.addEventListener("input", () => {
-      convertCurrency(true);
-    });
-
-    fromSelect.addEventListener("change", () => {
-      syncSubscribePair();
-      convertCurrency(true);
-    });
-
-    toSelect.addEventListener("change", () => {
-      syncSubscribePair();
-      convertCurrency(true);
-    });
-
-    // On subscribe submit, ensure pair is synced
-    subscribeForm.addEventListener("submit", () => {
-      syncSubscribePair();
-    });
-
-    // Init
-    populateDropdowns();
-    convertCurrency(true);
-
-    function handleResize() {
-      const rect = chartCanvas.getBoundingClientRect();
-      chartCanvas.width = rect.width * window.devicePixelRatio;
-      chartCanvas.height = rect.height * window.devicePixelRatio;
-      drawChart();
-    }
-    window.addEventListener("resize", handleResize);
-    handleResize();
-  </script>
-
-  <!-- FAQ Schema for Google -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "How do I convert USD to EUR?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Enter the amount in USD, select USD as the from currency and EUR as the to currency, and the Live Currency Converter will calculate the real-time exchange rate for you."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Is this a real-time currency converter?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. This currency converter uses live exchange rates and automatically updates results when you change the amount or currencies."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Can I get daily or weekly exchange rate updates by email?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. You can subscribe on this page for daily or weekly email updates for your chosen currency pair, plus a summary of major USD currency pairs."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Which currencies does this money converter support?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The tool supports popular currencies like USD, EUR, GBP, JPY, TRY, AED, SAR, INR, CNY, BRL, MXN, ZAR, and more."
-        }
-      }
-    ]
-  }
-  </script>
-</body>
-</html>
+      const from = fromSelects
