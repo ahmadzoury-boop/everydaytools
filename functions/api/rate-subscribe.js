@@ -4,70 +4,83 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-function json(data, status = 200, extraHeaders = {}) {
+function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: {
-      ...corsHeaders,
-      "Content-Type": "application/json",
-      ...extraHeaders,
-    },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
 
 export function onRequestOptions() {
-  // CORS preflight
   return new Response(null, { status: 204, headers: corsHeaders });
 }
 
-export async function onRequest(context) {
-  try {
-    const { request, env } = context;
+export async function onRequest({ request, env }) {
+  // ⚠️ Version marker to confirm deployment
+  const VERSION = "rate-subscribe-vDEBUG-2026-01-01";
 
-    // Allow only POST
+  try {
     if (request.method !== "POST") {
-      return json({ success: false, error: "POST only" }, 405);
+      return json({ success: false, error: "POST only", version: VERSION }, 405);
     }
 
-    // Ensure KV binding exists
     if (!env?.SUBSCRIBERS || typeof env.SUBSCRIBERS.put !== "function") {
       return json(
         {
           success: false,
-          error:
-            "Server misconfiguration: KV binding 'SUBSCRIBERS' is missing. Check Pages/Workers bindings.",
+          error: "Missing KV binding: SUBSCRIBERS",
+          version: VERSION,
         },
         500
       );
     }
 
-    // Parse body safely (JSON OR form-data)
     const ct = (request.headers.get("content-type") || "").toLowerCase();
+
+    // Read raw body once (works no matter what frontend sends)
+    const raw = await request.text().catch(() => "");
+    const rawTrim = raw.trim();
+
     let data = null;
 
-    if (ct.includes("application/json")) {
-      data = await request.json().catch(() => null);
-    } else if (
-      ct.includes("application/x-www-form-urlencoded") ||
-      ct.includes("multipart/form-data")
+    // If it looks like JSON, parse it
+    if (rawTrim.startsWith("{") || rawTrim.startsWith("[")) {
+      try {
+        data = JSON.parse(rawTrim);
+      } catch {
+        data = null;
+      }
+    } else {
+      // Otherwise try form-urlencoded (even if Content-Type is missing/wrong)
+      const params = new URLSearchParams(raw);
+      if ([...params.keys()].length) {
+        data = Object.fromEntries(params.entries());
+      }
+    }
+
+    // If Content-Type says form-data/urlencoded, also try formData()
+    // (Sometimes request.text() gives empty for certain multi-part edge cases)
+    if (
+      !data &&
+      (ct.includes("multipart/form-data") ||
+        ct.includes("application/x-www-form-urlencoded"))
     ) {
       const fd = await request.formData().catch(() => null);
       if (fd) data = Object.fromEntries(fd.entries());
-    } else {
-      // fallback: try text -> JSON
-      const text = await request.text().catch(() => "");
-      if (text) {
-        try {
-          data = JSON.parse(text);
-        } catch {
-          data = null;
-        }
-      }
     }
 
     if (!data) {
       return json(
-        { success: false, error: "Invalid JSON or empty request body" },
+        {
+          success: false,
+          error: "Invalid body (not JSON or form-urlencoded)",
+          version: VERSION,
+          debug: {
+            contentType: ct || "(missing)",
+            rawLength: raw.length,
+            rawPreview: raw.slice(0, 200),
+          },
+        },
         400
       );
     }
@@ -78,31 +91,22 @@ export async function onRequest(context) {
     const to = data.to ?? null;
 
     if (!email) {
-      return json({ success: false, error: "Email is required" }, 400);
+      return json({ success: false, error: "Email is required", version: VERSION }, 400);
     }
 
-    // Basic email validation
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!emailOk) {
-      return json({ success: false, error: "Invalid email" }, 400);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return json({ success: false, error: "Invalid email", version: VERSION }, 400);
     }
 
-    // Store in KV
     await env.SUBSCRIBERS.put(
       email,
-      JSON.stringify({
-        email,
-        frequency,
-        from,
-        to,
-        subscribedAt: Date.now(),
-      })
+      JSON.stringify({ email, frequency, from, to, subscribedAt: Date.now() })
     );
 
-    return json({ success: true }, 200);
+    return json({ success: true, version: VERSION }, 200);
   } catch (err) {
     return json(
-      { success: false, error: err?.message || "Server error" },
+      { success: false, error: err?.message || "Server error", version: VERSION },
       500
     );
   }
