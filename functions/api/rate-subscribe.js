@@ -42,10 +42,14 @@ export async function onRequest({ request, env }) {
     const to = data.to || "EUR";
 
     if (!email) return json({ success: false, error: "Email required" }, 400);
-    if (!env.SUBSCRIBERS)
+
+    if (!env.SUBSCRIBERS) {
       return json({ success: false, error: "Missing KV binding: SUBSCRIBERS" }, 500);
-    if (!env.RESEND_API_KEY)
+    }
+
+    if (!env.RESEND_API_KEY) {
       return json({ success: false, error: "Missing secret: RESEND_API_KEY" }, 500);
+    }
 
     // ---- Store in KV ----
     await env.SUBSCRIBERS.put(
@@ -70,7 +74,8 @@ export async function onRequest({ request, env }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "noreply@everydaytools.uk",
+        // ✅ Use the verified sending subdomain
+        from: "Everyday Tools <noreply@send.everydaytools.uk>",
         to: email,
         subject,
         html,
@@ -78,13 +83,18 @@ export async function onRequest({ request, env }) {
     });
 
     if (!sendRes.ok) {
-      const errText = await sendRes.text();
-      console.error("Email error:", errText);
-      return json({ success: true, warning: "Subscribed but email not sent" });
+      const errText = await sendRes.text().catch(() => "");
+      console.error("Resend email error:", errText);
+
+      // Return the reason so you can see it on the frontend/network tab
+      return json(
+        { success: true, warning: "Subscribed but email not sent", resend_error: errText },
+        200
+      );
     }
 
     return json({ success: true });
   } catch (err) {
-    return json({ success: false, error: err.message || "Server error" }, 500);
+    return json({ success: false, error: err?.message || "Server error" }, 500);
   }
 }
