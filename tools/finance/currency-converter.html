@@ -361,7 +361,6 @@ online currency tool, convert money online, currency conversion tool
     }
   </style>
 </head>
-
 <body>
   <div class="page-wrap">
     <div class="layout">
@@ -426,7 +425,10 @@ online currency tool, convert money online, currency conversion tool
             Trending pairs <span class="pill">vs USD (24h)</span>
           </div>
           <ul id="trendList" class="trend-list">
-            <li class="trend-item"><span class="trend-pair">Loading...</span><span class="trend-change">–</span></li>
+            <li class="trend-item">
+              <span class="trend-pair">Loading...</span>
+              <span class="trend-change">–</span>
+            </li>
           </ul>
         </div>
 
@@ -448,7 +450,6 @@ online currency tool, convert money online, currency conversion tool
                 required
               >
               <select class="subscribe-select" id="currency-frequency" required>
-
                 <option value="daily">Daily updates</option>
                 <option value="weekly">Weekly updates</option>
               </select>
@@ -510,9 +511,6 @@ online currency tool, convert money online, currency conversion tool
     const subscribeForm = document.getElementById("subscribeForm");
     const subFromInput = document.getElementById("subFrom");
     const subToInput = document.getElementById("subTo");
- fromSelect.addEventListener("change", syncSubscribePair);
- toSelect.addEventListener("change", syncSubscribePair);
- amountInput.addEventListener("input", syncSubscribePair);
 
     let chartCtx = chartCanvas.getContext("2d");
     let chartData = null;
@@ -721,14 +719,16 @@ online currency tool, convert money online, currency conversion tool
         const latestData = await latestRes.json();
         const prevData = await prevRes.json();
 
-        const changes = majors.map(code => {
-          const todayRate = latestData.rates[code];
-          const prevRate = prevData.rates[code];
-          if (!todayRate || !prevRate) return null;
-          const diff = todayRate - prevRate;
-          const pct = (diff / prevRate) * 100;
-          return { code, todayRate, prevRate, diff, pct };
-        }).filter(Boolean);
+        const changes = majors
+          .map(code => {
+            const todayRate = latestData.rates[code];
+            const prevRate = prevData.rates[code];
+            if (!todayRate || !prevRate) return null;
+            const diff = todayRate - prevRate;
+            const pct = (diff / prevRate) * 100;
+            return { code, todayRate, prevRate, diff, pct };
+          })
+          .filter(Boolean);
 
         changes.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
         const top = changes.slice(0, 5);
@@ -789,10 +789,33 @@ online currency tool, convert money online, currency conversion tool
       convertCurrency(true);
     });
 
-    // On subscribe submit, ensure pair is synced
-    subscribeForm.addEventListener("submit", () => {
-      syncSubscribePair();
-    });
+    // STEP 6 — Handle subscription (correct, async, in main script)
+    if (subscribeForm) {
+      subscribeForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Keep hidden pair fields synced
+        syncSubscribePair();
+
+        const email = document.getElementById("currency-email").value;
+        const frequency = document.getElementById("currency-frequency").value;
+        const from = subFromInput.value;
+        const to = subToInput.value;
+
+        try {
+          const res = await fetch("/api/rate-subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, frequency, from, to })
+          });
+
+          const data = await res.json();
+          console.log("Subscription response:", data);
+        } catch (err) {
+          console.error("Subscription error:", err);
+        }
+      });
+    }
 
     // Init
     populateDropdowns();
@@ -848,31 +871,6 @@ online currency tool, convert money online, currency conversion tool
       }
     ]
   }
-  // STEP 6 — Handle subscription
-if (subscribeForm) {
-  subscribeForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById("currency-email").value;
-    const frequency = document.getElementById("currency-frequency").value;
-    const from = subFromInput.value;
-    const to = subToInput.value;
-
-    try {
-      const res = await fetch("/api/rate-subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, frequency, from, to })
-      });
-
-      const data = await res.json();
-      console.log("Subscription response:", data);
-    } catch (err) {
-      console.error("Subscription error:", err);
-    }
-  });
-}
-
   </script>
 </body>
 </html>
