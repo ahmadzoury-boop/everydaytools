@@ -75,7 +75,8 @@ export async function onRequest({ request, env }) {
       },
       body: JSON.stringify({
         // ✅ Use the verified sending subdomain
-        from: "Everyday Tools <noreply@send.everydaytools.uk>",
+       from: "Everyday Tools <noreply@everydaytools.uk>",
+
         to: email,
         subject,
         html,
