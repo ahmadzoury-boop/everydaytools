@@ -16,98 +16,75 @@ export function onRequestOptions() {
 }
 
 export async function onRequest({ request, env }) {
-  // ⚠️ Version marker to confirm deployment
-  const VERSION = "rate-subscribe-vDEBUG-2026-01-01";
-
   try {
     if (request.method !== "POST") {
-      return json({ success: false, error: "POST only", version: VERSION }, 405);
+      return json({ success: false, error: "POST only" }, 405);
     }
 
-    if (!env?.SUBSCRIBERS || typeof env.SUBSCRIBERS.put !== "function") {
-      return json(
-        {
-          success: false,
-          error: "Missing KV binding: SUBSCRIBERS",
-          version: VERSION,
-        },
-        500
-      );
-    }
-
+    // ---- Parse the body ----
     const ct = (request.headers.get("content-type") || "").toLowerCase();
-
-    // Read raw body once (works no matter what frontend sends)
-    const raw = await request.text().catch(() => "");
-    const rawTrim = raw.trim();
-
     let data = null;
 
-    // If it looks like JSON, parse it
-    if (rawTrim.startsWith("{") || rawTrim.startsWith("[")) {
-      try {
-        data = JSON.parse(rawTrim);
-      } catch {
-        data = null;
-      }
+    if (ct.includes("application/json")) {
+      data = await request.json().catch(() => null);
     } else {
-      // Otherwise try form-urlencoded (even if Content-Type is missing/wrong)
-      const params = new URLSearchParams(raw);
-      if ([...params.keys()].length) {
-        data = Object.fromEntries(params.entries());
-      }
-    }
-
-    // If Content-Type says form-data/urlencoded, also try formData()
-    // (Sometimes request.text() gives empty for certain multi-part edge cases)
-    if (
-      !data &&
-      (ct.includes("multipart/form-data") ||
-        ct.includes("application/x-www-form-urlencoded"))
-    ) {
-      const fd = await request.formData().catch(() => null);
-      if (fd) data = Object.fromEntries(fd.entries());
+      const form = await request.formData().catch(() => null);
+      if (form) data = Object.fromEntries(form.entries());
     }
 
     if (!data) {
-      return json(
-        {
-          success: false,
-          error: "Invalid body (not JSON or form-urlencoded)",
-          version: VERSION,
-          debug: {
-            contentType: ct || "(missing)",
-            rawLength: raw.length,
-            rawPreview: raw.slice(0, 200),
-          },
-        },
-        400
-      );
+      return json({ success: false, error: "Invalid request body" }, 400);
     }
 
     const email = String(data.email || "").trim().toLowerCase();
-    const frequency = data.frequency ?? null;
-    const from = data.from ?? null;
-    const to = data.to ?? null;
+    const frequency = data.frequency || "daily";
+    const from = data.from || "USD";
+    const to = data.to || "EUR";
 
-    if (!email) {
-      return json({ success: false, error: "Email is required", version: VERSION }, 400);
-    }
+    if (!email) return json({ success: false, error: "Email required" }, 400);
+    if (!env.SUBSCRIBERS)
+      return json({ success: false, error: "Missing KV binding: SUBSCRIBERS" }, 500);
+    if (!env.RESEND_API_KEY)
+      return json({ success: false, error: "Missing secret: RESEND_API_KEY" }, 500);
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return json({ success: false, error: "Invalid email", version: VERSION }, 400);
-    }
-
+    // ---- Store in KV ----
     await env.SUBSCRIBERS.put(
       email,
       JSON.stringify({ email, frequency, from, to, subscribedAt: Date.now() })
     );
 
-    return json({ success: true, version: VERSION }, 200);
+    // ---- Send confirmation email through Resend ----
+    const subject = "You're subscribed to currency updates!";
+    const html = `
+      <h2>Subscription Confirmed ✅</h2>
+      <p>Hello!</p>
+      <p>You’ll now receive <strong>${frequency}</strong> exchange-rate updates for
+      <strong>${from} → ${to}</strong>.</p>
+      <p>— Everyday Tools Team</p>
+    `;
+
+    const sendRes = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "noreply@everydaytools.uk",
+        to: email,
+        subject,
+        html,
+      }),
+    });
+
+    if (!sendRes.ok) {
+      const errText = await sendRes.text();
+      console.error("Email error:", errText);
+      return json({ success: true, warning: "Subscribed but email not sent" });
+    }
+
+    return json({ success: true });
   } catch (err) {
-    return json(
-      { success: false, error: err?.message || "Server error", version: VERSION },
-      500
-    );
+    return json({ success: false, error: err.message || "Server error" }, 500);
   }
 }
