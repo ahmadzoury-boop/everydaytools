@@ -443,11 +443,12 @@ online currency tool, convert money online, currency conversion tool
               <input
                 class="subscribe-input"
                 type="email"
-                name="email"
+                id="currency-email"
                 placeholder="Your email address"
                 required
               >
-              <select class="subscribe-select" name="frequency" required>
+              <select class="subscribe-select" id="currency-frequency" required>
+
                 <option value="daily">Daily updates</option>
                 <option value="weekly">Weekly updates</option>
               </select>
@@ -455,8 +456,8 @@ online currency tool, convert money online, currency conversion tool
             </div>
 
             <!-- Hidden fields for user-chosen pair -->
-            <input type="hidden" name="from" id="subFrom">
-            <input type="hidden" name="to" id="subTo">
+            <input type="hidden" id="subFrom">
+            <input type="hidden" id="subTo">
 
             <div class="subscribe-note">
               You’ll get emails from noreply@mytools-56j.pages.dev.
@@ -509,6 +510,9 @@ online currency tool, convert money online, currency conversion tool
     const subscribeForm = document.getElementById("subscribeForm");
     const subFromInput = document.getElementById("subFrom");
     const subToInput = document.getElementById("subTo");
+ fromSelect.addEventListener("change", syncSubscribePair);
+ toSelect.addEventListener("change", syncSubscribePair);
+ amountInput.addEventListener("input", syncSubscribePair);
 
     let chartCtx = chartCanvas.getContext("2d");
     let chartData = null;
@@ -844,6 +848,31 @@ online currency tool, convert money online, currency conversion tool
       }
     ]
   }
+  // STEP 6 — Handle subscription
+if (subscribeForm) {
+  subscribeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("currency-email").value;
+    const frequency = document.getElementById("currency-frequency").value;
+    const from = subFromInput.value;
+    const to = subToInput.value;
+
+    try {
+      const res = await fetch("/api/rate-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, frequency, from, to })
+      });
+
+      const data = await res.json();
+      console.log("Subscription response:", data);
+    } catch (err) {
+      console.error("Subscription error:", err);
+    }
+  });
+}
+
   </script>
 </body>
 </html>
