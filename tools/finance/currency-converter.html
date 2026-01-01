@@ -6,7 +6,9 @@
 
   <title>Live Currency Converter | Real-Time Exchange Rates</title>
   <meta name="description" content="Convert currencies instantly with real-time exchange rates. Auto-convert, charts, trending currency pairs, and daily or weekly email updates.">
-  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/finance/currency-converter.html">
+
+  <!-- ✅ Fix canonical to your real domain/page -->
+  <link rel="canonical" href="https://everydaytools.uk/tools/finance/currency-converter">
 
   <!-- SEO keywords for broad search phrases -->
   <meta name="keywords" content="
@@ -34,9 +36,7 @@ online currency tool, convert money online, currency conversion tool
       --success: #15803d;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -62,9 +62,7 @@ online currency tool, convert money online, currency conversion tool
     }
 
     @media (max-width: 768px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
+      .layout { grid-template-columns: 1fr; }
     }
 
     .converter-card,
@@ -149,9 +147,7 @@ online currency tool, convert money online, currency conversion tool
       cursor: pointer;
     }
 
-    .primary-btn:hover {
-      background: var(--accent-hover);
-    }
+    .primary-btn:hover { background: var(--accent-hover); }
 
     .result-panel {
       margin-top: 16px;
@@ -197,9 +193,7 @@ online currency tool, convert money online, currency conversion tool
       color: #4b5563;
     }
 
-    .reverse-line {
-      margin-top: 2px;
-    }
+    .reverse-line { margin-top: 2px; }
 
     .status-line {
       font-size: 0.8rem;
@@ -247,21 +241,13 @@ online currency tool, convert money online, currency conversion tool
       border-bottom: 1px dashed #e5e7eb;
     }
 
-    .trend-pair {
-      color: #374151;
-    }
+    .trend-pair { color: #374151; }
 
-    .trend-change {
-      font-weight: 600;
-    }
+    .trend-change { font-weight: 600; }
 
-    .trend-change.up {
-      color: var(--success);
-    }
+    .trend-change.up { color: var(--success); }
 
-    .trend-change.down {
-      color: var(--danger);
-    }
+    .trend-change.down { color: var(--danger); }
 
     .pill {
       display: inline-block;
@@ -293,7 +279,6 @@ online currency tool, convert money online, currency conversion tool
       color: var(--text-muted);
     }
 
-    /* Dynamic expanding subscribe fields (Option B) */
     .subscribe-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -327,21 +312,11 @@ online currency tool, convert money online, currency conversion tool
       cursor: pointer;
     }
 
-    .subscribe-btn:hover {
-      background: var(--accent-hover);
-    }
+    .subscribe-btn:hover { background: var(--accent-hover); }
 
-    .subscribe-input:focus {
-      grid-column: 1 / 4;
-    }
-
-    .subscribe-select:focus {
-      grid-column: 1 / 4;
-    }
-
-    .subscribe-btn:focus {
-      grid-column: 1 / 4;
-    }
+    .subscribe-input:focus { grid-column: 1 / 4; }
+    .subscribe-select:focus { grid-column: 1 / 4; }
+    .subscribe-btn:focus { grid-column: 1 / 4; }
 
     .subscribe-note {
       margin-top: 6px;
@@ -349,16 +324,20 @@ online currency tool, convert money online, currency conversion tool
       color: var(--text-muted);
     }
 
+    /* ✅ Visible status message for subscription */
+    .subscribe-status {
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+    .subscribe-status.ok { color: var(--success); }
+    .subscribe-status.bad { color: var(--danger); }
+    .subscribe-status.muted { color: var(--text-muted); }
+
     @media (max-width: 640px) {
-      .subscribe-row {
-        grid-template-columns: 1fr;
-      }
+      .subscribe-row { grid-template-columns: 1fr; }
     }
 
-    /* Hidden SEO block (for Google only) */
-    .seo-hidden {
-      display: none;
-    }
+    .seo-hidden { display: none; }
   </style>
 </head>
 <body>
@@ -369,10 +348,9 @@ online currency tool, convert money online, currency conversion tool
         <h1 class="converter-title">Live Currency Converter</h1>
         <p class="converter-subtitle">
           Convert currencies instantly using real-time exchange rates.
-          Auto‑convert, reverse rate, 7‑day trend, trending pairs, and email alerts.
+          Auto-convert, reverse rate, 7-day trend, trending pairs, and email alerts.
         </p>
 
-        <!-- Hidden SEO block: Google can read, users don't see -->
         <div class="seo-hidden">
           <h2>Currency Converter – Money Converter, Dollar to Euro and More</h2>
           <p>
@@ -414,7 +392,7 @@ online currency tool, convert money online, currency conversion tool
       <aside class="side-card">
         <div>
           <div class="side-title">
-            7‑day rate trend <span id="chartPairLabel" class="pill">USD → EUR</span>
+            7-day rate trend <span id="chartPairLabel" class="pill">USD → EUR</span>
           </div>
           <canvas id="rateChart" class="chart-canvas"></canvas>
           <div id="chartMeta" class="chart-meta"></div>
@@ -440,30 +418,34 @@ online currency tool, convert money online, currency conversion tool
             (USD→EUR, USD→GBP, USD→TRY, USD→AED, and more).
           </p>
 
+          <!-- ✅ Keep action for fallback, but JS handles it -->
           <form id="subscribeForm" action="/api/rate-subscribe" method="POST">
             <div class="subscribe-row">
               <input
                 class="subscribe-input"
                 type="email"
                 id="currency-email"
+                name="email"
                 placeholder="Your email address"
                 required
               >
-              <select class="subscribe-select" id="currency-frequency" required>
+              <select class="subscribe-select" id="currency-frequency" name="frequency" required>
                 <option value="daily">Daily updates</option>
                 <option value="weekly">Weekly updates</option>
               </select>
-              <button class="subscribe-btn" type="submit">Subscribe</button>
+              <button class="subscribe-btn" id="subscribeBtn" type="submit">Subscribe</button>
             </div>
 
-            <!-- Hidden fields for user-chosen pair -->
-            <input type="hidden" id="subFrom">
-            <input type="hidden" id="subTo">
+            <!-- ✅ Hidden fields with NAME so fallback form submit also includes them -->
+            <input type="hidden" id="subFrom" name="from">
+            <input type="hidden" id="subTo" name="to">
 
             <div class="subscribe-note">
-              You’ll get emails from noreply@mytools-56j.pages.dev.
-              One-click unsubscribe link is included in every email.
+              You’ll receive an email with an unsubscribe link in every message.
             </div>
+
+            <!-- ✅ Status message shown to user -->
+            <div id="subscribeStatus" class="subscribe-status muted" aria-live="polite"></div>
           </form>
         </div>
       </aside>
@@ -511,6 +493,8 @@ online currency tool, convert money online, currency conversion tool
     const subscribeForm = document.getElementById("subscribeForm");
     const subFromInput = document.getElementById("subFrom");
     const subToInput = document.getElementById("subTo");
+    const subscribeStatus = document.getElementById("subscribeStatus");
+    const subscribeBtn = document.getElementById("subscribeBtn");
 
     let chartCtx = chartCanvas.getContext("2d");
     let chartData = null;
@@ -530,8 +514,8 @@ online currency tool, convert money online, currency conversion tool
     }
 
     function syncSubscribePair() {
-      subFromInput.value = fromSelect.value;
-      subToInput.value = toSelect.value;
+      if (subFromInput) subFromInput.value = fromSelect.value;
+      if (subToInput) subToInput.value = toSelect.value;
     }
 
     function setLoadingState(msg = "Fetching live rate…") {
@@ -550,7 +534,7 @@ online currency tool, convert money online, currency conversion tool
       copyButton.disabled = true;
     }
 
-    // Uses your /api/rates Worker instead of /api/currency
+    // Uses your /api/rates Worker
     async function convertCurrency(auto = false) {
       const amount = parseFloat(amountInput.value);
       const from = fromSelect.value;
@@ -597,7 +581,7 @@ online currency tool, convert money online, currency conversion tool
         const reverse = 1 / forward;
 
         resultMain.textContent = `${amount} ${from} = ${converted} ${to}`;
-        resultSub.textContent = "Live mid‑market rate";
+        resultSub.textContent = "Live mid-market rate";
         copyButton.disabled = false;
 
         rateLine.textContent = `1 ${from} ≈ ${forward} ${to}`;
@@ -620,7 +604,7 @@ online currency tool, convert money online, currency conversion tool
 
     async function updateChart(from, to) {
       chartPairLabel.textContent = `${from} → ${to}`;
-      chartMeta.textContent = "Loading 7‑day history…";
+      chartMeta.textContent = "Loading 7-day history…";
 
       try {
         const today = new Date();
@@ -726,7 +710,7 @@ online currency tool, convert money online, currency conversion tool
             if (!todayRate || !prevRate) return null;
             const diff = todayRate - prevRate;
             const pct = (diff / prevRate) * 100;
-            return { code, todayRate, prevRate, diff, pct };
+            return { code, pct };
           })
           .filter(Boolean);
 
@@ -766,7 +750,7 @@ online currency tool, convert money online, currency conversion tool
       navigator.clipboard.writeText(text).then(() => {
         const prev = copyButton.textContent;
         copyButton.textContent = "Copied!";
-        setTimeout(() => (copyButton.textContent = "Copy"), 1200);
+        setTimeout(() => (copyButton.textContent = prev), 1200);
       });
     }
 
@@ -775,9 +759,7 @@ online currency tool, convert money online, currency conversion tool
     swapButton.onclick = swapCurrencies;
     copyButton.onclick = copyResult;
 
-    amountInput.addEventListener("input", () => {
-      convertCurrency(true);
-    });
+    amountInput.addEventListener("input", () => convertCurrency(true));
 
     fromSelect.addEventListener("change", () => {
       syncSubscribePair();
@@ -789,30 +771,58 @@ online currency tool, convert money online, currency conversion tool
       convertCurrency(true);
     });
 
-    // STEP 6 — Handle subscription (correct, async, in main script)
+    // ✅ Subscription: show status + disable button + safe endpoint
     if (subscribeForm) {
       subscribeForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // Keep hidden pair fields synced
         syncSubscribePair();
 
-        const email = document.getElementById("currency-email").value;
+        const email = document.getElementById("currency-email").value.trim();
         const frequency = document.getElementById("currency-frequency").value;
         const from = subFromInput.value;
         const to = subToInput.value;
 
+        // quick UI validation
+        if (!email) {
+          subscribeStatus.className = "subscribe-status bad";
+          subscribeStatus.textContent = "Please enter your email.";
+          return;
+        }
+
+        subscribeStatus.className = "subscribe-status muted";
+        subscribeStatus.textContent = "Subscribing…";
+        subscribeBtn.disabled = true;
+
         try {
-          const res = await fetch("/api/rate-subscribe", {
+          // ✅ Always same-origin, even on pages.dev or your custom domain
+          const endpoint = new URL("/api/rate-subscribe", window.location.origin).toString();
+
+          const res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, frequency, from, to })
           });
 
-          const data = await res.json();
-          console.log("Subscription response:", data);
+          // Try JSON first; fallback to text
+          let data = null;
+          const text = await res.text();
+          try { data = JSON.parse(text); } catch { data = { success: false, error: text || ("HTTP " + res.status) }; }
+
+          if (res.ok && data && data.success) {
+            subscribeStatus.className = "subscribe-status ok";
+            subscribeStatus.textContent = "Subscribed ✅ Check your inbox soon.";
+            subscribeForm.reset();
+            syncSubscribePair(); // restore hidden pair values after reset
+          } else {
+            subscribeStatus.className = "subscribe-status bad";
+            subscribeStatus.textContent = "Failed ❌ " + (data?.error || ("HTTP " + res.status));
+          }
         } catch (err) {
-          console.error("Subscription error:", err);
+          subscribeStatus.className = "subscribe-status bad";
+          subscribeStatus.textContent = "Network error ❌ " + (err.message || "Unknown error");
+        } finally {
+          subscribeBtn.disabled = false;
         }
       });
     }
