@@ -1,8 +1,21 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
+
+function htmlResponse(html, status = 200) {
+  return new Response(html, {
+    status,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "text/html; charset=utf-8",
+      // Prevent search engines from indexing unsubscribe pages
+      "X-Robots-Tag": "noindex, nofollow, noarchive",
+      "Cache-Control": "no-store",
+    },
+  });
+}
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -17,84 +30,57 @@ export function onRequestOptions() {
 
 export async function onRequest({ request, env }) {
   try {
-    if (request.method !== "POST") {
-      return json({ success: false, error: "POST only" }, 405);
-    }
-
-    // ---- Parse the body ----
-    const ct = (request.headers.get("content-type") || "").toLowerCase();
-    let data = null;
-
-    if (ct.includes("application/json")) {
-      data = await request.json().catch(() => null);
-    } else {
-      const form = await request.formData().catch(() => null);
-      if (form) data = Object.fromEntries(form.entries());
-    }
-
-    if (!data) {
-      return json({ success: false, error: "Invalid request body" }, 400);
-    }
-
-    const email = String(data.email || "").trim().toLowerCase();
-    const frequency = data.frequency || "daily";
-    const from = data.from || "USD";
-    const to = data.to || "EUR";
-
-    if (!email) return json({ success: false, error: "Email required" }, 400);
-
     if (!env.SUBSCRIBERS) {
-      return json({ success: false, error: "Missing KV binding: SUBSCRIBERS" }, 500);
+      return htmlResponse(`<h3>Error</h3><p>Missing KV binding: SUBSCRIBERS</p>`, 500);
     }
 
-    if (!env.RESEND_API_KEY) {
-      return json({ success: false, error: "Missing secret: RESEND_API_KEY" }, 500);
+    const url = new URL(request.url);
+
+    // Accept email from:
+    // 1) query string: /api/unsubscribe?email=...
+    // 2) POST JSON body: { "email": "..." }
+    let email = (url.searchParams.get("email") || "").trim().toLowerCase();
+
+    if (!email && request.method === "POST") {
+      const ct = (request.headers.get("content-type") || "").toLowerCase();
+
+      if (ct.includes("application/json")) {
+        const data = await request.json().catch(() => null);
+        email = String(data?.email || "").trim().toLowerCase();
+      } else if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
+        const form = await request.formData().catch(() => null);
+        if (form) email = String(form.get("email") || "").trim().toLowerCase();
+      }
     }
 
-    // ---- Store in KV ----
-    await env.SUBSCRIBERS.put(
-      email,
-      JSON.stringify({ email, frequency, from, to, subscribedAt: Date.now() })
-    );
-
-    // ---- Send confirmation email through Resend ----
-    const subject = "You're subscribed to currency updates!";
-    const html = `
-      <h2>Subscription Confirmed ✅</h2>
-      <p>Hello!</p>
-      <p>You’ll now receive <strong>${frequency}</strong> exchange-rate updates for
-      <strong>${from} → ${to}</strong>.</p>
-      <p>— Everyday Tools Team</p>
-    `;
-
-    const sendRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        // ✅ Use the verified sending subdomain
-       from: "Everyday Tools <noreply@everydaytools.uk>",
-
-        to: email,
-        subject,
-        html,
-      }),
-    });
-
-    if (!sendRes.ok) {
-      const errText = await sendRes.text().catch(() => "");
-      console.error("Resend email error:", errText);
-
-      // Return the reason so you can see it on the frontend/network tab
-      return json(
-        { success: true, warning: "Subscribed but email not sent", resend_error: errText },
-        200
+    if (!email) {
+      return htmlResponse(
+        `<h3>Unsubscribe</h3><p>Missing email.</p>`,
+        400
       );
     }
 
-    return json({ success: true });
+    // Delete from KV (unsubscribe)
+    await env.SUBSCRIBERS.delete(email);
+
+    const resubscribeUrl = "https://everydaytools.uk/tools/finance/currency-converter";
+
+    // Nice confirmation page (works in email clients + browsers)
+    return htmlResponse(`
+      <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:560px;margin:40px auto;padding:18px;border:1px solid #e5e7eb;border-radius:12px;background:#fff">
+        <h2 style="margin:0 0 10px">You’re unsubscribed ✅</h2>
+        <p style="margin:0 0 14px;color:#374151">
+          We removed <b>${email.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</b> from our currency updates list.
+        </p>
+        <p style="margin:0 0 14px;color:#6b7280;font-size:14px">
+          If this was a mistake, you can re-subscribe anytime.
+        </p>
+        <a href="${resubscribeUrl}"
+           style="display:inline-block;padding:10px 14px;border-radius:999px;background:#2563eb;color:#fff;text-decoration:none;font-weight:600">
+          Re-subscribe
+        </a>
+      </div>
+    `);
   } catch (err) {
     return json({ success: false, error: err?.message || "Server error" }, 500);
   }
