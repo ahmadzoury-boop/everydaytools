@@ -7,7 +7,7 @@ const corsHeaders = {
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json; charset=utf-8" },
   });
 }
 
@@ -28,8 +28,20 @@ function formatDateISO(d) {
   return `${y}-${m}-${day}`;
 }
 
+function isCurrencyCode(s) {
+  return /^[A-Z]{3}$/.test(s);
+}
+
+function isValidEmail(email) {
+  // simple + safe (not overly strict)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 async function fetchJson(url) {
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: { Accept: "application/json" },
+    cf: { cacheTtl: 300, cacheEverything: true }, // optional caching
+  });
   if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
   return res.json();
 }
@@ -40,6 +52,7 @@ async function getRateSnapshot(from, to) {
 
   const latestUrl = `https://api.frankfurter.app/latest?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
   const latestData = await fetchJson(latestUrl);
+
   const rate = Number(latestData?.rates?.[to]);
   const reverse = rate ? 1 / rate : null;
   const asOf = latestData?.date || formatDateISO(today);
@@ -121,7 +134,19 @@ export async function onRequest({ request, env }) {
     const from = String(data.from || "USD").trim().toUpperCase();
     const to = String(data.to || "EUR").trim().toUpperCase();
 
-    if (!email) return json({ success: false, error: "Email required" }, 400);
+    // ---- Basic validation + anti-abuse ----
+    if (!email || email.length > 254 || !isValidEmail(email)) {
+      return json({ success: false, error: "Valid email required" }, 400);
+    }
+    if (!isCurrencyCode(from) || !isCurrencyCode(to)) {
+      return json({ success: false, error: "Invalid currency codes" }, 400);
+    }
+    if (from === to) {
+      return json({ success: false, error: "Choose two different currencies" }, 400);
+    }
+    if (!["daily", "weekly"].includes(frequency)) {
+      return json({ success: false, error: "Invalid frequency (daily/weekly)" }, 400);
+    }
 
     if (!env.SUBSCRIBERS) {
       return json({ success: false, error: "Missing KV binding: SUBSCRIBERS" }, 500);
@@ -130,7 +155,8 @@ export async function onRequest({ request, env }) {
       return json({ success: false, error: "Missing secret: RESEND_API_KEY" }, 500);
     }
 
-    // ---- Store in KV ----
+    // ---- Store in KV (keyed by email = one active subscription per email) ----
+    // If later you want multiple pairs per email, we can switch to key: `${email}:${from}:${to}`
     await env.SUBSCRIBERS.put(
       email,
       JSON.stringify({ email, frequency, from, to, subscribedAt: Date.now() })
@@ -182,7 +208,7 @@ export async function onRequest({ request, env }) {
 
       <p style="margin-top:14px">
         View the live converter anytime:
-        <a href="https://everydaytools.uk/tools/finance/currency-converter">${"everydaytools.uk/tools/finance/currency-converter"}</a>
+        <a href="https://everydaytools.uk/tools/finance/currency-converter">everydaytools.uk/tools/finance/currency-converter</a>
       </p>
 
       <hr />
@@ -191,7 +217,6 @@ export async function onRequest({ request, env }) {
       </p>
     `;
 
-    // Plain-text improves deliverability
     const text = [
       "Subscription Confirmed ✅",
       `You’re subscribed to ${frequency} updates for ${from} → ${to}.`,
@@ -218,7 +243,7 @@ export async function onRequest({ request, env }) {
       },
       body: JSON.stringify({
         from: "Everyday Tools <noreply@everydaytools.uk>",
-        to: email,
+        to: [email], // ✅ safest format for Resend
         subject,
         html,
         text,
@@ -240,10 +265,11 @@ export async function onRequest({ request, env }) {
         success: true,
         warning: "Subscribed but email not sent",
         resend_error: sendText,
-      });
+      }, 200);
     }
 
-    return json({ success: true, resend_id: sendJson?.id || null });
+    return json({ success: true, resend_id: sendJson?.id || null }, 200);
+
   } catch (err) {
     return json({ success: false, error: err?.message || "Server error" }, 500);
   }
