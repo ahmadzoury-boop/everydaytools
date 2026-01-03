@@ -1,882 +1,1695 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>Live Currency Converter | Real-Time Exchange Rates</title>
-  <meta name="description" content="Convert currencies instantly with real-time exchange rates. Auto-convert, charts, trending currency pairs, and daily or weekly email updates.">
-
-  <!-- ✅ Fix canonical to your real domain/page -->
+  <meta name="description" content="Convert currencies instantly with real-time exchange rates. Auto-convert, 7-day/30-day/1-year charts, volatility indicator, strongest/weakest currencies, trending pairs, and daily or weekly email alerts for your chosen pair.">
   <link rel="canonical" href="https://everydaytools.uk/tools/finance/currency-converter">
 
-  <!-- SEO keywords for broad search phrases -->
   <meta name="keywords" content="
 currency converter, money converter, live currency converter, real-time currency converter,
-dollar to euro, usd to eur, eur to usd, gbp to usd, usd to gbp,
-inr to usd, usd to inr, try to usd, usd to try, aed to usd, usd to aed,
-sar to usd, usd to sar, cny to usd, usd to cny,
-exchange rate calculator, forex calculator, foreign exchange calculator,
-online currency tool, convert money online, currency conversion tool
+usd to eur, eur to usd, gbp to usd, usd to gbp, jpy to usd, usd to jpy,
+inr to usd, try to usd, cny to usd, aed to usd, sar to usd,
+exchange rate calculator, forex calculator, foreign exchange calculator
 ">
 
+  <!-- WebApplication Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Everyday Tools — Live Currency Converter",
+    "url": "https://everydaytools.uk/tools/finance/currency-converter",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "description": "Convert currencies instantly with real-time exchange rates, 7-day/30-day/1-year trend charts, volatility indicator, strongest/weakest currencies, trending pairs, and email alerts for your chosen pair.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" }
+  }
+  </script>
+
   <style>
-    :root {
-      --bg: #f3f4f6;
-      --card-bg: #ffffff;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --border: #d1d5db;
-      --text-main: #111827;
-      --text-muted: #6b7280;
-      --radius-lg: 14px;
-      --radius-md: 10px;
-      --shadow-soft: 0 8px 24px rgba(0,0,0,0.06);
-      --danger: #b91c1c;
-      --success: #15803d;
+    :root{
+      --bg:#f3f4f6;
+      --card-bg:#ffffff;
+      --accent:#2563eb;
+      --accent-hover:#1d4ed8;
+      --border:#d1d5db;
+      --text-main:#111827;
+      --text-muted:#6b7280;
+      --radius-lg:14px;
+      --radius-md:10px;
+      --shadow-soft:0 8px 24px rgba(0,0,0,0.06);
+      --danger:#b91c1c;
+      --success:#15803d;
+      --warning:#b45309;
     }
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text-main);
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:var(--bg);
+      color:var(--text-main);
     }
 
-    .page-wrap {
-      min-height: 100vh;
-      padding: 32px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .page-wrap{
+      min-height:100vh;
+      padding:28px 16px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
     }
 
-    .layout {
-      width: 100%;
-      max-width: 960px;
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-      gap: 20px;
+    .container{
+      width:100%;
+      max-width:980px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    @media (max-width: 768px) {
-      .layout { grid-template-columns: 1fr; }
+    /* Future Google Ads placeholders (prevents CLS) */
+    .ad-slot{
+      background:#fff;
+      border:1px dashed #cbd5e1;
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--text-muted);
+      font-weight:800;
+      letter-spacing:0.2px;
+      overflow:hidden;
+    }
+    .ad-label{font-size:0.9rem;padding:10px 12px;text-align:center;}
+    .ad-top{min-height:90px;}
+    .ad-mid{min-height:250px;}
+    .ad-bottom{min-height:90px;}
+    @media (max-width:768px){
+      .ad-top,.ad-bottom{min-height:80px;}
+      .ad-mid{min-height:200px;}
     }
 
-    .converter-card,
-    .side-card {
-      background: var(--card-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-soft);
-      padding: 24px 20px;
+    .layout{
+      width:100%;
+      display:grid;
+      grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+      gap:20px;
+    }
+    @media (max-width:768px){ .layout{grid-template-columns:1fr;} }
+
+    .converter-card,.side-card{
+      background:var(--card-bg);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow-soft);
+      padding:22px 20px;
     }
 
-    .converter-title {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 6px;
+    .header-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:6px;
     }
 
-    .converter-subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 18px;
+    .converter-title{
+      font-size:1.6rem;
+      font-weight:900;
+      margin:0 0 6px 0;
+      line-height:1.15;
     }
 
-    .field-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 4px;
+    .converter-subtitle{
+      font-size:0.92rem;
+      color:var(--text-muted);
+      margin:0 0 16px 0;
+      line-height:1.4;
     }
 
-    .amount-input,
-    .currency-select {
-      width: 100%;
-      padding: 14px 12px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      background: #f9fafb;
-      font-size: 1rem;
+    .lang-select{
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:8px 10px;
+      background:#fff;
+      font-weight:900;
+      font-size:0.85rem;
+      color:#374151;
+      cursor:pointer;
+      max-width:210px;
     }
 
-    .amount-input:focus,
-    .currency-select:focus {
-      border-color: var(--accent);
-      outline: none;
-      background: #ffffff;
+    .field-label{
+      font-size:0.85rem;
+      font-weight:800;
+      color:var(--text-muted);
+      margin-bottom:4px;
+      display:block;
     }
 
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .amount-input,.currency-select{
+      width:100%;
+      padding:14px 12px;
+      border-radius:var(--radius-md);
+      border:1px solid var(--border);
+      background:#f9fafb;
+      font-size:1rem;
+    }
+    .amount-input:focus,.currency-select:focus{
+      border-color:var(--accent);
+      outline:none;
+      background:#fff;
     }
 
-    .swap-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 8px;
-      gap: 8px;
+    .input-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
     }
 
-    .swap-button {
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: none;
-      background: #e5edff;
-      color: var(--accent);
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.9rem;
-      white-space: nowrap;
+    .swap-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:8px;
+      gap:8px;
     }
 
-    .primary-btn {
-      flex: 1;
-      border: none;
-      border-radius: 999px;
-      padding: 12px 16px;
-      background: var(--accent);
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
+    .swap-button{
+      padding:8px 14px;
+      border-radius:999px;
+      border:none;
+      background:#e5edff;
+      color:var(--accent);
+      font-weight:900;
+      cursor:pointer;
+      font-size:0.9rem;
+      white-space:nowrap;
     }
 
-    .primary-btn:hover { background: var(--accent-hover); }
+    .primary-btn{
+      flex:1;
+      border:none;
+      border-radius:999px;
+      padding:12px 16px;
+      background:var(--accent);
+      color:#fff;
+      font-weight:900;
+      font-size:0.95rem;
+      cursor:pointer;
+    }
+    .primary-btn:hover{background:var(--accent-hover);}
 
-    .result-panel {
-      margin-top: 16px;
-      padding: 16px 14px;
-      border-radius: var(--radius-md);
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+    .result-panel{
+      margin-top:16px;
+      padding:16px 14px;
+      border-radius:var(--radius-md);
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
     }
 
-    .result-main-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+    .result-main-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
     }
 
-    .result-main {
-      font-size: 1.7rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-      color: var(--text-main);
+    .result-main{
+      font-size:1.65rem;
+      font-weight:900;
+      margin-bottom:4px;
     }
 
-    .copy-btn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
-      font-size: 0.8rem;
-      cursor: pointer;
-      white-space: nowrap;
+    .copy-btn{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #d1d5db;
+      background:#fff;
+      font-size:0.8rem;
+      cursor:pointer;
+      white-space:nowrap;
+      font-weight:900;
     }
 
-    .result-sub {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
+    .result-sub{
+      font-size:0.9rem;
+      color:var(--text-muted);
+      margin-bottom:6px;
+      line-height:1.35;
+    }
+    .rate-line,.reverse-line{font-size:0.9rem;color:#4b5563;}
+    .reverse-line{margin-top:2px;}
+    .status-line{font-size:0.8rem;color:#9ca3af;margin-top:6px;}
+    .error-line{font-size:0.85rem;color:var(--danger);margin-top:4px;}
+
+    .side-title{
+      font-size:1rem;
+      font-weight:900;
+      margin-bottom:10px;
     }
 
-    .rate-line,
-    .reverse-line {
-      font-size: 0.9rem;
-      color: #4b5563;
+    .chart-toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:8px;
+      flex-wrap:wrap;
     }
 
-    .reverse-line { margin-top: 2px; }
-
-    .status-line {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      margin-top: 6px;
+    .pill{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      background:#e5edff;
+      color:#1d4ed8;
+      font-size:0.75rem;
+      margin-left:6px;
+      white-space:nowrap;
+      font-weight:900;
     }
 
-    .error-line {
-      font-size: 0.85rem;
-      color: var(--danger);
-      margin-top: 4px;
+    .range-toggle{
+      display:inline-flex;
+      border:1px solid var(--border);
+      border-radius:999px;
+      overflow:hidden;
+      background:#fff;
     }
 
-    .side-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 10px;
+    .range-btn{
+      border:0;
+      padding:6px 10px;
+      font-size:0.8rem;
+      cursor:pointer;
+      background:transparent;
+      color:#374151;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .range-btn.active{background:#e5edff;color:var(--accent);}
+
+    .chart-canvas{
+      width:100%;
+      height:160px;
+      border-radius:var(--radius-md);
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
     }
 
-    .chart-canvas {
-      width: 100%;
-      height: 160px;
-      border-radius: var(--radius-md);
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+    .chart-meta{
+      font-size:0.75rem;
+      color:var(--text-muted);
+      margin-top:6px;
+      line-height:1.35;
     }
 
-    .chart-meta {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 6px;
+    .volatility-line strong{color:#111827;}
+    .vol-pill{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:0.75rem;
+      font-weight:900;
+      margin-left:6px;
+      border:1px solid #e5e7eb;
+      background:#fff;
+    }
+    .vol-low{color:var(--success);}
+    .vol-med{color:var(--warning);}
+    .vol-high{color:var(--danger);}
+
+    .trend-list{
+      list-style:none;
+      padding:0;
+      margin:8px 0 0 0;
+      font-size:0.9rem;
     }
 
-    .trend-list {
-      list-style: none;
-      padding: 0;
-      margin: 8px 0 0 0;
-      font-size: 0.9rem;
+    .trend-item{
+      display:flex;
+      justify-content:space-between;
+      padding:4px 0;
+      border-bottom:1px dashed #e5e7eb;
+      gap:10px;
+    }
+    .trend-pair{color:#374151;}
+    .trend-change{font-weight:900;}
+    .trend-change.up{color:var(--success);}
+    .trend-change.down{color:var(--danger);}
+
+    .strength-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:8px;
     }
 
-    .trend-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      border-bottom: 1px dashed #e5e7eb;
+    .strength-box{
+      border:1px solid #e5e7eb;
+      background:#f9fafb;
+      border-radius:var(--radius-md);
+      padding:10px 10px 6px;
     }
 
-    .trend-pair { color: #374151; }
-
-    .trend-change { font-weight: 600; }
-
-    .trend-change.up { color: var(--success); }
-
-    .trend-change.down { color: var(--danger); }
-
-    .pill {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #e5edff;
-      color: #1d4ed8;
-      font-size: 0.75rem;
-      margin-left: 6px;
+    .strength-head{
+      font-size:0.85rem;
+      font-weight:900;
+      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
     }
 
-    /* Subscribe box */
-    .subscribe-box {
-      margin-top: 18px;
-      padding: 14px 14px 12px;
-      border-radius: var(--radius-md);
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+    .strength-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      font-size:0.88rem;
     }
 
-    .subscribe-box h3 {
-      margin: 0 0 6px;
-      font-size: 1rem;
+    .strength-item{
+      display:flex;
+      justify-content:space-between;
+      padding:4px 0;
+      border-bottom:1px dashed #e5e7eb;
+      gap:10px;
+    }
+    .strength-item:last-child{border-bottom:0;}
+
+    /* Subscribe */
+    .subscribe-box{
+      margin-top:18px;
+      padding:14px 14px 12px;
+      border-radius:var(--radius-md);
+      background:#f9fafb;
+      border:1px solid #e5e7eb;
     }
 
-    .subscribe-box p {
-      margin: 0 0 10px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .subscribe-box h3{
+      margin:0 0 6px;
+      font-size:1rem;
+      font-weight:900;
     }
 
-    .subscribe-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
+    .subscribe-box p{
+      margin:0 0 10px;
+      font-size:0.85rem;
+      color:var(--text-muted);
+      line-height:1.35;
     }
 
-    .subscribe-row > * {
-      min-width: 0;
-      transition: all 0.25s ease;
+    .subscribe-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr;
+      gap:8px;
+      align-items:center;
     }
 
-    .subscribe-input,
-    .subscribe-select {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #ffffff;
-      font-size: 0.85rem;
+    .subscribe-email{
+      grid-column:1 / -1;
+      width:100%;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:0.9rem;
     }
 
-    .subscribe-btn {
-      width: 100%;
-      border-radius: 999px;
-      border: none;
-      padding: 9px 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      background: var(--accent);
-      color: #ffffff;
-      cursor: pointer;
+    .subscribe-select{
+      width:100%;
+      padding:9px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fff;
+      font-size:0.85rem;
+      min-width:0;
+      font-weight:900;
     }
 
-    .subscribe-btn:hover { background: var(--accent-hover); }
+    .subscribe-btn{
+      width:100%;
+      border-radius:999px;
+      border:none;
+      padding:10px 10px;
+      font-size:0.9rem;
+      font-weight:900;
+      background:var(--accent);
+      color:#fff;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .subscribe-btn:hover{background:var(--accent-hover);}
 
-    .subscribe-input:focus { grid-column: 1 / 4; }
-    .subscribe-select:focus { grid-column: 1 / 4; }
-    .subscribe-btn:focus { grid-column: 1 / 4; }
-
-    .subscribe-note {
-      margin-top: 6px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
+    .subscribe-row2{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:8px;
+      flex-wrap:wrap;
     }
 
-    /* ✅ Visible status message for subscription */
-    .subscribe-status {
-      margin-top: 8px;
-      font-size: 0.85rem;
+    .link-btn{
+      border:0;
+      background:transparent;
+      color:var(--accent);
+      font-weight:900;
+      cursor:pointer;
+      font-size:0.8rem;
+      padding:0;
+      text-decoration:underline;
+      white-space:nowrap;
     }
-    .subscribe-status.ok { color: var(--success); }
-    .subscribe-status.bad { color: var(--danger); }
-    .subscribe-status.muted { color: var(--text-muted); }
 
-    @media (max-width: 640px) {
-      .subscribe-row { grid-template-columns: 1fr; }
+    .subscribe-note{
+      margin-top:8px;
+      font-size:0.75rem;
+      color:var(--text-muted);
+      line-height:1.35;
     }
 
-    .seo-hidden { display: none; }
+    .subscribe-status{
+      margin-top:8px;
+      font-size:0.85rem;
+      font-weight:900;
+    }
+    .subscribe-status.ok{color:var(--success);}
+    .subscribe-status.bad{color:var(--danger);}
+    .subscribe-status.muted{color:var(--text-muted);}
+
+    @media (max-width:640px){
+      .subscribe-grid{grid-template-columns:1fr 1fr;}
+    }
+
+    /* RTL tweaks */
+    body.rtl{direction:rtl;}
+    body.rtl .pill,
+    body.rtl .vol-pill{margin-left:0;margin-right:6px;}
+    body.rtl .header-row{flex-direction:row-reverse;}
+    body.rtl .result-main-row{flex-direction:row-reverse;}
+    body.rtl .chart-toolbar{flex-direction:row-reverse;}
+    body.rtl .trend-item,
+    body.rtl .strength-item{flex-direction:row-reverse;}
+    body.rtl .subscribe-row2{flex-direction:row-reverse;}
   </style>
 </head>
+
 <body>
   <div class="page-wrap">
-    <div class="layout">
-      <!-- LEFT: Converter -->
-      <main class="converter-card">
-        <h1 class="converter-title">Live Currency Converter</h1>
-        <p class="converter-subtitle">
-          Convert currencies instantly using real-time exchange rates.
-          Auto-convert, reverse rate, 7-day trend, trending pairs, and email alerts.
-        </p>
+    <div class="container">
 
-        <div class="seo-hidden">
-          <h2>Currency Converter – Money Converter, Dollar to Euro and More</h2>
-          <p>
-            Use this live currency converter to convert money between USD, EUR, GBP, INR, TRY, AED, SAR, CNY,
-            and many more currencies. Convert dollar to euro (USD to EUR), euro to dollar (EUR to USD),
-            pound to dollar (GBP to USD), rupee to dollar (INR to USD), and other foreign exchange pairs
-            with real-time exchange rates, charts, and auto-conversion.
-          </p>
-        </div>
+      <!-- TOP AD (future Google Ads) -->
+      <div class="ad-slot ad-top" data-ad-slot="top-banner" aria-label="Advertisement">
+        <div class="ad-label" data-i18n="adTop">Ad Space (Top Banner) — future Google Ads</div>
+        <!-- Future: insert AdSense banner here -->
+      </div>
 
-        <label class="field-label">Amount</label>
-        <input id="amountInput" class="amount-input" type="number" value="1" min="0" step="0.01" />
+      <div class="layout">
+        <!-- LEFT -->
+        <main class="converter-card">
+          <div class="header-row">
+            <div>
+              <h1 class="converter-title" data-i18n="converterTitle">Live Currency Converter</h1>
+              <p class="converter-subtitle" data-i18n="converterSubtitle">
+                Convert currencies instantly using real-time exchange rates. Auto-convert, 7-day/30-day/1-year trend, volatility, trending pairs, and email alerts.
+              </p>
+            </div>
 
-        <label class="field-label" style="margin-top:10px;">Currencies</label>
-        <div class="input-row">
-          <select id="fromCurrency" class="currency-select"></select>
-          <select id="toCurrency" class="currency-select"></select>
-        </div>
-
-        <div class="swap-row">
-          <button id="swapButton" class="swap-button">⇆ Swap</button>
-          <button id="convertButton" class="primary-btn">Convert</button>
-        </div>
-
-        <div class="result-panel">
-          <div class="result-main-row">
-            <div id="resultMain" class="result-main">Enter an amount</div>
-            <button id="copyButton" class="copy-btn" disabled>Copy</button>
+            <select id="langSelect" class="lang-select" aria-label="Language">
+              <option value="en">English</option>
+              <option value="ar">العربية</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+              <option value="tr">Türkçe</option>
+              <option value="hi">हिन्दी</option>
+            </select>
           </div>
-          <div id="resultSub" class="result-sub">Your result will appear here.</div>
-          <div id="rateLine" class="rate-line"></div>
-          <div id="reverseLine" class="reverse-line"></div>
-          <div id="statusLine" class="status-line"></div>
-          <div id="errorLine" class="error-line"></div>
-        </div>
-      </main>
 
-      <!-- RIGHT: Chart + Trending + Subscribe -->
-      <aside class="side-card">
-        <div>
-          <div class="side-title">
-            7-day rate trend <span id="chartPairLabel" class="pill">USD → EUR</span>
+          <label class="field-label" data-i18n="amountLabel">Amount</label>
+          <input id="amountInput" class="amount-input" type="number" value="1" min="0" step="0.01" />
+
+          <label class="field-label" style="margin-top:10px;" data-i18n="currenciesLabel">Currencies</label>
+          <div class="input-row">
+            <select id="fromCurrency" class="currency-select"></select>
+            <select id="toCurrency" class="currency-select"></select>
           </div>
+
+          <div class="swap-row">
+            <button id="swapButton" class="swap-button" type="button" data-i18n="swapBtn">⇆ Swap</button>
+            <button id="convertButton" class="primary-btn" type="button" data-i18n="convertBtn">Convert</button>
+          </div>
+
+          <div class="result-panel">
+            <div class="result-main-row">
+              <div id="resultMain" class="result-main" data-i18n="enterAmount">Enter an amount</div>
+              <button id="copyButton" class="copy-btn" type="button" disabled data-i18n="copyBtn">Copy</button>
+            </div>
+            <div id="resultSub" class="result-sub" data-i18n="resultPlaceholder">Your result will appear here.</div>
+            <div id="rateLine" class="rate-line"></div>
+            <div id="reverseLine" class="reverse-line"></div>
+            <div id="statusLine" class="status-line"></div>
+            <div id="errorLine" class="error-line"></div>
+          </div>
+        </main>
+
+        <!-- RIGHT -->
+        <aside class="side-card">
+          <div class="chart-toolbar">
+            <div class="side-title" style="margin:0;">
+              <span data-i18n="trendTitle">Rate trend</span>
+              <span id="chartPairLabel" class="pill">USD → EUR</span>
+            </div>
+
+            <div class="range-toggle" aria-label="Trend range">
+              <button class="range-btn active" id="range7d" type="button" data-i18n="range7d">7D</button>
+              <button class="range-btn" id="range30d" type="button" data-i18n="range30d">30D</button>
+              <button class="range-btn" id="range1y" type="button" data-i18n="range1y">1Y</button>
+            </div>
+          </div>
+
           <canvas id="rateChart" class="chart-canvas"></canvas>
           <div id="chartMeta" class="chart-meta"></div>
-        </div>
+          <div id="volatilityLine" class="chart-meta volatility-line"></div>
 
-        <div style="margin-top:18px;">
-          <div class="side-title">
-            Trending pairs <span class="pill">vs USD (24h)</span>
+          <div style="margin-top:18px;">
+            <div class="side-title">
+              <span data-i18n="trendingTitle">Trending pairs</span>
+              <span class="pill" data-i18n="vsUsd24h">vs USD (24h)</span>
+            </div>
+            <ul id="trendList" class="trend-list">
+              <li class="trend-item">
+                <span class="trend-pair" data-i18n="loading">Loading...</span>
+                <span class="trend-change">–</span>
+              </li>
+            </ul>
           </div>
-          <ul id="trendList" class="trend-list">
-            <li class="trend-item">
-              <span class="trend-pair">Loading...</span>
-              <span class="trend-change">–</span>
-            </li>
-          </ul>
-        </div>
 
-        <!-- Subscribe box -->
-        <div class="subscribe-box">
-          <h3>Get Daily or Weekly Rate Emails</h3>
-          <p>
-            Subscribe to receive updates for this currency pair plus key USD markets
-            (USD→EUR, USD→GBP, USD→TRY, USD→AED, and more).
-          </p>
+          <div style="margin-top:18px;">
+            <div class="side-title">
+              <span data-i18n="strengthTitle">Strongest / Weakest currencies today</span>
+              <span class="pill" data-i18n="vsUsd24h">vs USD (24h)</span>
+            </div>
 
-          <!-- ✅ Keep action for fallback, but JS handles it -->
-          <form id="subscribeForm" action="/api/rate-subscribe" method="POST">
-            <div class="subscribe-row">
+            <div class="strength-grid">
+              <div class="strength-box">
+                <div class="strength-head">
+                  <span data-i18n="strongest">Strongest</span>
+                  <span class="pill">Top 3</span>
+                </div>
+                <ul id="strongList" class="strength-list"></ul>
+              </div>
+
+              <div class="strength-box">
+                <div class="strength-head">
+                  <span data-i18n="weakest">Weakest</span>
+                  <span class="pill">Top 3</span>
+                </div>
+                <ul id="weakList" class="strength-list"></ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIDEBAR AD (future Google Ads) -->
+          <div style="margin-top:18px;">
+            <div class="ad-slot ad-mid" data-ad-slot="sidebar-rectangle" aria-label="Advertisement">
+              <div class="ad-label" data-i18n="adMid">Ad Space (Sidebar 300×250) — future Google Ads</div>
+              <!-- Future: insert AdSense rectangle here -->
+            </div>
+          </div>
+
+          <!-- Subscribe -->
+          <div class="subscribe-box">
+            <h3 data-i18n="subscribeTitle">Get Rate Emails for Any Pair</h3>
+            <p data-i18n="subscribeDesc">
+              Choose the currency pair you want to track and get daily or weekly updates. Unsubscribe anytime.
+            </p>
+
+            <form id="subscribeForm" action="/api/rate-subscribe" method="POST">
               <input
-                class="subscribe-input"
+                class="subscribe-email"
                 type="email"
                 id="currency-email"
                 name="email"
                 placeholder="Your email address"
                 required
+                data-i18n-placeholder="emailPlaceholder"
               >
-              <select class="subscribe-select" id="currency-frequency" name="frequency" required>
-                <option value="daily">Daily updates</option>
-                <option value="weekly">Weekly updates</option>
-              </select>
-              <button class="subscribe-btn" id="subscribeBtn" type="submit">Subscribe</button>
-            </div>
 
-            <!-- ✅ Hidden fields with NAME so fallback form submit also includes them -->
-            <input type="hidden" id="subFrom" name="from">
-            <input type="hidden" id="subTo" name="to">
+              <div class="subscribe-grid">
+                <select class="subscribe-select" id="subFromSelect" name="from" required></select>
+                <select class="subscribe-select" id="subToSelect" name="to" required></select>
 
-            <div class="subscribe-note">
-              You’ll receive an email with an unsubscribe link in every message.
-            </div>
+                <select class="subscribe-select" id="currency-frequency" name="frequency" required>
+                  <option value="daily" data-i18n="dailyUpdates">Daily updates</option>
+                  <option value="weekly" data-i18n="weeklyUpdates">Weekly updates</option>
+                </select>
 
-            <!-- ✅ Status message shown to user -->
-            <div id="subscribeStatus" class="subscribe-status muted" aria-live="polite"></div>
-          </form>
-        </div>
-      </aside>
+                <button class="subscribe-btn" id="subscribeBtn" type="submit" data-i18n="subscribeBtn">Subscribe</button>
+              </div>
+
+              <div class="subscribe-row2">
+                <span class="subscribe-note" style="margin:0;" data-i18n="pairHint">
+                  Tip: you can keep this pair different from the converter above.
+                </span>
+                <button class="link-btn" id="useConverterPair" type="button" data-i18n="useConverterPair">
+                  Use converter pair
+                </button>
+              </div>
+
+              <div class="subscribe-note" data-i18n="subscribeNote">
+                You’ll receive an email with an unsubscribe link in every message.
+              </div>
+
+              <div id="subscribeStatus" class="subscribe-status muted" aria-live="polite"></div>
+            </form>
+          </div>
+        </aside>
+      </div>
+
+      <!-- BOTTOM AD (future Google Ads) -->
+      <div class="ad-slot ad-bottom" data-ad-slot="bottom-banner" aria-label="Advertisement">
+        <div class="ad-label" data-i18n="adBottom">Ad Space (Bottom Banner) — future Google Ads</div>
+        <!-- Future: insert AdSense banner here -->
+      </div>
+
     </div>
   </div>
 
   <script>
-    const currencyList = [
-      { code: "USD", name: "United States Dollar", flag: "🇺🇸" },
-      { code: "EUR", name: "Euro", flag: "🇪🇺" },
-      { code: "GBP", name: "British Pound", flag: "🇬🇧" },
-      { code: "JPY", name: "Japanese Yen", flag: "🇯🇵" },
-      { code: "AUD", name: "Australian Dollar", flag: "🇦🇺" },
-      { code: "CAD", name: "Canadian Dollar", flag: "🇨🇦" },
-      { code: "TRY", name: "Turkish Lira", flag: "🇹🇷" },
-      { code: "AED", name: "UAE Dirham", flag: "🇦🇪" },
-      { code: "SAR", name: "Saudi Riyal", flag: "🇸🇦" },
-      { code: "INR", name: "Indian Rupee", flag: "🇮🇳" },
-      { code: "CNY", name: "Chinese Yuan", flag: "🇨🇳" },
-      { code: "ZAR", name: "South African Rand", flag: "🇿🇦" },
-      { code: "BRL", name: "Brazilian Real", flag: "🇧🇷" },
-      { code: "MXN", name: "Mexican Peso", flag: "🇲🇽" },
-      { code: "SGD", name: "Singapore Dollar", flag: "🇸🇬" }
-    ];
+    // =======================
+    //  i18n + language detect
+    // =======================
+    const SUPPORTED_LANGS = ["en","ar","es","fr","de","tr","hi"];
 
-    const amountInput = document.getElementById("amountInput");
-    const fromSelect = document.getElementById("fromCurrency");
-    const toSelect = document.getElementById("toCurrency");
-    const convertButton = document.getElementById("convertButton");
-    const swapButton = document.getElementById("swapButton");
-    const copyButton = document.getElementById("copyButton");
+    const I18N = {
+      en: {
+        converterTitle:"Live Currency Converter",
+        converterSubtitle:"Convert currencies instantly using real-time exchange rates. Auto-convert, 7-day/30-day/1-year trend, volatility, trending pairs, and email alerts.",
+        amountLabel:"Amount",
+        currenciesLabel:"Currencies",
+        swapBtn:"⇆ Swap",
+        convertBtn:"Convert",
+        copyBtn:"Copy",
+        copied:"Copied!",
+        enterAmount:"Enter an amount",
+        resultPlaceholder:"Your result will appear here.",
+        trendTitle:"Rate trend",
+        range7d:"7D",
+        range30d:"30D",
+        range1y:"1Y",
+        trendingTitle:"Trending pairs",
+        strengthTitle:"Strongest / Weakest currencies today",
+        strongest:"Strongest",
+        weakest:"Weakest",
+        vsUsd24h:"vs USD (24h)",
+        loading:"Loading...",
+        trendsFail:"Unable to load trends.",
+        subscribeTitle:"Get Rate Emails for Any Pair",
+        subscribeDesc:"Choose the currency pair you want to track and get daily or weekly updates. Unsubscribe anytime.",
+        emailPlaceholder:"Your email address",
+        dailyUpdates:"Daily updates",
+        weeklyUpdates:"Weekly updates",
+        subscribeBtn:"Subscribe",
+        useConverterPair:"Use converter pair",
+        pairHint:"Tip: you can keep this pair different from the converter above.",
+        subscribeNote:"You’ll receive an email with an unsubscribe link in every message.",
+        adTop:"Ad Space (Top Banner) — future Google Ads",
+        adMid:"Ad Space (Sidebar 300×250) — future Google Ads",
+        adBottom:"Ad Space (Bottom Banner) — future Google Ads",
 
-    const resultMain = document.getElementById("resultMain");
-    const resultSub = document.getElementById("resultSub");
-    const rateLine = document.getElementById("rateLine");
-    const reverseLine = document.getElementById("reverseLine");
-    const statusLine = document.getElementById("statusLine");
-    const errorLine = document.getElementById("errorLine");
+        converting:"Converting…",
+        updatingRate:"Updating rate…",
+        fetchingRate:"Fetching live rate…",
+        tryAgain:"Please try again.",
+        invalidAmountTitle:"Enter a valid amount",
+        invalidAmountSub:"Amount must be greater than zero.",
+        sameCurrencySub:"Same currency selected.",
+        noConversion:"No conversion needed.",
+        liveMidMarket:"Live mid-market rate",
+        updatedNow:"Updated just now",
+        historyLoading:"Loading history…",
+        historyNoData:"No history data available.",
+        historyFail:"Could not load history.",
+        volLabel:"Volatility",
+        volLow:"Low",
+        volMed:"Medium",
+        volHigh:"High",
+        volNotEnough:"Volatility: not enough data",
+        highLow:"High/Low",
+        subscribing:"Subscribing…",
+        enterEmail:"Please enter your email.",
+        chooseDifferentPair:"Please choose two different currencies for the email pair.",
+        subscribedOk:"Subscribed ✅ Check your inbox soon.",
+        failedPrefix:"Failed ❌ ",
+        networkErrorPrefix:"Network error ❌ "
+      },
 
-    const chartCanvas = document.getElementById("rateChart");
-    const chartPairLabel = document.getElementById("chartPairLabel");
-    const chartMeta = document.getElementById("chartMeta");
-    const trendList = document.getElementById("trendList");
+      ar: {
+        converterTitle:"محوّل العملات المباشر",
+        converterSubtitle:"حوّل العملات فوراً باستخدام أسعار صرف حية. تحويل تلقائي، اتجاه ٧/٣٠ يوم وسنة، مؤشر تذبذب، الأزواج الرائجة، وتنبيهات بريدية.",
+        amountLabel:"المبلغ",
+        currenciesLabel:"العملات",
+        swapBtn:"⇆ تبديل",
+        convertBtn:"تحويل",
+        copyBtn:"نسخ",
+        copied:"تم النسخ!",
+        enterAmount:"أدخل مبلغاً",
+        resultPlaceholder:"ستظهر النتيجة هنا.",
+        trendTitle:"اتجاه السعر",
+        range7d:"٧ أيام",
+        range30d:"٣٠ يوم",
+        range1y:"سنة",
+        trendingTitle:"الأزواج الرائجة",
+        strengthTitle:"أقوى / أضعف العملات اليوم",
+        strongest:"الأقوى",
+        weakest:"الأضعف",
+        vsUsd24h:"مقابل الدولار (٢٤ ساعة)",
+        loading:"جارٍ التحميل...",
+        trendsFail:"تعذر تحميل الاتجاهات.",
+        subscribeTitle:"تنبيهات سعر الصرف لأي زوج",
+        subscribeDesc:"اختر زوج العملات الذي تريد متابعته واستلم تحديثات يومية أو أسبوعية. يمكنك إلغاء الاشتراك في أي وقت.",
+        emailPlaceholder:"بريدك الإلكتروني",
+        dailyUpdates:"تحديثات يومية",
+        weeklyUpdates:"تحديثات أسبوعية",
+        subscribeBtn:"اشتراك",
+        useConverterPair:"استخدم زوج المحوّل",
+        pairHint:"ملاحظة: يمكنك اختيار زوج مختلف عن المحوّل أعلاه.",
+        subscribeNote:"ستتضمن كل رسالة رابطاً لإلغاء الاشتراك.",
+        adTop:"مساحة إعلان (أعلى الصفحة) — لإعلانات Google لاحقاً",
+        adMid:"مساحة إعلان (300×250) — لإعلانات Google لاحقاً",
+        adBottom:"مساحة إعلان (أسفل الصفحة) — لإعلانات Google لاحقاً",
 
-    const subscribeForm = document.getElementById("subscribeForm");
-    const subFromInput = document.getElementById("subFrom");
-    const subToInput = document.getElementById("subTo");
-    const subscribeStatus = document.getElementById("subscribeStatus");
-    const subscribeBtn = document.getElementById("subscribeBtn");
+        converting:"جارٍ التحويل…",
+        updatingRate:"تحديث السعر…",
+        fetchingRate:"جلب السعر الحي…",
+        tryAgain:"يرجى المحاولة مرة أخرى.",
+        invalidAmountTitle:"أدخل مبلغاً صالحاً",
+        invalidAmountSub:"يجب أن يكون المبلغ أكبر من صفر.",
+        sameCurrencySub:"تم اختيار نفس العملة.",
+        noConversion:"لا حاجة للتحويل.",
+        liveMidMarket:"سعر حي (سعر السوق المتوسط)",
+        updatedNow:"تم التحديث الآن",
+        historyLoading:"جارٍ تحميل البيانات…",
+        historyNoData:"لا توجد بيانات تاريخية متاحة.",
+        historyFail:"تعذر تحميل البيانات.",
+        volLabel:"مؤشر التذبذب",
+        volLow:"منخفض",
+        volMed:"متوسط",
+        volHigh:"مرتفع",
+        volNotEnough:"مؤشر التذبذب: بيانات غير كافية",
+        highLow:"أعلى/أدنى",
+        subscribing:"جارٍ الاشتراك…",
+        enterEmail:"يرجى إدخال البريد الإلكتروني.",
+        chooseDifferentPair:"يرجى اختيار عملتين مختلفتين لزوج البريد.",
+        subscribedOk:"تم الاشتراك ✅ تفقد بريدك قريباً.",
+        failedPrefix:"فشل ❌ ",
+        networkErrorPrefix:"خطأ بالشبكة ❌ "
+      },
 
-    let chartCtx = chartCanvas.getContext("2d");
-    let chartData = null;
+      // Note: translations are "good enough" UI-level; you can refine later.
+      es: {
+        converterTitle:"Convertidor de Divisas en Vivo",
+        converterSubtitle:"Convierte al instante con tipos en tiempo real. Auto-conversión, tendencia 7/30 días y 1 año, volatilidad, pares en tendencia y alertas por email.",
+        amountLabel:"Importe", currenciesLabel:"Monedas",
+        swapBtn:"⇆ Intercambiar", convertBtn:"Convertir",
+        copyBtn:"Copiar", copied:"¡Copiado!",
+        enterAmount:"Introduce un importe", resultPlaceholder:"Tu resultado aparecerá aquí.",
+        trendTitle:"Tendencia del tipo", range7d:"7D", range30d:"30D", range1y:"1A",
+        trendingTitle:"Pares en tendencia", strengthTitle:"Monedas más fuertes / más débiles hoy",
+        strongest:"Más fuertes", weakest:"Más débiles", vsUsd24h:"vs USD (24h)",
+        loading:"Cargando...", trendsFail:"No se pudieron cargar las tendencias.",
+        subscribeTitle:"Emails para cualquier par", subscribeDesc:"Elige el par y recibe actualizaciones diarias o semanales. Baja cuando quieras.",
+        emailPlaceholder:"Tu correo", dailyUpdates:"Diarias", weeklyUpdates:"Semanales",
+        subscribeBtn:"Suscribirse", useConverterPair:"Usar par del convertidor",
+        pairHint:"Consejo: puedes elegir un par distinto.", subscribeNote:"Cada email incluye enlace de baja.",
+        adTop:"Espacio publicitario (Arriba) — Google Ads en el futuro",
+        adMid:"Espacio publicitario (300×250) — Google Ads en el futuro",
+        adBottom:"Espacio publicitario (Abajo) — Google Ads en el futuro",
+        converting:"Convirtiendo…", updatingRate:"Actualizando…", fetchingRate:"Cargando tipo…",
+        tryAgain:"Inténtalo de nuevo.", invalidAmountTitle:"Importe válido", invalidAmountSub:"Debe ser mayor que cero.",
+        sameCurrencySub:"Misma moneda.", noConversion:"No hace falta convertir.",
+        liveMidMarket:"Tipo medio de mercado", updatedNow:"Actualizado ahora",
+        historyLoading:"Cargando historial…", historyNoData:"Sin datos históricos.", historyFail:"No se pudo cargar el historial.",
+        volLabel:"Volatilidad", volLow:"Baja", volMed:"Media", volHigh:"Alta", volNotEnough:"Volatilidad: sin datos",
+        highLow:"Máx/Mín",
+        subscribing:"Suscribiendo…", enterEmail:"Introduce tu correo.", chooseDifferentPair:"Elige dos monedas diferentes.",
+        subscribedOk:"Suscrito ✅ Revisa tu correo.", failedPrefix:"Falló ❌ ", networkErrorPrefix:"Error de red ❌ "
+      },
 
-    function populateDropdowns() {
-      currencyList.forEach(c => {
-        const label = `${c.flag} ${c.code} — ${c.name}`;
-        const opt1 = new Option(label, c.code);
-        const opt2 = new Option(label, c.code);
-        fromSelect.add(opt1);
-        toSelect.add(opt2);
+      fr: {
+        converterTitle:"Convertisseur de Devises en Direct",
+        converterSubtitle:"Conversion instantanée avec taux en temps réel. Auto, tendance 7/30 jours et 1 an, volatilité, paires tendance et alertes email.",
+        amountLabel:"Montant", currenciesLabel:"Devises",
+        swapBtn:"⇆ Inverser", convertBtn:"Convertir",
+        copyBtn:"Copier", copied:"Copié !",
+        enterAmount:"Saisissez un montant", resultPlaceholder:"Votre résultat apparaîtra ici.",
+        trendTitle:"Tendance", range7d:"7J", range30d:"30J", range1y:"1A",
+        trendingTitle:"Paires tendance", strengthTitle:"Devises les plus fortes / plus faibles",
+        strongest:"Plus fortes", weakest:"Plus faibles", vsUsd24h:"vs USD (24h)",
+        loading:"Chargement...", trendsFail:"Impossible de charger les tendances.",
+        subscribeTitle:"Emails pour n’importe quelle paire", subscribeDesc:"Choisissez la paire et recevez des mises à jour. Désinscription à tout moment.",
+        emailPlaceholder:"Votre email", dailyUpdates:"Quotidiennes", weeklyUpdates:"Hebdomadaires",
+        subscribeBtn:"S’abonner", useConverterPair:"Utiliser la paire du convertisseur",
+        pairHint:"Astuce : vous pouvez choisir une autre paire.", subscribeNote:"Chaque email contient un lien de désinscription.",
+        adTop:"Espace pub (Haut) — Google Ads plus tard",
+        adMid:"Espace pub (300×250) — Google Ads plus tard",
+        adBottom:"Espace pub (Bas) — Google Ads plus tard",
+        converting:"Conversion…", updatingRate:"Mise à jour…", fetchingRate:"Récupération du taux…",
+        tryAgain:"Veuillez réessayer.", invalidAmountTitle:"Montant valide", invalidAmountSub:"Doit être supérieur à zéro.",
+        sameCurrencySub:"Même devise.", noConversion:"Aucune conversion nécessaire.",
+        liveMidMarket:"Taux interbancaire", updatedNow:"Mis à jour",
+        historyLoading:"Chargement historique…", historyNoData:"Aucune donnée.", historyFail:"Historique indisponible.",
+        volLabel:"Volatilité", volLow:"Faible", volMed:"Moyenne", volHigh:"Élevée", volNotEnough:"Volatilité : données insuffisantes",
+        highLow:"Haut/Bas",
+        subscribing:"Abonnement…", enterEmail:"Saisissez votre email.", chooseDifferentPair:"Choisissez deux devises différentes.",
+        subscribedOk:"Abonné ✅ Vérifiez votre boîte mail.", failedPrefix:"Échec ❌ ", networkErrorPrefix:"Erreur réseau ❌ "
+      },
+
+      de: {
+        converterTitle:"Live Währungsrechner",
+        converterSubtitle:"Sofort umrechnen mit Echtzeitkursen. Auto-Umrechnung, 7/30 Tage & 1 Jahr Trend, Volatilität, Trend-Paare und E-Mail-Alerts.",
+        amountLabel:"Betrag", currenciesLabel:"Währungen",
+        swapBtn:"⇆ Tauschen", convertBtn:"Umrechnen",
+        copyBtn:"Kopieren", copied:"Kopiert!",
+        enterAmount:"Betrag eingeben", resultPlaceholder:"Ergebnis erscheint hier.",
+        trendTitle:"Kursverlauf", range7d:"7T", range30d:"30T", range1y:"1J",
+        trendingTitle:"Trend-Paare", strengthTitle:"Stärkste / Schwächste heute",
+        strongest:"Stärkste", weakest:"Schwächste", vsUsd24h:"vs USD (24h)",
+        loading:"Lädt...", trendsFail:"Trends konnten nicht geladen werden.",
+        subscribeTitle:"E-Mails für jedes Paar", subscribeDesc:"Paar wählen und täglich/wöchentlich Updates erhalten. Jederzeit abmelden.",
+        emailPlaceholder:"Deine E-Mail", dailyUpdates:"Täglich", weeklyUpdates:"Wöchentlich",
+        subscribeBtn:"Abonnieren", useConverterPair:"Converter-Paar nutzen",
+        pairHint:"Tipp: anderes Paar möglich.", subscribeNote:"Jede E-Mail enthält Abmeldelink.",
+        adTop:"Werbeplatz (Oben) — Google Ads später",
+        adMid:"Werbeplatz (300×250) — Google Ads später",
+        adBottom:"Werbeplatz (Unten) — Google Ads später",
+        converting:"Wird umgerechnet…", updatingRate:"Aktualisieren…", fetchingRate:"Live-Kurs laden…",
+        tryAgain:"Bitte erneut versuchen.", invalidAmountTitle:"Gültigen Betrag eingeben", invalidAmountSub:"Muss größer als 0 sein.",
+        sameCurrencySub:"Gleiche Währung.", noConversion:"Keine Umrechnung nötig.",
+        liveMidMarket:"Mid-Market-Kurs", updatedNow:"Gerade aktualisiert",
+        historyLoading:"Historie laden…", historyNoData:"Keine Daten.", historyFail:"Historie nicht verfügbar.",
+        volLabel:"Volatilität", volLow:"Niedrig", volMed:"Mittel", volHigh:"Hoch", volNotEnough:"Volatilität: zu wenig Daten",
+        highLow:"Hoch/Tief",
+        subscribing:"Abonnieren…", enterEmail:"E-Mail eingeben.", chooseDifferentPair:"Zwei unterschiedliche Währungen wählen.",
+        subscribedOk:"Abonniert ✅ Postfach prüfen.", failedPrefix:"Fehlgeschlagen ❌ ", networkErrorPrefix:"Netzwerkfehler ❌ "
+      },
+
+      tr: {
+        converterTitle:"Canlı Döviz Çevirici",
+        converterSubtitle:"Gerçek zamanlı kurlarla anında çeviri. Otomatik çeviri, 7/30 gün ve 1 yıl trend, volatilite, trend pariteler ve e-posta bildirimleri.",
+        amountLabel:"Tutar", currenciesLabel:"Para birimleri",
+        swapBtn:"⇆ Değiştir", convertBtn:"Çevir",
+        copyBtn:"Kopyala", copied:"Kopyalandı!",
+        enterAmount:"Tutar girin", resultPlaceholder:"Sonuç burada görünecek.",
+        trendTitle:"Kur trendi", range7d:"7G", range30d:"30G", range1y:"1Y",
+        trendingTitle:"Trend pariteler", strengthTitle:"Bugünün en güçlü / en zayıf para birimleri",
+        strongest:"En güçlü", weakest:"En zayıf", vsUsd24h:"USD’ye göre (24s)",
+        loading:"Yükleniyor...", trendsFail:"Trendler yüklenemedi.",
+        subscribeTitle:"Her parite için e-posta", subscribeDesc:"Pariteyi seçin, günlük/haftalık güncellemeler alın. İstediğiniz zaman iptal edin.",
+        emailPlaceholder:"E-posta", dailyUpdates:"Günlük", weeklyUpdates:"Haftalık",
+        subscribeBtn:"Abone ol", useConverterPair:"Çevirici paritesini kullan",
+        pairHint:"İpucu: farklı parite seçebilirsiniz.", subscribeNote:"Her e-postada iptal bağlantısı vardır.",
+        adTop:"Reklam Alanı (Üst) — Google Ads daha sonra",
+        adMid:"Reklam Alanı (300×250) — Google Ads daha sonra",
+        adBottom:"Reklam Alanı (Alt) — Google Ads daha sonra",
+        converting:"Çevriliyor…", updatingRate:"Güncelleniyor…", fetchingRate:"Canlı kur alınıyor…",
+        tryAgain:"Lütfen tekrar deneyin.", invalidAmountTitle:"Geçerli tutar girin", invalidAmountSub:"0’dan büyük olmalı.",
+        sameCurrencySub:"Aynı para birimi.", noConversion:"Çeviri gerekmez.",
+        liveMidMarket:"Orta piyasa kuru", updatedNow:"Az önce güncellendi",
+        historyLoading:"Geçmiş yükleniyor…", historyNoData:"Veri yok.", historyFail:"Geçmiş yüklenemedi.",
+        volLabel:"Volatilite", volLow:"Düşük", volMed:"Orta", volHigh:"Yüksek", volNotEnough:"Volatilite: veri yok",
+        highLow:"Yüksek/Düşük",
+        subscribing:"Abone olunuyor…", enterEmail:"E-posta girin.", chooseDifferentPair:"İki farklı para birimi seçin.",
+        subscribedOk:"Abone olundu ✅ Gelen kutunuzu kontrol edin.", failedPrefix:"Başarısız ❌ ", networkErrorPrefix:"Ağ hatası ❌ "
+      },
+
+      hi: {
+        converterTitle:"लाइव करेंसी कन्वर्टर",
+        converterSubtitle:"रियल-टाइम रेट के साथ तुरंत कन्वर्ट करें। ऑटो-कन्वर्ट, 7/30 दिन और 1 साल ट्रेंड, वोलैटिलिटी, ट्रेंडिंग पेयर्स और ईमेल अलर्ट।",
+        amountLabel:"राशि", currenciesLabel:"मुद्राएँ",
+        swapBtn:"⇆ बदलें", convertBtn:"कन्वर्ट",
+        copyBtn:"कॉपी", copied:"कॉपी हो गया!",
+        enterAmount:"राशि दर्ज करें", resultPlaceholder:"परिणाम यहाँ दिखेगा।",
+        trendTitle:"रेट ट्रेंड", range7d:"7 दिन", range30d:"30 दिन", range1y:"1 साल",
+        trendingTitle:"ट्रेंडिंग पेयर्स", strengthTitle:"आज की सबसे मजबूत / सबसे कमजोर मुद्राएँ",
+        strongest:"सबसे मजबूत", weakest:"सबसे कमजोर", vsUsd24h:"USD के मुकाबले (24h)",
+        loading:"लोड हो रहा है...", trendsFail:"ट्रेंड लोड नहीं हो सके।",
+        subscribeTitle:"किसी भी पेयर के लिए ईमेल", subscribeDesc:"पेयर चुनें और दैनिक/साप्ताहिक अपडेट पाएं। कभी भी अनसब्सक्राइब करें।",
+        emailPlaceholder:"आपका ईमेल", dailyUpdates:"दैनिक", weeklyUpdates:"साप्ताहिक",
+        subscribeBtn:"सब्सक्राइब", useConverterPair:"कन्वर्टर वाला पेयर उपयोग करें",
+        pairHint:"टिप: आप अलग पेयर चुन सकते हैं।", subscribeNote:"हर ईमेल में अनसब्सक्राइब लिंक होगा।",
+        adTop:"विज्ञापन स्थान (ऊपर) — भविष्य में Google Ads",
+        adMid:"विज्ञापन स्थान (300×250) — भविष्य में Google Ads",
+        adBottom:"विज्ञापन स्थान (नीचे) — भविष्य में Google Ads",
+        converting:"कन्वर्ट हो रहा है…", updatingRate:"अपडेट हो रहा है…", fetchingRate:"लाइव रेट लोड हो रही है…",
+        tryAgain:"कृपया फिर से कोशिश करें।", invalidAmountTitle:"मान्य राशि दर्ज करें", invalidAmountSub:"0 से अधिक होना चाहिए।",
+        sameCurrencySub:"एक ही मुद्रा चुनी है।", noConversion:"कन्वर्ज़न की जरूरत नहीं।",
+        liveMidMarket:"मिड-मार्केट रेट", updatedNow:"अभी अपडेट हुआ",
+        historyLoading:"हिस्ट्री लोड हो रही है…", historyNoData:"हिस्ट्री डेटा नहीं है।", historyFail:"हिस्ट्री लोड नहीं हुई।",
+        volLabel:"वोलैटिलिटी", volLow:"कम", volMed:"मध्यम", volHigh:"ज्यादा", volNotEnough:"वोलैटिलिटी: डेटा नहीं",
+        highLow:"High/Low",
+        subscribing:"सब्सक्राइब हो रहा है…", enterEmail:"ईमेल दर्ज करें।", chooseDifferentPair:"दो अलग मुद्राएँ चुनें।",
+        subscribedOk:"सब्सक्राइब ✅ इनबॉक्स देखें।", failedPrefix:"फेल ❌ ", networkErrorPrefix:"नेटवर्क त्रुटि ❌ "
+      }
+    };
+
+    function getLangFromUrl(){
+      const p=new URLSearchParams(window.location.search);
+      const v=(p.get("lang")||"").toLowerCase();
+      return SUPPORTED_LANGS.includes(v)?v:null;
+    }
+
+    function getLangFromBrowser(){
+      const prefs=(navigator.languages && navigator.languages.length)?navigator.languages:[navigator.language||"en"];
+      for (const raw of prefs){
+        const lang=String(raw||"").toLowerCase();
+        const base=lang.split("-")[0];
+        if (SUPPORTED_LANGS.includes(base)) return base;
+      }
+      return "en";
+    }
+
+    let CURRENT_LANG="en";
+    function t(key){ return (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][key]) || I18N.en[key] || key; }
+
+    function applyLang(lang){
+      CURRENT_LANG = SUPPORTED_LANGS.includes(lang)?lang:"en";
+      localStorage.setItem("et_lang", CURRENT_LANG);
+
+      const isRtl=(CURRENT_LANG==="ar");
+      document.documentElement.lang=CURRENT_LANG;
+      document.documentElement.dir=isRtl?"rtl":"ltr";
+      document.body.classList.toggle("rtl", isRtl);
+
+      const titleMap={
+        en:"Live Currency Converter | Real-Time Exchange Rates",
+        ar:"محوّل العملات المباشر | أسعار صرف حية",
+        es:"Convertidor de Divisas | Tipos en Tiempo Real",
+        fr:"Convertisseur de Devises | Taux en Temps Réel",
+        de:"Währungsrechner | Echtzeit-Wechselkurse",
+        tr:"Canlı Döviz Çevirici | Gerçek Zamanlı Kurlar",
+        hi:"लाइव करेंसी कन्वर्टर | रियल-टाइम रेट"
+      };
+      document.title = titleMap[CURRENT_LANG] || titleMap.en;
+
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const key=el.getAttribute("data-i18n");
+        if (key) el.textContent=t(key);
       });
 
-      fromSelect.value = "USD";
-      toSelect.value = "EUR";
-      syncSubscribePair();
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+        const key=el.getAttribute("data-i18n-placeholder");
+        if (key) el.setAttribute("placeholder", t(key));
+      });
+
+      // Re-render volatility line in new language
+      updateVolatilityLine(LAST_VOL_INFO);
     }
 
-    function syncSubscribePair() {
-      if (subFromInput) subFromInput.value = fromSelect.value;
-      if (subToInput) subToInput.value = toSelect.value;
+    // ==========
+    //  Data/DOM
+    // ==========
+    const currencyList = [
+      { code:"USD", name:"United States Dollar", flag:"🇺🇸" },
+      { code:"EUR", name:"Euro", flag:"🇪🇺" },
+      { code:"GBP", name:"British Pound", flag:"🇬🇧" },
+      { code:"JPY", name:"Japanese Yen", flag:"🇯🇵" },
+      { code:"AUD", name:"Australian Dollar", flag:"🇦🇺" },
+      { code:"CAD", name:"Canadian Dollar", flag:"🇨🇦" },
+      { code:"TRY", name:"Turkish Lira", flag:"🇹🇷" },
+      { code:"AED", name:"UAE Dirham", flag:"🇦🇪" },
+      { code:"SAR", name:"Saudi Riyal", flag:"🇸🇦" },
+      { code:"INR", name:"Indian Rupee", flag:"🇮🇳" },
+      { code:"CNY", name:"Chinese Yuan", flag:"🇨🇳" },
+      { code:"ZAR", name:"South African Rand", flag:"🇿🇦" },
+      { code:"BRL", name:"Brazilian Real", flag:"🇧🇷" },
+      { code:"MXN", name:"Mexican Peso", flag:"🇲🇽" },
+      { code:"SGD", name:"Singapore Dollar", flag:"🇸🇬" }
+    ];
+
+    // Market moves uses Frankfurter (ECB-based). Keep a safer set to avoid "unsupported currency" failures.
+    const BASE_FOR_MARKET="USD";
+    const MAJORS_MARKET=["EUR","GBP","JPY","AUD","CAD","TRY","INR","CNY","BRL","MXN","ZAR","SGD"];
+
+    const langSelect = document.getElementById("langSelect");
+
+    const amountInput=document.getElementById("amountInput");
+    const fromSelect=document.getElementById("fromCurrency");
+    const toSelect=document.getElementById("toCurrency");
+    const convertButton=document.getElementById("convertButton");
+    const swapButton=document.getElementById("swapButton");
+    const copyButton=document.getElementById("copyButton");
+
+    const resultMain=document.getElementById("resultMain");
+    const resultSub=document.getElementById("resultSub");
+    const rateLine=document.getElementById("rateLine");
+    const reverseLine=document.getElementById("reverseLine");
+    const statusLine=document.getElementById("statusLine");
+    const errorLine=document.getElementById("errorLine");
+
+    const chartCanvas=document.getElementById("rateChart");
+    const chartPairLabel=document.getElementById("chartPairLabel");
+    const chartMeta=document.getElementById("chartMeta");
+    const volatilityLine=document.getElementById("volatilityLine");
+
+    const trendList=document.getElementById("trendList");
+    const strongList=document.getElementById("strongList");
+    const weakList=document.getElementById("weakList");
+
+    const subscribeForm=document.getElementById("subscribeForm");
+    const subscribeStatus=document.getElementById("subscribeStatus");
+    const subscribeBtn=document.getElementById("subscribeBtn");
+    const subFromSelect=document.getElementById("subFromSelect");
+    const subToSelect=document.getElementById("subToSelect");
+    const useConverterPairBtn=document.getElementById("useConverterPair");
+
+    const range7dBtn=document.getElementById("range7d");
+    const range30dBtn=document.getElementById("range30d");
+    const range1yBtn=document.getElementById("range1y");
+
+    let chartCtx=chartCanvas.getContext("2d");
+    let chartData=null;
+
+    let selectedRange="7d";
+    let subscribePairOverridden=false;
+    let marketLoaded=false;
+
+    // keep last volatility so language switch can re-render
+    let LAST_VOL_INFO=null;
+
+    // ==================
+    //  Formatting helpers
+    // ==================
+    function getLocale(){
+      // Intl works best with language tags; for RTL Arabic it’s fine.
+      // You can map to regional variants later if you want (e.g., es-ES, fr-FR).
+      return CURRENT_LANG;
     }
 
-    function setLoadingState(msg = "Fetching live rate…") {
-      resultMain.textContent = "Converting…";
-      resultSub.textContent = "";
-      rateLine.textContent = "";
-      reverseLine.textContent = "";
-      statusLine.textContent = msg;
-      errorLine.textContent = "";
-      copyButton.disabled = true;
+    function fmtNumber(num, decimals=null){
+      const n = Number(num);
+      if (!Number.isFinite(n)) return String(num);
+      const opts = (decimals === null)
+        ? { maximumFractionDigits: 6 }
+        : { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
+      try { return new Intl.NumberFormat(getLocale(), opts).format(n); }
+      catch { return n.toFixed(decimals ?? 6); }
     }
 
-    function setErrorState(message) {
-      errorLine.textContent = message;
-      statusLine.textContent = "Please try again.";
-      copyButton.disabled = true;
+    function debounce(fn, wait=260){
+      let tmr=null;
+      return (...args)=>{
+        clearTimeout(tmr);
+        tmr=setTimeout(()=>fn(...args), wait);
+      };
     }
 
-    // Uses your /api/rates Worker
-    async function convertCurrency(auto = false) {
+    function formatDate(d){
+      const y=d.getFullYear();
+      const m=String(d.getMonth()+1).padStart(2,"0");
+      const day=String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function daysAgo(n){
+      const d=new Date();
+      d.setDate(d.getDate()-n);
+      return d;
+    }
+
+    // ==========
+    //  Dropdowns
+    // ==========
+    function populateDropdown(selectEl){
+      selectEl.innerHTML="";
+      currencyList.forEach(c=>{
+        const label=`${c.flag} ${c.code} — ${c.name}`;
+        selectEl.add(new Option(label, c.code));
+      });
+    }
+
+    function initDropdowns(){
+      populateDropdown(fromSelect);
+      populateDropdown(toSelect);
+      populateDropdown(subFromSelect);
+      populateDropdown(subToSelect);
+
+      fromSelect.value="USD";
+      toSelect.value="EUR";
+
+      subFromSelect.value=fromSelect.value;
+      subToSelect.value=toSelect.value;
+      subscribePairOverridden=false;
+    }
+
+    function syncSubscribeToConverter(force=false){
+      if (force) subscribePairOverridden=false;
+      if (!subscribePairOverridden){
+        subFromSelect.value=fromSelect.value;
+        subToSelect.value=toSelect.value;
+      }
+    }
+
+    // ===================
+    //  Conversion (FAST)
+    //  NOTE: does NOT refresh chart/market (avoids heavy calls)
+    // ===================
+    function setLoadingState(msg){
+      resultMain.textContent=t("converting");
+      resultSub.textContent="";
+      rateLine.textContent="";
+      reverseLine.textContent="";
+      statusLine.textContent=msg;
+      errorLine.textContent="";
+      copyButton.disabled=true;
+    }
+
+    function setErrorState(message){
+      errorLine.textContent=message;
+      statusLine.textContent=t("tryAgain");
+      copyButton.disabled=true;
+    }
+
+    async function convertCurrency(auto=false){
       const amount = parseFloat(amountInput.value);
-      const from = fromSelect.value;
-      const to = toSelect.value;
+      const from=fromSelect.value;
+      const to=toSelect.value;
 
-      syncSubscribePair();
+      // keep subscription pair aligned unless user overrides
+      syncSubscribeToConverter(false);
 
-      if (!amount || amount <= 0) {
-        resultMain.textContent = "Enter a valid amount";
-        resultSub.textContent = "Amount must be greater than zero.";
-        rateLine.textContent = "";
-        reverseLine.textContent = "";
-        statusLine.textContent = "";
-        errorLine.textContent = "";
-        copyButton.disabled = true;
+      if (!amount || amount <= 0){
+        resultMain.textContent=t("invalidAmountTitle");
+        resultSub.textContent=t("invalidAmountSub");
+        rateLine.textContent="";
+        reverseLine.textContent="";
+        statusLine.textContent="";
+        errorLine.textContent="";
+        copyButton.disabled=true;
         return;
       }
 
-      if (from === to) {
-        resultMain.textContent = `${amount.toFixed(2)} ${from} = ${amount.toFixed(2)} ${to}`;
-        resultSub.textContent = "Same currency selected.";
-        rateLine.textContent = `1 ${from} = 1 ${to}`;
-        reverseLine.textContent = `1 ${to} = 1 ${from}`;
-        statusLine.textContent = "No conversion needed.";
-        errorLine.textContent = "";
-        copyButton.disabled = false;
-        updateChart(from, to);
+      if (from === to){
+        const shown = `${fmtNumber(amount, 2)} ${from} = ${fmtNumber(amount, 2)} ${to}`;
+        resultMain.textContent=shown;
+        resultSub.textContent=t("sameCurrencySub");
+        rateLine.textContent=`1 ${from} = 1 ${to}`;
+        reverseLine.textContent=`1 ${to} = 1 ${from}`;
+        statusLine.textContent=t("noConversion");
+        errorLine.textContent="";
+        copyButton.disabled=false;
         return;
       }
 
-      setLoadingState(auto ? "Updating rate…" : "Fetching live rate…");
+      setLoadingState(auto ? t("updatingRate") : t("fetchingRate"));
 
-      try {
-        const url = `/api/rates?from=${from}&to=${to}&amount=${amount}`;
-        const res = await fetch(url);
-        const data = await res.json();
+      try{
+        const url=`/api/rates?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&amount=${encodeURIComponent(amount)}`;
+        const res=await fetch(url);
+        const data=await res.json();
 
-        if (!res.ok || data.error) {
-          throw new Error(data.error || "Conversion failed");
+        if (!res.ok || data.error) throw new Error(data.error || "Conversion failed");
+
+        // Try to treat as numbers; fallback to strings if your Worker returns preformatted values
+        const rateNum = Number(data.rate);
+        const resultNum = Number(data.result);
+
+        const amountTxt = fmtNumber(amount, null);
+        const resultTxt = Number.isFinite(resultNum) ? fmtNumber(resultNum, null) : String(data.result);
+        const rateTxt = Number.isFinite(rateNum) ? fmtNumber(rateNum, 6) : String(data.rate);
+
+        let reverseTxt = "";
+        if (Number.isFinite(rateNum) && rateNum !== 0){
+          reverseTxt = fmtNumber(1 / rateNum, 6);
         }
 
-        const converted = data.result;
-        const forward = data.rate;
-        const reverse = 1 / forward;
-
-        resultMain.textContent = `${amount} ${from} = ${converted} ${to}`;
-        resultSub.textContent = "Live mid-market rate";
-        copyButton.disabled = false;
-
-        rateLine.textContent = `1 ${from} ≈ ${forward} ${to}`;
-        reverseLine.textContent = `1 ${to} ≈ ${reverse.toFixed(6)} ${from}`;
-        statusLine.textContent = "Updated just now";
+        resultMain.textContent = `${amountTxt} ${from} = ${resultTxt} ${to}`;
+        resultSub.textContent = t("liveMidMarket");
+        rateLine.textContent = `1 ${from} ≈ ${rateTxt} ${to}`;
+        reverseLine.textContent = reverseTxt ? `1 ${to} ≈ ${reverseTxt} ${from}` : "";
+        statusLine.textContent = t("updatedNow");
         errorLine.textContent = "";
-
-        updateChart(from, to);
-      } catch (err) {
+        copyButton.disabled = false;
+      } catch(err){
         setErrorState(err.message || "Error fetching rate");
       }
     }
 
-    function swapCurrencies() {
-      const temp = fromSelect.value;
-      fromSelect.value = toSelect.value;
-      toSelect.value = temp;
+    function swapCurrencies(){
+      const tmp=fromSelect.value;
+      fromSelect.value=toSelect.value;
+      toSelect.value=tmp;
+
+      syncSubscribeToConverter(false);
       convertCurrency(true);
+      updateChart(fromSelect.value, toSelect.value); // chart refresh only on currency change
     }
 
-    async function updateChart(from, to) {
-      chartPairLabel.textContent = `${from} → ${to}`;
-      chartMeta.textContent = "Loading 7-day history…";
+    // ===================
+    //  Chart (7D/30D/1Y)
+    // ===================
+    function setRange(rangeKey){
+      selectedRange = rangeKey;
+      range7dBtn.classList.toggle("active", rangeKey==="7d");
+      range30dBtn.classList.toggle("active", rangeKey==="30d");
+      range1yBtn.classList.toggle("active", rangeKey==="1y");
+      updateChart(fromSelect.value, toSelect.value);
+    }
 
-      try {
-        const today = new Date();
-        const end = formatDate(today);
-        const startDate = new Date(today);
-        startDate.setDate(startDate.getDate() - 6);
-        const start = formatDate(startDate);
+    function stdev(arr){
+      if (!arr || arr.length < 2) return null;
+      const mean = arr.reduce((a,b)=>a+b,0)/arr.length;
+      const v = arr.reduce((a,b)=>a + Math.pow(b-mean,2),0)/(arr.length-1);
+      return Math.sqrt(v);
+    }
 
-        const url = `https://api.frankfurter.app/${start}..${end}?from=${from}&to=${to}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("History fetch error");
-        const data = await res.json();
-
-        const dates = Object.keys(data.rates).sort();
-        const values = dates.map(d => data.rates[d][to]);
-
-        chartData = { dates, values };
-        drawChart();
-        if (dates.length > 0) {
-          chartMeta.textContent = `Last 7 days • ${dates[0]} → ${dates[dates.length - 1]}`;
-        } else {
-          chartMeta.textContent = "No history data available.";
-        }
-      } catch (err) {
-        chartMeta.textContent = "Could not load history.";
+    function downsample(dates, values, maxPoints=140){
+      if (values.length <= maxPoints) return { dates, values };
+      const step=Math.ceil(values.length/maxPoints);
+      const nd=[], nv=[];
+      for (let i=0;i<values.length;i+=step){
+        nd.push(dates[i]);
+        nv.push(values[i]);
       }
-
-      updateTrending();
+      if (nd[nd.length-1] !== dates[dates.length-1]){
+        nd.push(dates[dates.length-1]);
+        nv.push(values[values.length-1]);
+      }
+      return { dates: nd, values: nv };
     }
 
-    function formatDate(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
+    function computeVolatilityInfo(values){
+      if (!values || values.length < 5) return { ok:false };
+      const returns=[];
+      for (let i=1;i<values.length;i++){
+        const prev=values[i-1], cur=values[i];
+        if (prev && cur) returns.push(((cur-prev)/prev)*100);
+      }
+      const sd=stdev(returns);
+      if (!sd) return { ok:false };
+
+      let level="low";
+      if (sd >= 0.8) level="high";
+      else if (sd >= 0.3) level="med";
+
+      return { ok:true, sd, level };
     }
 
-    function drawChart() {
-      if (!chartData || chartData.values.length === 0) {
-        chartCtx.clearRect(0, 0, chartCanvas.width, chartCanvas.height);
+    function updateVolatilityLine(volInfo){
+      if (!volInfo || !volInfo.ok){
+        volatilityLine.textContent = t("volNotEnough");
         return;
       }
+      const label=t("volLabel");
+      const levelText = volInfo.level==="low" ? t("volLow") : volInfo.level==="med" ? t("volMed") : t("volHigh");
+      const cls = volInfo.level==="low" ? "vol-low" : volInfo.level==="med" ? "vol-med" : "vol-high";
+      volatilityLine.innerHTML = `<strong>${label}:</strong> ${fmtNumber(volInfo.sd, 2)}% <span class="vol-pill ${cls}">${levelText}</span>`;
+    }
 
-      const { values } = chartData;
-      const w = chartCanvas.width;
-      const h = chartCanvas.height;
-      chartCtx.clearRect(0, 0, w, h);
+    async function updateChart(from, to){
+      chartPairLabel.textContent = `${from} → ${to}`;
 
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      const padding = 20;
+      const rangeDays = (selectedRange==="7d") ? 7 : (selectedRange==="30d") ? 30 : 365;
+      chartMeta.textContent = t("historyLoading");
+      volatilityLine.textContent = "";
 
-      const xStep = (w - padding * 2) / Math.max(values.length - 1, 1);
-      const yScale = max === min ? 1 : (h - padding * 2) / (max - min);
+      try{
+        const end=formatDate(new Date());
+        const start=formatDate(daysAgo(rangeDays-1));
+        const url=`https://api.frankfurter.app/${start}..${end}?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+        const res=await fetch(url);
+        if (!res.ok) throw new Error("History fetch error");
+        const data=await res.json();
+
+        const datesAll=Object.keys(data.rates || {}).sort();
+        const paired = datesAll
+          .map(d=>({ d, v: data.rates[d]?.[to] }))
+          .filter(x=>typeof x.v === "number");
+
+        const dates = paired.map(x=>x.d);
+        const values = paired.map(x=>x.v);
+
+        if (dates.length === 0){
+          chartData=null;
+          drawChart();
+          chartMeta.textContent = t("historyNoData");
+          LAST_VOL_INFO=null;
+          updateVolatilityLine(null);
+          return;
+        }
+
+        const ds=downsample(dates, values, selectedRange==="1y" ? 160 : 90);
+        chartData={ dates: ds.dates, values: ds.values };
+
+        drawChart();
+
+        if (values.length > 1){
+          const lo=Math.min(...values);
+          const hi=Math.max(...values);
+          chartMeta.textContent = `${t("highLow")}: ${fmtNumber(hi,6)} / ${fmtNumber(lo,6)} • ${dates[0]} → ${dates[dates.length-1]}`;
+        } else {
+          chartMeta.textContent = `${dates[0]} • ${fmtNumber(values[0],6)}`;
+        }
+
+        const volInfo=computeVolatilityInfo(values);
+        LAST_VOL_INFO=volInfo;
+        updateVolatilityLine(volInfo);
+
+      } catch(err){
+        chartData=null;
+        drawChart();
+        chartMeta.textContent = t("historyFail");
+        LAST_VOL_INFO=null;
+        updateVolatilityLine(null);
+      }
+    }
+
+    function drawChart(){
+      const w=chartCanvas.width;
+      const h=chartCanvas.height;
+      chartCtx.clearRect(0,0,w,h);
+
+      if (!chartData || !chartData.values || chartData.values.length===0) return;
+
+      const values=chartData.values;
+      const min=Math.min(...values);
+      const max=Math.max(...values);
+
+      const dpr=window.devicePixelRatio || 1;
+      const padding=22*dpr;
+      const xStep=(w - padding*2) / Math.max(values.length-1,1);
+      const yScale=(max===min) ? 1 : (h - padding*2)/(max-min);
 
       chartCtx.beginPath();
-      chartCtx.strokeStyle = "#2563eb";
-      chartCtx.lineWidth = 2;
+      chartCtx.strokeStyle="#2563eb";
+      chartCtx.lineWidth=2*dpr;
 
-      values.forEach((val, i) => {
-        const x = padding + i * xStep;
-        const y = h - padding - (val - min) * yScale;
-        if (i === 0) chartCtx.moveTo(x, y);
-        else chartCtx.lineTo(x, y);
+      values.forEach((val,i)=>{
+        const x=padding + i*xStep;
+        const y=h - padding - (val-min)*yScale;
+        if (i===0) chartCtx.moveTo(x,y);
+        else chartCtx.lineTo(x,y);
       });
-
       chartCtx.stroke();
 
-      chartCtx.fillStyle = "#2563eb";
-      values.forEach((val, i) => {
-        const x = padding + i * xStep;
-        const y = h - padding - (val - min) * yScale;
+      chartCtx.fillStyle="#2563eb";
+      values.forEach((val,i)=>{
+        const x=padding + i*xStep;
+        const y=h - padding - (val-min)*yScale;
         chartCtx.beginPath();
-        chartCtx.arc(x, y, 3, 0, Math.PI * 2);
+        chartCtx.arc(x,y,3*dpr,0,Math.PI*2);
         chartCtx.fill();
       });
     }
 
-    async function updateTrending() {
-      const base = "USD";
-      const majors = ["EUR", "GBP", "JPY", "AUD", "CAD", "TRY", "INR", "CNY", "BRL", "MXN"];
+    // ===================
+    //  Market moves (once)
+    //  Trending + Strongest/Weakest vs USD (24h)
+    // ===================
+    async function updateMarketMoves(){
+      // Avoid repeated calls; you can remove this guard if you want periodic refresh.
+      if (marketLoaded) return;
+      marketLoaded = true;
 
-      try {
-        const today = new Date();
-        const todayStr = formatDate(today);
-        const yest = new Date(today);
-        yest.setDate(yest.getDate() - 1);
-        const yestStr = formatDate(yest);
+      try{
+        const end=formatDate(new Date());
+        const start=formatDate(daysAgo(10));
+        const url=`https://api.frankfurter.app/${start}..${end}?from=${encodeURIComponent(BASE_FOR_MARKET)}&to=${encodeURIComponent(MAJORS_MARKET.join(","))}`;
+        const res=await fetch(url);
+        if (!res.ok) throw new Error("Market fetch error");
+        const data=await res.json();
 
-        const latestUrl = `https://api.frankfurter.app/latest?from=${base}&to=${majors.join(",")}`;
-        const prevUrl = `https://api.frankfurter.app/${yestStr}?from=${base}&to=${majors.join(",")}`;
+        const dates=Object.keys(data.rates || {}).sort();
+        if (dates.length < 2) throw new Error("Not enough days");
+        const latestDate=dates[dates.length-1];
+        const prevDate=dates[dates.length-2];
 
-        const [latestRes, prevRes] = await Promise.all([fetch(latestUrl), fetch(prevUrl)]);
-        if (!latestRes.ok || !prevRes.ok) throw new Error("Trending fetch error");
+        const latestRates=data.rates[latestDate];
+        const prevRates=data.rates[prevDate];
 
-        const latestData = await latestRes.json();
-        const prevData = await prevRes.json();
+        const changes = MAJORS_MARKET.map(code=>{
+          const today=latestRates?.[code];
+          const prev=prevRates?.[code];
+          if (!today || !prev) return null;
 
-        const changes = majors
-          .map(code => {
-            const todayRate = latestData.rates[code];
-            const prevRate = prevData.rates[code];
-            if (!todayRate || !prevRate) return null;
-            const diff = todayRate - prevRate;
-            const pct = (diff / prevRate) * 100;
-            return { code, pct };
-          })
-          .filter(Boolean);
+          // USD -> X move
+          const pctUsdTo = ((today-prev)/prev)*100;
 
-        changes.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
-        const top = changes.slice(0, 5);
+          // Currency strength vs USD: use inverse (X -> USD)
+          const invToday=1/today;
+          const invPrev=1/prev;
+          const pctStrength = ((invToday-invPrev)/invPrev)*100;
 
-        trendList.innerHTML = "";
-        top.forEach(item => {
-          const li = document.createElement("li");
-          li.className = "trend-item";
+          return { code, pctUsdTo, pctStrength };
+        }).filter(Boolean);
 
-          const pairSpan = document.createElement("span");
-          pairSpan.className = "trend-pair";
-          pairSpan.textContent = `${base} → ${item.code}`;
+        // Trending: biggest absolute USD->X move
+        changes.sort((a,b)=>Math.abs(b.pctUsdTo)-Math.abs(a.pctUsdTo));
+        renderTrending(changes.slice(0,5));
 
-          const changeSpan = document.createElement("span");
-          changeSpan.className = "trend-change " + (item.pct >= 0 ? "up" : "down");
-          const sign = item.pct >= 0 ? "▲" : "▼";
-          changeSpan.textContent = `${sign} ${item.pct.toFixed(2)}%`;
+        // Strength/weakness: strongest = highest pctStrength
+        const byStrength=[...changes].sort((a,b)=>b.pctStrength-a.pctStrength);
+        renderStrength(byStrength.slice(0,3), byStrength.slice(-3).reverse());
 
-          li.appendChild(pairSpan);
-          li.appendChild(changeSpan);
-          trendList.appendChild(li);
-        });
-      } catch (err) {
-        trendList.innerHTML = "";
-        const li = document.createElement("li");
-        li.className = "trend-item";
-        li.innerHTML = `<span class="trend-pair">Unable to load trends</span><span class="trend-change">–</span>`;
-        trendList.appendChild(li);
+      } catch(err){
+        trendList.innerHTML = `<li class="trend-item"><span class="trend-pair">${t("trendsFail")}</span><span class="trend-change">–</span></li>`;
+        strongList.innerHTML = `<li class="strength-item"><span class="trend-pair">—</span><span class="trend-change">–</span></li>`;
+        weakList.innerHTML = `<li class="strength-item"><span class="trend-pair">—</span><span class="trend-change">–</span></li>`;
       }
     }
 
-    function copyResult() {
-      const text = resultMain.textContent;
-      if (!text || text === "Enter an amount") return;
-      navigator.clipboard.writeText(text).then(() => {
-        const prev = copyButton.textContent;
-        copyButton.textContent = "Copied!";
-        setTimeout(() => (copyButton.textContent = prev), 1200);
+    function renderTrending(items){
+      trendList.innerHTML="";
+      items.forEach(item=>{
+        const li=document.createElement("li");
+        li.className="trend-item";
+
+        const left=document.createElement("span");
+        left.className="trend-pair";
+        left.textContent = `${BASE_FOR_MARKET} → ${item.code}`;
+
+        const right=document.createElement("span");
+        right.className = "trend-change " + (item.pctUsdTo>=0 ? "up" : "down");
+        const sign=item.pctUsdTo>=0 ? "▲" : "▼";
+        right.textContent = `${sign} ${fmtNumber(item.pctUsdTo, 2)}%`;
+
+        li.appendChild(left);
+        li.appendChild(right);
+        trendList.appendChild(li);
       });
     }
 
-    // Event wiring
-    convertButton.onclick = () => convertCurrency(false);
-    swapButton.onclick = swapCurrencies;
-    copyButton.onclick = copyResult;
+    function renderStrength(strongItems, weakItems){
+      strongList.innerHTML="";
+      weakList.innerHTML="";
 
-    amountInput.addEventListener("input", () => convertCurrency(true));
+      strongItems.forEach(item=>{
+        const li=document.createElement("li");
+        li.className="strength-item";
+        const left=document.createElement("span");
+        left.className="trend-pair";
+        left.textContent=item.code;
 
-    fromSelect.addEventListener("change", () => {
-      syncSubscribePair();
-      convertCurrency(true);
-    });
+        const right=document.createElement("span");
+        right.className = "trend-change " + (item.pctStrength>=0 ? "up" : "down");
+        const sign=item.pctStrength>=0 ? "▲" : "▼";
+        right.textContent = `${sign} ${fmtNumber(item.pctStrength, 2)}%`;
 
-    toSelect.addEventListener("change", () => {
-      syncSubscribePair();
-      convertCurrency(true);
-    });
+        li.appendChild(left);
+        li.appendChild(right);
+        strongList.appendChild(li);
+      });
 
-    // ✅ Subscription: show status + disable button + safe endpoint
-    if (subscribeForm) {
-      subscribeForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      weakItems.forEach(item=>{
+        const li=document.createElement("li");
+        li.className="strength-item";
+        const left=document.createElement("span");
+        left.className="trend-pair";
+        left.textContent=item.code;
 
-        syncSubscribePair();
+        const right=document.createElement("span");
+        right.className = "trend-change " + (item.pctStrength>=0 ? "up" : "down");
+        const sign=item.pctStrength>=0 ? "▲" : "▼";
+        right.textContent = `${sign} ${fmtNumber(item.pctStrength, 2)}%`;
 
-        const email = document.getElementById("currency-email").value.trim();
-        const frequency = document.getElementById("currency-frequency").value;
-        const from = subFromInput.value;
-        const to = subToInput.value;
-
-        // quick UI validation
-        if (!email) {
-          subscribeStatus.className = "subscribe-status bad";
-          subscribeStatus.textContent = "Please enter your email.";
-          return;
-        }
-
-        subscribeStatus.className = "subscribe-status muted";
-        subscribeStatus.textContent = "Subscribing…";
-        subscribeBtn.disabled = true;
-
-        try {
-          // ✅ Always same-origin, even on pages.dev or your custom domain
-          const endpoint = new URL("/api/rate-subscribe", window.location.origin).toString();
-
-          const res = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, frequency, from, to })
-          });
-
-          // Try JSON first; fallback to text
-          let data = null;
-          const text = await res.text();
-          try { data = JSON.parse(text); } catch { data = { success: false, error: text || ("HTTP " + res.status) }; }
-
-          if (res.ok && data && data.success) {
-            subscribeStatus.className = "subscribe-status ok";
-            subscribeStatus.textContent = "Subscribed ✅ Check your inbox soon.";
-            subscribeForm.reset();
-            syncSubscribePair(); // restore hidden pair values after reset
-          } else {
-            subscribeStatus.className = "subscribe-status bad";
-            subscribeStatus.textContent = "Failed ❌ " + (data?.error || ("HTTP " + res.status));
-          }
-        } catch (err) {
-          subscribeStatus.className = "subscribe-status bad";
-          subscribeStatus.textContent = "Network error ❌ " + (err.message || "Unknown error");
-        } finally {
-          subscribeBtn.disabled = false;
-        }
+        li.appendChild(left);
+        li.appendChild(right);
+        weakList.appendChild(li);
       });
     }
 
-    // Init
-    populateDropdowns();
-    convertCurrency(true);
+    // ==========
+    //  Copy
+    // ==========
+    function copyResult(){
+      const text=resultMain.textContent;
+      if (!text || text===t("enterAmount")) return;
+      navigator.clipboard.writeText(text).then(()=>{
+        const prev=copyButton.textContent;
+        copyButton.textContent=t("copied");
+        setTimeout(()=>{ copyButton.textContent = t("copyBtn"); }, 1100);
+        setTimeout(()=>{ copyButton.textContent = prev; }, 1300);
+      }).catch(()=>{});
+    }
 
-    function handleResize() {
-      const rect = chartCanvas.getBoundingClientRect();
-      chartCanvas.width = rect.width * window.devicePixelRatio;
-      chartCanvas.height = rect.height * window.devicePixelRatio;
+    // ==========
+    //  Subscribe
+    // ==========
+    async function handleSubscribe(e){
+      e.preventDefault();
+
+      const email=document.getElementById("currency-email").value.trim();
+      const frequency=document.getElementById("currency-frequency").value;
+      const from=subFromSelect.value;
+      const to=subToSelect.value;
+
+      if (!email){
+        subscribeStatus.className="subscribe-status bad";
+        subscribeStatus.textContent=t("enterEmail");
+        return;
+      }
+      if (from===to){
+        subscribeStatus.className="subscribe-status bad";
+        subscribeStatus.textContent=t("chooseDifferentPair");
+        return;
+      }
+
+      subscribeStatus.className="subscribe-status muted";
+      subscribeStatus.textContent=t("subscribing");
+      subscribeBtn.disabled=true;
+
+      try{
+        const endpoint=new URL("/api/rate-subscribe", window.location.origin).toString();
+        const res=await fetch(endpoint,{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ email, frequency, from, to })
+        });
+
+        const raw=await res.text();
+        let data=null;
+        try{ data=JSON.parse(raw); } catch { data={ success:false, error: raw || ("HTTP "+res.status) }; }
+
+        if (res.ok && data && data.success){
+          subscribeStatus.className="subscribe-status ok";
+          subscribeStatus.textContent=t("subscribedOk");
+          subscribeForm.reset();
+
+          // keep selected pair after reset
+          subFromSelect.value=from;
+          subToSelect.value=to;
+        } else {
+          subscribeStatus.className="subscribe-status bad";
+          subscribeStatus.textContent=t("failedPrefix") + (data?.error || ("HTTP "+res.status));
+        }
+      } catch(err){
+        subscribeStatus.className="subscribe-status bad";
+        subscribeStatus.textContent=t("networkErrorPrefix") + (err.message || "Unknown error");
+      } finally {
+        subscribeBtn.disabled=false;
+      }
+    }
+
+    // ==========
+    //  Resize
+    // ==========
+    function handleResize(){
+      const rect=chartCanvas.getBoundingClientRect();
+      const dpr=window.devicePixelRatio || 1;
+      chartCanvas.width=Math.max(1, Math.floor(rect.width*dpr));
+      chartCanvas.height=Math.max(1, Math.floor(rect.height*dpr));
       drawChart();
     }
+
+    // ==========
+    //  Wiring
+    // ==========
+    const debouncedConvert = debounce(()=>convertCurrency(true), 260);
+
+    convertButton.addEventListener("click", ()=>convertCurrency(false));
+    swapButton.addEventListener("click", swapCurrencies);
+    copyButton.addEventListener("click", copyResult);
+
+    amountInput.addEventListener("input", debouncedConvert);
+
+    fromSelect.addEventListener("change", ()=>{
+      syncSubscribeToConverter(false);
+      convertCurrency(true);
+      updateChart(fromSelect.value, toSelect.value);
+    });
+
+    toSelect.addEventListener("change", ()=>{
+      syncSubscribeToConverter(false);
+      convertCurrency(true);
+      updateChart(fromSelect.value, toSelect.value);
+    });
+
+    subFromSelect.addEventListener("change", ()=>{ subscribePairOverridden=true; });
+    subToSelect.addEventListener("change", ()=>{ subscribePairOverridden=true; });
+
+    useConverterPairBtn.addEventListener("click", ()=>{
+      syncSubscribeToConverter(true);
+    });
+
+    range7dBtn.addEventListener("click", ()=>setRange("7d"));
+    range30dBtn.addEventListener("click", ()=>setRange("30d"));
+    range1yBtn.addEventListener("click", ()=>setRange("1y"));
+
+    subscribeForm.addEventListener("submit", handleSubscribe);
+
     window.addEventListener("resize", handleResize);
-    handleResize();
+
+    // ==========
+    //  Init
+    // ==========
+    (function init(){
+      const urlLang=getLangFromUrl();
+      const saved=localStorage.getItem("et_lang");
+      const browser=getLangFromBrowser();
+      const initial=urlLang || saved || browser || "en";
+      applyLang(initial);
+      if (langSelect){
+        langSelect.value = CURRENT_LANG;
+        langSelect.addEventListener("change", (e)=>applyLang(e.target.value));
+      }
+
+      initDropdowns();
+      handleResize();
+
+      // Initial: convert + chart + market moves (ONCE)
+      convertCurrency(true);
+      updateChart(fromSelect.value, toSelect.value);
+      updateMarketMoves();
+    })();
   </script>
 
-  <!-- FAQ Schema for Google -->
+  <!-- FAQ Schema (keep English for consistent SEO; optional to expand later with hreflang pages) -->
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
       {
-        "@type": "Question",
-        "name": "How do I convert USD to EUR?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Enter the amount in USD, select USD as the from currency and EUR as the to currency, and the Live Currency Converter will calculate the real-time exchange rate for you."
+        "@type":"Question",
+        "name":"Does this currency converter show trends?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"Yes. You can view 7-day, 30-day, and 1-year trend charts for your selected currency pair."
         }
       },
       {
-        "@type": "Question",
-        "name": "Is this a real-time currency converter?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. This currency converter uses live exchange rates and automatically updates results when you change the amount or currencies."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Can I get daily or weekly exchange rate updates by email?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes. You can subscribe on this page for daily or weekly email updates for your chosen currency pair, plus a summary of major USD currency pairs."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Which currencies does this money converter support?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "The tool supports popular currencies like USD, EUR, GBP, JPY, TRY, AED, SAR, INR, CNY, BRL, MXN, ZAR, and more."
+        "@type":"Question",
+        "name":"Can I get exchange rate updates by email for a chosen pair?",
+        "acceptedAnswer":{
+          "@type":"Answer",
+          "text":"Yes. You can select any currency pair and receive daily or weekly exchange rate updates by email."
         }
       }
     ]
