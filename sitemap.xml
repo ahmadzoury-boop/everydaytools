@@ -1,242 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <url>
-    <loc>https://everydaytools.uk/</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
+  <!-- Home -->
+  <url><loc>https://everydaytools.uk/</loc></url>
 
-  <url>
-    <loc>https://everydaytools.uk/contact</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
+  <!-- Legal -->
+  <url><loc>https://everydaytools.uk/privacy</loc></url>
+  <url><loc>https://everydaytools.uk/terms</loc></url>
 
-  <url>
-    <loc>https://everydaytools.uk/privacy</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
+  <!-- Tools index pages -->
+  <url><loc>https://everydaytools.uk/tools/</loc></url>
+  <url><loc>https://everydaytools.uk/tools/time/</loc></url>
+  <url><loc>https://everydaytools.uk/tools/date/</loc></url>
+  <url><loc>https://everydaytools.uk/tools/finance/</loc></url>
+  <url><loc>https://everydaytools.uk/tools/health/</loc></url>
+  <url><loc>https://everydaytools.uk/tools/text/</loc></url>
+  <url><loc>https://everydaytools.uk/tools/random/</loc></url>
+  <url><loc>https://everydaytools.uk/tools/school/</loc></url>
 
-  <url>
-    <loc>https://everydaytools.uk/terms</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- DATE TOOLS -->
-  <url>
-    <loc>https://everydaytools.uk/tools/date/age-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/date/days-between-dates</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/date</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- FINANCE TOOLS -->
-  <url>
-    <loc>https://everydaytools.uk/tools/finance/currency-converter</loc>
-    <lastmod>2025-12-27</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/finance</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/finance/profit-margin</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/finance/vat-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- HEALTH TOOLS -->
-  <url>
-    <loc>https://everydaytools.uk/tools/health/bmi-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/health/body-fat-estimate</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/health/calorie-needs</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/health</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- TOOLS INDEX -->
-  <url>
-    <loc>https://everydaytools.uk/tools</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- RANDOM TOOLS -->
-  <url>
-    <loc>https://everydaytools.uk/tools/random/coin-flip</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/random</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/random/random-number</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/random/team-generator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- SCHOOL TOOLS -->
-  <url>
-    <loc>https://everydaytools.uk/tools/school/average-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/final-grade-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/gpa-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/percentage-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/percentage-change</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/proportion-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/ratio-proportion-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/school/weighted-grade-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- TEXT TOOLS -->
-  <url>
-    <loc>https://everydaytools.uk/tools/text/case-converter</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/text</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/text/lorem-ipsum</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/text/reading-time-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/text/word-counter</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <!-- TIME TOOLS -->
-  <url>
-    <loc>https://everydaytools.uk/tools/time/break-timer</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/countdown</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/hiit-timer</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/pomodoro-timer</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/reading-time</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/stopwatch</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/tabata</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/time-calculator</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/time-difference</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
-
-  <url>
-    <loc>https://everydaytools.uk/tools/time/work-hours</loc>
-    <lastmod>2025-12-20</lastmod>
-  </url>
+  <!-- Individual tools -->
+  <url><loc>https://everydaytools.uk/tools/time/pomodoro-timer</loc></url>
+  <url><loc>https://everydaytools.uk/tools/time/stopwatch</loc></url>
+  <url><loc>https://everydaytools.uk/tools/time/countdown</loc></url>
+  <url><loc>https://everydaytools.uk/tools/finance/profit-margin</loc></url>
+  <url><loc>https://everydaytools.uk/tools/finance/vat-calculator</loc></url>
+  <url><loc>https://everydaytools.uk/tools/health/body-fat-estimate</loc></url>
+  <url><loc>https://everydaytools.uk/tools/health/calorie-needs</loc></url>
 
 </urlset>
