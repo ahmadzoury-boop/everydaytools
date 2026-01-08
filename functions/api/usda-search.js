@@ -7,7 +7,11 @@ const corsHeaders = {
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json; charset=utf-8", ...extraHeaders },
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json; charset=utf-8",
+      ...extraHeaders,
+    },
   });
 }
 
@@ -40,28 +44,32 @@ export async function onRequest({ request, env }) {
         query: q,
         pageSize,
         pageNumber: 1,
+        // Optionally filter:
+        // dataType: ["Foundation", "SR Legacy", "Branded", "Survey (FNDDS)"],
       }),
     });
 
     if (!res.ok) {
       const text = await res.text();
-      return json({ ok: false, error: "USDA search failed", details: text.slice(0, 300) }, 502);
+      return json({ ok: false, error: "USDA search failed", details: text.slice(0, 400) }, 502);
     }
 
     const data = await res.json();
 
     const items = (data.foods || []).map((f) => ({
       fdcId: f.fdcId,
-      description: f.description,
-      dataType: f.dataType,
+      description: f.description || "",
+      dataType: f.dataType || "",
       brandName: f.brandName || "",
       brandOwner: f.brandOwner || "",
+      servingSize: f.servingSize ?? null,
+      servingSizeUnit: f.servingSizeUnit || "",
     }));
 
     return json(
       { ok: true, query: q, totalHits: data.totalHits || 0, items },
       200,
-      { "Cache-Control": "public, max-age=300" }
+      { "Cache-Control": "public, max-age=300" } // 5 min
     );
   } catch (err) {
     return json({ ok: false, error: "Server error", details: String(err) }, 500);
