@@ -4,6 +4,9 @@
   <!-- Home -->
   <url><loc>https://everydaytools.uk/</loc></url>
 
+  <!-- Core pages -->
+  <url><loc>https://everydaytools.uk/contact</loc></url>
+
   <!-- Legal -->
   <url><loc>https://everydaytools.uk/privacy</loc></url>
   <url><loc>https://everydaytools.uk/terms</loc></url>
@@ -18,12 +21,18 @@
   <url><loc>https://everydaytools.uk/tools/random/</loc></url>
   <url><loc>https://everydaytools.uk/tools/school/</loc></url>
 
-  <!-- Individual tools -->
+  <!-- Individual tools (time) -->
   <url><loc>https://everydaytools.uk/tools/time/pomodoro-timer</loc></url>
   <url><loc>https://everydaytools.uk/tools/time/stopwatch</loc></url>
   <url><loc>https://everydaytools.uk/tools/time/countdown</loc></url>
+  <url><loc>https://everydaytools.uk/tools/time/break-timer</loc></url>
+
+  <!-- Individual tools (finance) -->
   <url><loc>https://everydaytools.uk/tools/finance/profit-margin</loc></url>
   <url><loc>https://everydaytools.uk/tools/finance/vat-calculator</loc></url>
+
+  <!-- Individual tools (health) -->
+  <url><loc>https://everydaytools.uk/tools/health/bmi-calculator</loc></url>
   <url><loc>https://everydaytools.uk/tools/health/body-fat-estimate</loc></url>
   <url><loc>https://everydaytools.uk/tools/health/calorie-needs</loc></url>
 
