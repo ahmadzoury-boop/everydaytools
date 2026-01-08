@@ -6,14 +6,13 @@
   <title>Health Tools | Everyday Tools</title>
   <meta name="description" content="Daily health tools: nutrition lookup (USDA), BMI, calorie needs, body fat estimate." />
 
-  <!-- Your global CSS (keep) -->
   <link rel="stylesheet" href="../../assets/css/style.css" />
 
   <style>
     :root{
       --bg:#05060a; --fg:#e5e7eb; --muted:#94a3b8;
       --card:rgba(11,18,32,.86); --line:rgba(148,163,184,.22);
-      --accent:#4ade80; --accent2:#60a5fa; --danger:#fb7185;
+      --accent:#4ade80; --accent2:#60a5fa;
       --shadow: 0 18px 55px rgba(0,0,0,.45);
       --r:18px;
     }
@@ -24,27 +23,17 @@
       font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     }
     .wrap{ max-width:1100px; margin:0 auto; padding:22px 14px 44px; }
-    header{
-      display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px; margin-bottom:14px;
-    }
+    header{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
     .brand h1{ margin:0; font-size:22px; letter-spacing:.2px; }
     .brand p{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
     .pill{
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:8px 12px;
-      color:var(--fg);
-      text-decoration:none;
-      font-size:13px;
-      background:rgba(15,23,42,.45);
-      white-space:nowrap;
+      border:1px solid var(--line); border-radius:999px; padding:8px 12px;
+      color:var(--fg); text-decoration:none; font-size:13px;
+      background:rgba(15,23,42,.45); white-space:nowrap;
     }
 
     .grid{ display:grid; grid-template-columns:1fr; gap:12px; }
-    @media (min-width: 920px){
-      .grid{ grid-template-columns: 1.35fr .65fr; gap:14px; }
-    }
+    @media (min-width: 920px){ .grid{ grid-template-columns: 1.35fr .65fr; gap:14px; } }
 
     .card{
       background:var(--card);
@@ -59,76 +48,45 @@
 
     .searchRow{ display:flex; gap:10px; }
     .searchRow input{
-      flex:1;
-      border-radius:12px;
-      border:1px solid var(--line);
-      padding:12px 12px;
-      background:rgba(2,6,23,.45);
-      color:var(--fg);
-      outline:none;
-      font-size:14px;
+      flex:1; border-radius:12px; border:1px solid var(--line);
+      padding:12px 12px; background:rgba(2,6,23,.45); color:var(--fg);
+      outline:none; font-size:14px;
     }
     .searchRow button{
-      border-radius:12px;
-      border:1px solid var(--line);
-      padding:12px 14px;
-      background:rgba(74,222,128,.14);
-      color:var(--fg);
-      cursor:pointer;
-      font-weight:800;
+      border-radius:12px; border:1px solid var(--line);
+      padding:12px 14px; background:rgba(74,222,128,.14);
+      color:var(--fg); cursor:pointer; font-weight:900;
     }
 
     .loading{ display:none; margin-top:10px; color:var(--muted); font-size:13px; }
     .results{
-      margin-top:10px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      overflow:hidden;
-      background:rgba(2,6,23,.35);
-      display:none;
-      max-height:320px;
-      overflow:auto;
+      margin-top:10px; border:1px solid var(--line); border-radius:14px; overflow:hidden;
+      background:rgba(2,6,23,.35); display:none; max-height:320px; overflow:auto;
     }
     .resultItem{
-      padding:10px 12px;
-      cursor:pointer;
+      padding:10px 12px; cursor:pointer;
       border-top:1px solid rgba(148,163,184,.14);
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
     }
     .resultItem:first-child{ border-top:none; }
     .resultItem:hover{ background:rgba(96,165,250,.10); }
-    .rTitle{ font-size:13px; font-weight:800; }
+    .rTitle{ font-size:13px; font-weight:900; }
     .rMeta{ font-size:12px; color:var(--muted); margin-top:2px; }
     .badge{
-      font-size:11px;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.25);
-      color:var(--muted);
-      white-space:nowrap;
+      font-size:11px; padding:4px 8px; border-radius:999px;
+      border:1px solid rgba(148,163,184,.25); color:var(--muted); white-space:nowrap;
     }
 
-    .factsTop{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
-      margin-top:14px;
-    }
-    .foodName{ margin:0; font-size:15px; font-weight:900; }
+    .factsTop{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-top:14px; }
+    .foodName{ margin:0; font-size:15px; font-weight:1000; }
     .basis{ margin:6px 0 0; color:var(--muted); font-size:12px; }
+
     .factsGrid{
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap:10px;
-      margin-top:12px;
+      display:grid; grid-template-columns: repeat(2, 1fr);
+      gap:10px; margin-top:12px;
     }
-    @media (min-width: 520px){
-      .factsGrid{ grid-template-columns: repeat(4, 1fr); }
-    }
+    @media (min-width: 520px){ .factsGrid{ grid-template-columns: repeat(4, 1fr); } }
+
     .fact{
       border:1px solid rgba(148,163,184,.22);
       border-radius:16px;
@@ -136,31 +94,19 @@
       background:rgba(2,6,23,.30);
     }
     .fact .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
-    .fact .num{
-      font-size:28px;
-      font-weight:1000;
-      letter-spacing:.2px;
-      line-height:1;
-    }
+    .fact .num{ font-size:28px; font-weight:1000; letter-spacing:.2px; line-height:1; }
     .fact .unit{ font-size:12px; color:var(--muted); margin-top:4px; }
 
     .note{ margin-top:12px; color:var(--muted); font-size:12px; line-height:1.45; }
 
     .links{ display:grid; grid-template-columns:1fr; gap:10px; }
     .linkCard{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px;
-      border-radius:16px;
-      border:1px solid rgba(148,163,184,.22);
-      background:rgba(2,6,23,.26);
-      text-decoration:none;
-      color:var(--fg);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px; border-radius:16px; border:1px solid rgba(148,163,184,.22);
+      background:rgba(2,6,23,.26); text-decoration:none; color:var(--fg);
     }
     .linkCard:hover{ background:rgba(74,222,128,.08); }
-    .linkCard .t{ font-weight:900; }
+    .linkCard .t{ font-weight:1000; }
     .linkCard .d{ color:var(--muted); font-size:12px; margin-top:3px; }
   </style>
 </head>
@@ -176,10 +122,9 @@
     </header>
 
     <div class="grid">
-      <!-- LEFT: USDA Nutrition -->
       <section class="card">
         <h2>Nutrition Lookup</h2>
-        <p class="sub">Search foods and instantly show bold calories/macros.</p>
+        <p class="sub">Type a food → click a result → see bold calories/macros.</p>
 
         <div class="searchRow">
           <input id="q" type="text" inputmode="search" placeholder="Search: banana, chicken breast, greek yogurt…" autocomplete="off" />
@@ -187,7 +132,6 @@
         </div>
 
         <div id="loading" class="loading">Loading…</div>
-
         <div id="results" class="results" aria-label="Search results"></div>
 
         <div id="facts" style="display:none;">
@@ -200,89 +144,43 @@
           </div>
 
           <div class="factsGrid">
-            <div class="fact">
-              <div class="label">Calories</div>
-              <div class="num" id="cal">—</div>
-              <div class="unit">kcal</div>
-            </div>
-            <div class="fact">
-              <div class="label">Protein</div>
-              <div class="num" id="pro">—</div>
-              <div class="unit">g</div>
-            </div>
-            <div class="fact">
-              <div class="label">Carbs</div>
-              <div class="num" id="carb">—</div>
-              <div class="unit">g</div>
-            </div>
-            <div class="fact">
-              <div class="label">Fat</div>
-              <div class="num" id="fat">—</div>
-              <div class="unit">g</div>
-            </div>
+            <div class="fact"><div class="label">Calories</div><div class="num" id="cal">—</div><div class="unit">kcal</div></div>
+            <div class="fact"><div class="label">Protein</div><div class="num" id="pro">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Carbs</div><div class="num" id="carb">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Fat</div><div class="num" id="fat">—</div><div class="unit">g</div></div>
           </div>
 
           <div class="factsGrid" style="margin-top:10px;">
-            <div class="fact">
-              <div class="label">Fiber</div>
-              <div class="num" id="fib">—</div>
-              <div class="unit">g</div>
-            </div>
-            <div class="fact">
-              <div class="label">Sugar</div>
-              <div class="num" id="sug">—</div>
-              <div class="unit">g</div>
-            </div>
-            <div class="fact">
-              <div class="label">Sodium</div>
-              <div class="num" id="sod">—</div>
-              <div class="unit">mg</div>
-            </div>
-            <div class="fact">
-              <div class="label">Last Saved</div>
-              <div class="num" id="saved">—</div>
-              <div class="unit">food</div>
-            </div>
+            <div class="fact"><div class="label">Fiber</div><div class="num" id="fib">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Sugar</div><div class="num" id="sug">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Sodium</div><div class="num" id="sod">—</div><div class="unit">mg</div></div>
+            <div class="fact"><div class="label">Saved</div><div class="num" id="saved">—</div><div class="unit">food</div></div>
           </div>
 
-          <p class="note">Tip: click a search result to load full nutrition.</p>
+          <p class="note">Tip: results may be per 100g or per serving depending on USDA item type.</p>
         </div>
       </section>
 
-      <!-- RIGHT: Existing tools links -->
       <aside class="card">
         <h2>Quick Tools</h2>
         <p class="sub">Fast daily checks people actually use.</p>
 
         <div class="links">
           <a class="linkCard" href="./bmi-calculator.html">
-            <div>
-              <div class="t">BMI Calculator</div>
-              <div class="d">Body mass index + category.</div>
-            </div>
+            <div><div class="t">BMI Calculator</div><div class="d">Body mass index + category.</div></div>
             <div class="badge">Open</div>
           </a>
-
           <a class="linkCard" href="./calorie-needs.html">
-            <div>
-              <div class="t">Calorie Needs</div>
-              <div class="d">Maintenance + deficit/surplus target.</div>
-            </div>
+            <div><div class="t">Calorie Needs</div><div class="d">Maintenance + deficit/surplus target.</div></div>
             <div class="badge">Open</div>
           </a>
-
           <a class="linkCard" href="./body-fat-estimate.html">
-            <div>
-              <div class="t">Body Fat Estimate</div>
-              <div class="d">Quick estimate using measurements.</div>
-            </div>
+            <div><div class="t">Body Fat Estimate</div><div class="d">Quick estimate using measurements.</div></div>
             <div class="badge">Open</div>
           </a>
         </div>
 
-        <p class="note">
-          Next upgrade (later): “Meal total” (add multiple foods + grams → daily totals).
-        </p>
+        <p class="note">Next (optional): “Meal total” (add multiple foods + grams → daily totals).</p>
       </aside>
     </div>
   </div>
@@ -290,19 +188,10 @@
   <script>
     const $ = (id) => document.getElementById(id);
 
-    const q = $("q");
-    const btn = $("btn");
-    const results = $("results");
-    const loading = $("loading");
-
-    const facts = $("facts");
-    const foodName = $("foodName");
-    const basis = $("basis");
-    const dtype = $("dtype");
-
+    const q = $("q"), btn = $("btn"), results = $("results"), loading = $("loading");
+    const facts = $("facts"), foodName = $("foodName"), basis = $("basis"), dtype = $("dtype");
     const cal = $("cal"), pro = $("pro"), carb = $("carb"), fat = $("fat");
-    const fib = $("fib"), sug = $("sug"), sod = $("sod");
-    const saved = $("saved");
+    const fib = $("fib"), sug = $("sug"), sod = $("sod"), saved = $("saved");
 
     function escapeHtml(s){
       return String(s).replace(/[&<>"']/g, (c) => ({
@@ -313,6 +202,11 @@
       if (n === null || n === undefined || !isFinite(n)) return "—";
       const v = Number(n);
       return digits ? v.toFixed(digits) : String(Math.round(v));
+    }
+
+    function setSavedLabel(desc){
+      if (!desc) { saved.textContent = "—"; return; }
+      saved.textContent = desc.slice(0, 12) + (desc.length > 12 ? "…" : "");
     }
 
     function renderResults(items){
@@ -356,7 +250,12 @@
         const res = await fetch(`/api/usda-search?q=${encodeURIComponent(term)}&pageSize=12`);
         const data = await res.json();
         if (!data.ok) throw new Error(data.error || "Search failed");
-        renderResults(data.items || []);
+
+        const items = data.items || [];
+        renderResults(items);
+
+        // Auto-load first result (fast UX)
+        if (items.length) fetchFood(items[0].fdcId);
       } catch(e){
         results.style.display = "block";
         results.innerHTML = `<div class="resultItem"><div class="rTitle">Error</div><div class="rMeta">${escapeHtml(e.message)}</div></div>`;
@@ -375,8 +274,10 @@
         facts.style.display = "block";
         foodName.textContent = data.description || "Selected food";
         dtype.textContent = data.dataType || "";
+        basis.textContent = data.serving?.size
+          ? `${data.basis} • Serving: ${data.serving.size} ${data.serving.unit}`
+          : (data.basis || "");
 
-        // Your usda-food endpoint returns nutrients map (calories/protein/carbs/fat/fiber/sugars/sodium)
         const N = data.nutrients || {};
         cal.textContent  = fmt(N.calories ?? null);
         pro.textContent  = fmt(N.protein ?? null, 1);
@@ -386,11 +287,8 @@
         sug.textContent  = fmt(N.sugars ?? null, 1);
         sod.textContent  = fmt(N.sodium ?? null, 0);
 
-        basis.textContent = "Values depend on USDA item type (often per 100g for SR/Foundation).";
-
-        // Save last picked food
         localStorage.setItem("health_lastFood", JSON.stringify({ fdcId: data.fdcId, description: data.description }));
-        saved.textContent = (data.description || "").slice(0, 12) + ((data.description||"").length > 12 ? "…" : "");
+        setSavedLabel(data.description || "");
       } catch(e){
         facts.style.display = "block";
         foodName.textContent = "Could not load nutrition";
@@ -401,23 +299,19 @@
       }
     }
 
-    // Debounced typing
+    // Debounce typing
     let t = null;
     q.addEventListener("input", () => {
       clearTimeout(t);
       t = setTimeout(searchFoods, 250);
     });
     btn.addEventListener("click", searchFoods);
-    q.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") searchFoods();
-    });
+    q.addEventListener("keydown", (e) => { if (e.key === "Enter") searchFoods(); });
 
-    // Restore last saved food (optional)
+    // Restore saved label on load
     try{
       const last = JSON.parse(localStorage.getItem("health_lastFood") || "null");
-      if (last?.fdcId) {
-        saved.textContent = (last.description || "Saved").slice(0, 12) + ((last.description||"").length > 12 ? "…" : "");
-      }
+      if (last?.description) setSavedLabel(last.description);
     } catch {}
   </script>
 </body>
