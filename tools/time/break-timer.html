@@ -4,69 +4,277 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- Strong SEO -->
-  <title>Break Timer – Work/Rest Cycles for Productivity & Health</title>
-  <meta name="description" content="Stay energized with this break timer. Schedule work/rest intervals, get reminders, and maintain healthy productivity habits with automatic cycles and notifications." />
-
-  <!-- Canonical URL -->
-  <link rel="canonical" href="https://mytools-56j.pages.dev/tools/time/break-timer.html" />
+  <title>Break Timer – Work/Rest Cycles</title>
+  <meta name="description" content="Break timer with adjustable work/break durations, long breaks, sound alerts, and dark mode." />
 
   <link rel="stylesheet" href="../../assets/css/style.css" />
 
   <style>
-    .wrap{max-width:900px;margin:0 auto;padding:24px}
-    .topnav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
-    .topnav a{opacity:.9;text-decoration:none}
-    .card{padding:16px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
-    .big{font-size:56px;font-weight:900;letter-spacing:1px;line-height:1}
-    .phase{font-size:18px;opacity:.9;margin-top:8px}
-    .meta{margin-top:10px;opacity:.85;display:flex;flex-wrap:wrap;gap:12px}
-    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
-    button{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.2);color:inherit;cursor:pointer}
-    button.primary{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
-    button:disabled{opacity:.5;cursor:not-allowed}
-    .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.10);overflow:hidden;margin-top:12px}
-    .fill{height:100%;width:0%}
+    :root {
+      --bg: #05060a;
+      --fg: #ffffff;
+      --accent: #4ade80;
+      --accent-soft: rgba(74, 222, 128, 0.15);
+      --danger: #f97373;
+    }
 
-    .row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
-    label{display:block;font-size:.9rem;opacity:.9;margin-bottom:6px}
-    input,select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.15);color:inherit}
-    .hint{opacity:.75;margin-top:10px;font-size:.9rem}
-    .kbd{padding:2px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.18)}
-    @media (max-width:820px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    body.light {
+      --bg: #f5f5f7;
+      --fg: #111827;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --danger: #dc2626;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      padding: 40px 16px;
+      background: radial-gradient(circle at top, #111827, var(--bg));
+      color: var(--fg);
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    .timer-container {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 24px 20px 28px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(18px);
+      transition: background 0.4s ease, border-color 0.4s ease, transform 0.2s ease;
+    }
+
+    body.light .timer-container {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(148, 163, 184, 0.5);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+    }
+
+    .timer-container.running {
+      transform: translateY(-2px);
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .timer-title {
+      font-size: 22px;
+      font-weight: 650;
+    }
+
+    .theme-toggle {
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.7);
+      color: inherit;
+      cursor: pointer;
+    }
+
+    body.light .theme-toggle {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .time-settings {
+      margin-bottom: 18px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .time-settings-group {
+      flex: 1;
+      padding: 10px 10px 12px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    body.light .time-settings-group {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .time-settings label {
+      display: block;
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .time-settings button {
+      padding: 4px 9px;
+      margin: 0 4px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.8);
+      color: inherit;
+    }
+
+    body.light .time-settings button {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .time-settings span {
+      min-width: 22px;
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    .long-break-note {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .timer-display {
+      font-size: 60px;
+      font-weight: 800;
+      margin: 10px 0 4px;
+      letter-spacing: 1px;
+    }
+
+    .timer-phase {
+      font-size: 16px;
+      opacity: 0.85;
+      margin-bottom: 14px;
+    }
+
+    .timer-phase.work {
+      color: var(--accent);
+    }
+
+    .timer-phase.break {
+      color: var(--danger);
+    }
+
+    .progress-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.25);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-soft), var(--accent));
+      transition: width 0.25s linear;
+    }
+
+    .timer-controls {
+      margin-top: 4px;
+    }
+
+    .timer-controls button {
+      padding: 9px 18px;
+      margin: 4px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: inherit;
+      min-width: 90px;
+    }
+
+    body.light .timer-controls button {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .timer-controls button.primary {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .timer-cycles {
+      margin-top: 12px;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .timer-cycles strong {
+      font-weight: 700;
+    }
+
+    .sound-toggle {
+      font-size: 13px;
+      margin-top: 8px;
+      opacity: 0.85;
+      cursor: pointer;
+      text-decoration: underline;
+    }
   </style>
 
   <script defer src="./break-timer.js"></script>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topnav">
-      <a href="./index.html">← Back to Time Tools</a>
-      <div style="opacity:.8">Break Timer</div>
+
+  <div class="timer-container" id="timerCard">
+    <div class="header-row">
+      <h1 class="timer-title">Break Timer</h1>
+      <button id="themeToggle" class="theme-toggle">Dark mode</button>
     </div>
 
-    <div class="card">
-      <div class="big" id="time">00:00</div>
-      <div class="phase" id="phase">Idle</div>
-
-      <div class="bar"><div class="fill" id="fill"></div></div>
-
-      <div class="meta">
-        <div>Cycle: <b id="cycle">0</b>/<span id="cycleTotal">∞</span></div>
-        <div>Mode: <b id="modeLabel">Work</b></div>
+    <!-- Time Controls -->
+    <div class="time-settings">
+      <div class="time-settings-group">
+        <label>Work (min)</label>
+        <button id="workMinus">−</button>
+        <span id="workValue">25</span>
+        <button id="workPlus">+</button>
       </div>
 
-      <div class="controls">
-        <button class="primary" id="startBtn">Start</button>
-        <button id="pauseBtn" disabled>Pause</button>
-        <button id="resetBtn">Reset</button>
-
-        <button class="primary" id="soundBtn">Sound: ON</button>
-        <button id="fsBtn" title="Fullscreen (F)">Fullscreen</button>
+      <div class="time-settings-group">
+        <label>Break (min)</label>
+        <button id="breakMinus">−</button>
+        <span id="breakValue">5</span>
+        <button id="breakPlus">+</button>
       </div>
 
-      <div class="hint">
-        Shortcuts: <span class="kbd">Space</span> start/pause · <span class="kbd">R</span> reset · <span class="kbd">F</span> fullscreen.
-        Audio works only after you click Start once.
+      <div class="time-settings-group">
+        <label>Long break every</label>
+        <button id="longEveryMinus">−</button>
+        <span id="longEveryValue">4</span>
+        <button id="longEveryPlus">+</button>
+        <div class="long-break-note">cycles → 2× break</div>
       </div>
     </div>
+
+    <!-- Timer -->
+    <div class="timer-display" id="timerDisplay">25:00</div>
+    <div class="timer-phase work" id="phaseLabel">Work</div>
+
+    <!-- Progress -->
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="timer-controls">
+      <button id="startPauseBtn" class="primary">Start</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div class="timer-cycles">
+      Cycles completed: <strong><span id="cycleCount">0</span></strong>
+    </div>
+
+    <div id="soundToggle" class="sound-toggle">Sound: ON</div>
+  </div>
+
+</body>
+</html>

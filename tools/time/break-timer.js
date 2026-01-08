@@ -1,319 +1,224 @@
-(() => {
-  const LS_KEY = "break_timer_v1";
+// -----------------------------
+// Break Timer – advanced version
+// -----------------------------
 
-  const timeEl = document.getElementById("time");
-  const phaseEl = document.getElementById("phase");
-  const fillEl = document.getElementById("fill");
+let workMin = 25;
+let breakMin = 5;
+let longEvery = 4;      // long break every X cycles
+let soundOn = true;
 
-  const cycleEl = document.getElementById("cycle");
-  const cycleTotalEl = document.getElementById("cycleTotal");
-  const modeLabelEl = document.getElementById("modeLabel");
+// DOM elements
+const timerDisplay = document.getElementById("timerDisplay");
+const phaseLabel = document.getElementById("phaseLabel");
+const startPauseBtn = document.getElementById("startPauseBtn");
+const resetBtn = document.getElementById("resetBtn");
+const cycleCountEl = document.getElementById("cycleCount");
+const progressFill = document.getElementById("progressFill");
+const timerCard = document.getElementById("timerCard");
 
-  const startBtn = document.getElementById("startBtn");
-  const pauseBtn = document.getElementById("pauseBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const soundBtn = document.getElementById("soundBtn");
-  const fsBtn = document.getElementById("fsBtn");
+const workValue = document.getElementById("workValue");
+const breakValue = document.getElementById("breakValue");
+const longEveryValue = document.getElementById("longEveryValue");
 
-  const prepareIn = document.getElementById("prepare");
-  const workIn = document.getElementById("work");
-  const breakIn = document.getElementById("breakMin");
-  const cyclesIn = document.getElementById("cycles");
-  const autoStartIn = document.getElementById("autoStart");
-  const notifyIn = document.getElementById("notify");
+const workMinus = document.getElementById("workMinus");
+const workPlus = document.getElementById("workPlus");
+const breakMinus = document.getElementById("breakMinus");
+const breakPlus = document.getElementById("breakPlus");
+const longEveryMinus = document.getElementById("longEveryMinus");
+const longEveryPlus = document.getElementById("longEveryPlus");
 
-  // ---- Beep
-  let audioCtx = null;
-  let soundOn = true;
+const themeToggle = document.getElementById("themeToggle");
+const soundToggle = document.getElementById("soundToggle");
 
-  function ensureAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+// Timer state
+let phase = "WORK"; // WORK | BREAK | LONG_BREAK
+let remaining = workMin * 60;
+let totalPhaseSeconds = workMin * 60;
+let intervalId = null;
+let running = false;
+let cycles = 0;
+
+// Simple beep using Web Audio API
+function playBeep() {
+  if (!soundOn) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = 880;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  } catch {}
+}
+
+// Format seconds as MM:SS
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+// Update UI
+function updateUI() {
+  timerDisplay.textContent = formatTime(remaining);
+
+  if (phase === "WORK") {
+    phaseLabel.textContent = "Work";
+    phaseLabel.classList.add("work");
+    phaseLabel.classList.remove("break");
+  } else if (phase === "BREAK") {
+    phaseLabel.textContent = "Break";
+    phaseLabel.classList.add("break");
+    phaseLabel.classList.remove("work");
+  } else {
+    phaseLabel.textContent = "Long break";
+    phaseLabel.classList.add("break");
+    phaseLabel.classList.remove("work");
   }
 
-  function beep(freq = 880, duration = 0.08) {
-    if (!soundOn) return;
-    ensureAudio();
-    if (!audioCtx) return;
+  cycleCountEl.textContent = cycles;
+  workValue.textContent = workMin;
+  breakValue.textContent = breakMin;
+  longEveryValue.textContent = longEvery;
 
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.type = "sine";
-    o.frequency.value = freq;
+  const progress = Math.max(0, Math.min(1, 1 - remaining / totalPhaseSeconds));
+  progressFill.style.width = `${progress * 100}%`;
+}
 
-    g.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+// Switch phases
+function switchPhase() {
+  playBeep();
 
-    o.connect(g);
-    g.connect(audioCtx.destination);
-    o.start();
-    o.stop(audioCtx.currentTime + duration + 0.02);
-  }
+  if (phase === "WORK") {
+    // Completed a work cycle
+    cycles++;
 
-  function tripleBeep() {
-    beep(880, 0.07);
-    setTimeout(() => beep(880, 0.07), 120);
-    setTimeout(() => beep(880, 0.07), 240);
-  }
-
-  function formatTime(sec) {
-    sec = Math.max(0, Math.ceil(sec));
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-  }
-
-  function clampInt(v, min, max = Infinity) {
-    v = Number(v);
-    if (!Number.isFinite(v)) v = min;
-    v = Math.floor(v);
-    v = Math.max(min, v);
-    v = Math.min(max, v);
-    return v;
-  }
-
-  // ---- Notifications
-  async function maybeNotify(title, body) {
-    if (notifyIn.value !== "on") return;
-    if (!("Notification" in window)) return;
-
-    if (Notification.permission === "default") {
-      try { await Notification.requestPermission(); } catch {}
+    if (longEvery > 0 && cycles % longEvery === 0) {
+      phase = "LONG_BREAK";
+      totalPhaseSeconds = breakMin * 2 * 60;
+      remaining = totalPhaseSeconds;
+    } else {
+      phase = "BREAK";
+      totalPhaseSeconds = breakMin * 60;
+      remaining = totalPhaseSeconds;
     }
-    if (Notification.permission !== "granted") return;
-
-    try { new Notification(title, { body }); } catch {}
+  } else {
+    // Any break → back to work
+    phase = "WORK";
+    totalPhaseSeconds = workMin * 60;
+    remaining = totalPhaseSeconds;
   }
 
-  // ---- Settings save/load
-  function readSettings() {
-    return {
-      prepare: clampInt(prepareIn.value, 0, 3600),
-      workMin: clampInt(workIn.value, 1, 1440),
-      breakMin: clampInt(breakIn.value, 1, 1440),
-      cycles: clampInt(cyclesIn.value, 0, 1000), // 0 = infinite
-      autoStart: !!autoStartIn.checked,
-      notify: notifyIn.value || "off",
-    };
+  updateUI();
+}
+
+// Timer tick
+function tick() {
+  if (remaining > 0) {
+    remaining--;
+    updateUI();
+  } else {
+    switchPhase();
   }
+}
 
-  function saveSettings() {
-    const s = readSettings();
-    try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch {}
-  }
-
-  function loadSettings() {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return;
-      const s = JSON.parse(raw);
-      if (!s || typeof s !== "object") return;
-
-      prepareIn.value = clampInt(s.prepare, 0, 3600);
-      workIn.value = clampInt(s.workMin, 1, 1440);
-      breakIn.value = clampInt(s.breakMin, 1, 1440);
-      cyclesIn.value = String(clampInt(s.cycles, 0, 1000));
-      autoStartIn.checked = !!s.autoStart;
-      notifyIn.value = (s.notify === "on") ? "on" : "off";
-    } catch {}
-  }
-
-  // ---- Timer state
-  let settings = readSettings();
-  let intervalId = null;
-  let running = false;
-
-  // phases: IDLE -> PREPARE -> WORK -> BREAK -> ... -> DONE
-  let phase = "IDLE";
-  let phaseTotal = 0;
-  let remaining = 0;
-
-  let cycle = 0; // completed cycles
-  let isWork = true; // within cycle
-
-  function setUI() {
-    timeEl.textContent = formatTime(remaining);
-
-    if (phase === "IDLE") phaseEl.textContent = "Idle";
-    if (phase === "PREPARE") phaseEl.textContent = "Prepare";
-    if (phase === "WORK") phaseEl.textContent = "Work";
-    if (phase === "BREAK") phaseEl.textContent = "Break";
-    if (phase === "DONE") phaseEl.textContent = "Done ✅";
-
-    modeLabelEl.textContent = (phase === "BREAK") ? "Break" : "Work";
-
-    cycleEl.textContent = String(cycle);
-    cycleTotalEl.textContent = settings.cycles === 0 ? "∞" : String(settings.cycles);
-
-    const pct = phaseTotal > 0 ? ((phaseTotal - remaining) / phaseTotal) * 100 : 0;
-    fillEl.style.width = Math.max(0, Math.min(100, pct)) + "%";
-
-    startBtn.textContent =
-      running ? "Running…" : (phase === "IDLE" || phase === "DONE") ? "Start" : "Resume";
-
-    pauseBtn.disabled = !running;
-  }
-
-  function goPhase(newPhase, seconds) {
-    phase = newPhase;
-    phaseTotal = Math.max(0, seconds);
-    remaining = phaseTotal;
-
-    // beeps + notifications
-    if (phase === "WORK") {
-      beep(1046, 0.10);
-      maybeNotify("Work started", "Focus time.");
-    }
-    if (phase === "BREAK") {
-      beep(659, 0.10);
-      maybeNotify("Break started", "Take a short break.");
-    }
-    if (phase === "DONE") {
-      tripleBeep();
-      maybeNotify("Finished", "All cycles completed.");
-    }
-
-    setUI();
-  }
-
-  function nextPhase() {
-    const { prepare, workMin, breakMin, cycles } = settings;
-
-    if (phase === "IDLE") {
-      cycle = 0;
-      isWork = true;
-      if (prepare > 0) return goPhase("PREPARE", prepare);
-      return goPhase("WORK", workMin * 60);
-    }
-
-    if (phase === "PREPARE") {
-      return goPhase("WORK", workMin * 60);
-    }
-
-    if (phase === "WORK") {
-      return goPhase("BREAK", breakMin * 60);
-    }
-
-    if (phase === "BREAK") {
-      // one full cycle completed after break ends
-      cycle += 1;
-
-      if (cycles !== 0 && cycle >= cycles) {
-        return goPhase("DONE", 0);
-      }
-
-      return goPhase("WORK", workMin * 60);
-    }
-
-    if (phase === "DONE") {
-      return reset();
-    }
-  }
-
-  function tick() {
-    if (!running) return;
-
-    remaining -= 1;
-
-    // last 3 seconds countdown
-    if (remaining > 0 && remaining <= 3 && phase !== "IDLE" && phase !== "DONE") {
-      beep(880, 0.06);
-    }
-
-    if (remaining <= 0) {
-      if (settings.autoStart) {
-        nextPhase();
-      } else {
-        running = false;
-        nextPhase(); // move, but stop
-      }
-    }
-
-    setUI();
-  }
-
-  function start() {
-    settings = readSettings();
-    saveSettings();
-    ensureAudio();
-
-    if (phase === "IDLE" || phase === "DONE") {
-      goPhase("IDLE", 0);
-      nextPhase();
-    }
-
-    if (phase === "DONE") return;
-
+// Start / Pause
+startPauseBtn.addEventListener("click", () => {
+  if (!running) {
+    intervalId = setInterval(tick, 1000);
     running = true;
-    if (!intervalId) intervalId = setInterval(tick, 1000);
-
-    startBtn.disabled = true;
-    pauseBtn.disabled = false;
-    setUI();
-  }
-
-  function pause() {
+    startPauseBtn.textContent = "Pause";
+    timerCard.classList.add("running");
+  } else {
+    clearInterval(intervalId);
     running = false;
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    setUI();
+    startPauseBtn.textContent = "Start";
+    timerCard.classList.remove("running");
   }
+});
 
-  function reset() {
-    running = false;
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
+// Reset
+resetBtn.addEventListener("click", () => {
+  clearInterval(intervalId);
+  running = false;
+  startPauseBtn.textContent = "Start";
+  timerCard.classList.remove("running");
 
-    settings = readSettings();
-    phase = "IDLE";
-    phaseTotal = 0;
-    remaining = 0;
+  phase = "WORK";
+  totalPhaseSeconds = workMin * 60;
+  remaining = totalPhaseSeconds;
+  cycles = 0;
 
-    cycle = 0;
-    isWork = true;
+  updateUI();
+});
 
-    fillEl.style.width = "0%";
-    setUI();
+// Work time controls
+workMinus.addEventListener("click", () => {
+  if (workMin > 1) workMin--;
+  if (!running && phase === "WORK") {
+    totalPhaseSeconds = workMin * 60;
+    remaining = totalPhaseSeconds;
   }
+  updateUI();
+});
 
-  async function toggleFullscreen() {
-    try {
-      if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-      else await document.exitFullscreen();
-    } catch {}
+workPlus.addEventListener("click", () => {
+  workMin++;
+  if (!running && phase === "WORK") {
+    totalPhaseSeconds = workMin * 60;
+    remaining = totalPhaseSeconds;
   }
+  updateUI();
+});
 
-  // Events
-  startBtn.addEventListener("click", () => !running && start());
-  pauseBtn.addEventListener("click", pause);
-  resetBtn.addEventListener("click", reset);
+// Break time controls
+breakMinus.addEventListener("click", () => {
+  if (breakMin > 1) breakMin--;
+  if (!running && (phase === "BREAK" || phase === "LONG_BREAK")) {
+    totalPhaseSeconds = (phase === "LONG_BREAK" ? breakMin * 2 : breakMin) * 60;
+    remaining = totalPhaseSeconds;
+  }
+  updateUI();
+});
 
-  soundBtn.addEventListener("click", () => {
-    soundOn = !soundOn;
-    soundBtn.textContent = "Sound: " + (soundOn ? "ON" : "OFF");
-    if (soundOn) beep(880, 0.08);
-  });
+breakPlus.addEventListener("click", () => {
+  breakMin++;
+  if (!running && (phase === "BREAK" || phase === "LONG_BREAK")) {
+    totalPhaseSeconds = (phase === "LONG_BREAK" ? breakMin * 2 : breakMin) * 60;
+    remaining = totalPhaseSeconds;
+  }
+  updateUI();
+});
 
-  fsBtn.addEventListener("click", toggleFullscreen);
+// Long break every X cycles
+longEveryMinus.addEventListener("click", () => {
+  if (longEvery > 1) longEvery--;
+  updateUI();
+});
 
-  [prepareIn, workIn, breakIn, cyclesIn, autoStartIn, notifyIn].forEach(el => {
-    el.addEventListener("input", () => saveSettings());
-    el.addEventListener("change", () => { saveSettings(); settings = readSettings(); setUI(); });
-  });
+longEveryPlus.addEventListener("click", () => {
+  longEvery++;
+  updateUI();
+});
 
-  window.addEventListener("keydown", (e) => {
-    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
-    const typing = tag === "input" || tag === "textarea" || tag === "select";
-    if (typing) return;
+// Theme toggle
+themeToggle.addEventListener("click", () => {
+  const body = document.body;
+  const isLight = body.classList.toggle("light");
+  themeToggle.textContent = isLight ? "Light mode" : "Dark mode";
+});
 
-    if (e.code === "Space") { e.preventDefault(); running ? pause() : start(); }
-    if (e.key.toLowerCase() === "r") { e.preventDefault(); reset(); }
-    if (e.key.toLowerCase() === "f") { e.preventDefault(); toggleFullscreen(); }
-  });
+// Sound toggle
+soundToggle.addEventListener("click", () => {
+  soundOn = !soundOn;
+  soundToggle.textContent = soundOn ? "Sound: ON" : "Sound: OFF";
+});
 
-  // Init
-  loadSettings();
-  settings = readSettings();
-  reset();
-})();
+// Initialize
+updateUI();
