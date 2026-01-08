@@ -218,7 +218,8 @@
     }
   </style>
 
- <script defer src="/tools/time/break-timer/break-timer.js"></script>
+  <!-- FIXED: Correct script path -->
+  <script defer src="break-timer.js"></script>
 
 </head>
 
@@ -230,7 +231,6 @@
       <button id="themeToggle" class="theme-toggle">Dark mode</button>
     </div>
 
-    <!-- Time Controls -->
     <div class="time-settings">
       <div class="time-settings-group">
         <label>Work (min)</label>
@@ -255,16 +255,13 @@
       </div>
     </div>
 
-    <!-- Timer -->
     <div class="timer-display" id="timerDisplay">25:00</div>
     <div class="timer-phase work" id="phaseLabel">Work</div>
 
-    <!-- Progress -->
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
 
-    <!-- Controls -->
     <div class="timer-controls">
       <button id="startPauseBtn" class="primary">Start</button>
       <button id="resetBtn">Reset</button>
