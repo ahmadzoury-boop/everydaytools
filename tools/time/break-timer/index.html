@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <title>Break Timer – Work/Rest Cycles</title>
-  <meta name="description" content="Break timer with adjustable work/break durations, long breaks, sound alerts, and dark mode." />
-
-  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <title>Break Timer – Work/Rest Cycles | Everyday Tools</title>
+  <meta name="description" content="Smart break timer for productivity — alternate work and rest periods with sound alerts, progress tracking, and dark mode." />
 
   <style>
     :root {
@@ -17,7 +15,6 @@
       --accent-soft: rgba(74, 222, 128, 0.15);
       --danger: #f97373;
     }
-
     body.light {
       --bg: #f5f5f7;
       --fg: #111827;
@@ -25,16 +22,14 @@
       --accent-soft: rgba(37, 99, 235, 0.12);
       --danger: #dc2626;
     }
-
     body {
-      font-family: system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       text-align: center;
       padding: 40px 16px;
       background: radial-gradient(circle at top, #111827, var(--bg));
       color: var(--fg);
       transition: background 0.4s ease, color 0.4s ease;
     }
-
     .timer-container {
       max-width: 460px;
       margin: 0 auto;
@@ -46,17 +41,14 @@
       backdrop-filter: blur(18px);
       transition: background 0.4s ease, border-color 0.4s ease, transform 0.2s ease;
     }
-
     body.light .timer-container {
       background: rgba(255, 255, 255, 0.9);
       border-color: rgba(148, 163, 184, 0.5);
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
     }
-
     .timer-container.running {
       transform: translateY(-2px);
     }
-
     .header-row {
       display: flex;
       justify-content: space-between;
@@ -64,12 +56,10 @@
       margin-bottom: 12px;
       gap: 10px;
     }
-
     .timer-title {
       font-size: 22px;
       font-weight: 650;
     }
-
     .theme-toggle {
       font-size: 13px;
       padding: 6px 10px;
@@ -79,11 +69,9 @@
       color: inherit;
       cursor: pointer;
     }
-
     body.light .theme-toggle {
       background: rgba(255, 255, 255, 0.9);
     }
-
     .time-settings {
       margin-bottom: 18px;
       font-size: 14px;
@@ -91,7 +79,6 @@
       justify-content: space-between;
       gap: 10px;
     }
-
     .time-settings-group {
       flex: 1;
       padding: 10px 10px 12px;
@@ -99,18 +86,15 @@
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(148, 163, 184, 0.4);
     }
-
     body.light .time-settings-group {
       background: rgba(255, 255, 255, 0.9);
     }
-
     .time-settings label {
       display: block;
       font-size: 12px;
       opacity: 0.8;
       margin-bottom: 4px;
     }
-
     .time-settings button {
       padding: 4px 9px;
       margin: 0 4px;
@@ -121,44 +105,36 @@
       background: rgba(15, 23, 42, 0.8);
       color: inherit;
     }
-
     body.light .time-settings button {
       background: rgba(255, 255, 255, 0.9);
     }
-
     .time-settings span {
       min-width: 22px;
       display: inline-block;
       font-weight: 600;
     }
-
     .long-break-note {
       font-size: 11px;
       opacity: 0.7;
       margin-top: 4px;
     }
-
     .timer-display {
       font-size: 60px;
       font-weight: 800;
       margin: 10px 0 4px;
       letter-spacing: 1px;
     }
-
     .timer-phase {
       font-size: 16px;
       opacity: 0.85;
       margin-bottom: 14px;
     }
-
     .timer-phase.work {
       color: var(--accent);
     }
-
     .timer-phase.break {
       color: var(--danger);
     }
-
     .progress-bar {
       height: 10px;
       border-radius: 999px;
@@ -166,18 +142,15 @@
       overflow: hidden;
       margin-bottom: 16px;
     }
-
     .progress-fill {
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, var(--accent-soft), var(--accent));
       transition: width 0.25s linear;
     }
-
     .timer-controls {
       margin-top: 4px;
     }
-
     .timer-controls button {
       padding: 9px 18px;
       margin: 4px;
@@ -189,26 +162,21 @@
       color: inherit;
       min-width: 90px;
     }
-
     body.light .timer-controls button {
       background: rgba(255, 255, 255, 0.95);
     }
-
     .timer-controls button.primary {
       border-color: var(--accent);
       background: var(--accent-soft);
     }
-
     .timer-cycles {
       margin-top: 12px;
       font-size: 13px;
       opacity: 0.85;
     }
-
     .timer-cycles strong {
       font-weight: 700;
     }
-
     .sound-toggle {
       font-size: 13px;
       margin-top: 8px;
@@ -218,13 +186,10 @@
     }
   </style>
 
-  <!-- FIXED: Correct script path -->
-  <script defer src="break-timer.js"></script>
-
+  <script defer src="./break-timer.js"></script>
 </head>
 
 <body>
-
   <div class="timer-container" id="timerCard">
     <div class="header-row">
       <h1 class="timer-title">Break Timer</h1>
@@ -273,6 +238,5 @@
 
     <div id="soundToggle" class="sound-toggle">Sound: ON</div>
   </div>
-
 </body>
 </html>
