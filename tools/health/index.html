@@ -1,135 +1,424 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Health Tools</title>
-<link rel="stylesheet" href="../../assets/css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Health Tools | Everyday Tools</title>
+  <meta name="description" content="Daily health tools: nutrition lookup (USDA), BMI, calorie needs, body fat estimate." />
 
-<style>
-:root{
-  --ts-bg:#0b1220;
-  --ts-card:#0f1a33;
-  --ts-border:rgba(255,255,255,.10);
-  --ts-text:rgba(255,255,255,.92);
-  --ts-muted:rgba(255,255,255,.70);
-  --ts-accent:#7dd3fc;
-}
-*{box-sizing:border-box}
-body{
-  margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(1000px 600px at 10% 0%, rgba(125,211,252,.16), transparent 60%),
-              radial-gradient(900px 500px at 90% 20%, rgba(167,139,250,.14), transparent 55%),
-              var(--ts-bg);
-  color:var(--ts-text);
-}
-a{color:var(--ts-accent); text-decoration:none}
-a:hover{text-decoration:underline}
-.ts-header{
-  display:flex; gap:12px; align-items:center; justify-content:space-between;
-  padding:16px 20px; border-bottom:1px solid var(--ts-border);
-  position:sticky; top:0; backdrop-filter: blur(10px);
-  background: rgba(11,18,32,.65);
-}
-.ts-header .left{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-.ts-badge{
-  font-size:12px; padding:6px 10px; border:1px solid var(--ts-border);
-  border-radius:999px; color:var(--ts-muted)
-}
-.ts-container{max-width:980px; margin:0 auto; padding:22px 16px 44px}
-h1{font-size:28px; margin:10px 0 6px}
-.ts-sub{margin:0 0 18px; color:var(--ts-muted)}
-.ts-grid{display:grid; grid-template-columns: 1fr; gap:14px}
-@media (min-width: 900px){ .ts-grid.cols-2{grid-template-columns: 1fr 1fr} }
-.ts-card{
-  background: rgba(15,26,51,.86);
-  border:1px solid var(--ts-border);
-  border-radius:16px;
-  padding:16px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.25);
-}
-label{display:block; font-size:13px; color:var(--ts-muted); margin:8px 0 6px}
-input, select, textarea{
-  width:100%;
-  background: rgba(0,0,0,.18);
-  border:1px solid var(--ts-border);
-  border-radius:12px;
-  padding:10px 12px;
-  color:var(--ts-text);
-  outline:none;
-}
-textarea{min-height:180px; resize:vertical; line-height:1.4}
-.ts-row{display:grid; grid-template-columns: 1fr; gap:12px}
-@media (min-width: 700px){ .ts-row.cols-2{grid-template-columns: 1fr 1fr} .ts-row.cols-3{grid-template-columns:1fr 1fr 1fr}}
-.ts-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
-button{
-  cursor:pointer;
-  background: rgba(125,211,252,.18);
-  border:1px solid rgba(125,211,252,.35);
-  color:var(--ts-text);
-  padding:10px 12px;
-  border-radius:12px;
-}
-button.secondary{
-  background: rgba(255,255,255,.06);
-  border:1px solid var(--ts-border);
-}
-button:active{transform:translateY(1px)}
-.ts-kpi{
-  display:flex; gap:10px; flex-wrap:wrap; margin-top:10px
-}
-.ts-pill{
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid var(--ts-border);
-  background: rgba(0,0,0,.16);
-  min-width: 160px;
-}
-.ts-pill b{display:block; font-size:14px}
-.ts-pill span{display:block; font-size:12px; color:var(--ts-muted); margin-top:4px}
-.ts-note{margin-top:10px; color:var(--ts-muted); font-size:12px}
-.ts-footer{
-  padding:18px 16px; border-top:1px solid var(--ts-border);
-  color:var(--ts-muted); text-align:center
-}
-code.ts-inline{background:rgba(255,255,255,.08); padding:2px 6px; border-radius:8px; border:1px solid var(--ts-border)}
-</style>
+  <!-- Your global CSS (keep) -->
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+
+  <style>
+    :root{
+      --bg:#05060a; --fg:#e5e7eb; --muted:#94a3b8;
+      --card:rgba(11,18,32,.86); --line:rgba(148,163,184,.22);
+      --accent:#4ade80; --accent2:#60a5fa; --danger:#fb7185;
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+      --r:18px;
+    }
+    body{
+      margin:0;
+      background:radial-gradient(circle at top, #111827, var(--bg));
+      color:var(--fg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:22px 14px 44px; }
+    header{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; margin-bottom:14px;
+    }
+    .brand h1{ margin:0; font-size:22px; letter-spacing:.2px; }
+    .brand p{ margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35; }
+    .pill{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+      color:var(--fg);
+      text-decoration:none;
+      font-size:13px;
+      background:rgba(15,23,42,.45);
+      white-space:nowrap;
+    }
+
+    .grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+    @media (min-width: 920px){
+      .grid{ grid-template-columns: 1.35fr .65fr; gap:14px; }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:16px;
+      backdrop-filter: blur(14px);
+    }
+    .card h2{ margin:0 0 10px; font-size:16px; }
+    .sub{ margin:0 0 12px; color:var(--muted); font-size:13px; line-height:1.35; }
+
+    .searchRow{ display:flex; gap:10px; }
+    .searchRow input{
+      flex:1;
+      border-radius:12px;
+      border:1px solid var(--line);
+      padding:12px 12px;
+      background:rgba(2,6,23,.45);
+      color:var(--fg);
+      outline:none;
+      font-size:14px;
+    }
+    .searchRow button{
+      border-radius:12px;
+      border:1px solid var(--line);
+      padding:12px 14px;
+      background:rgba(74,222,128,.14);
+      color:var(--fg);
+      cursor:pointer;
+      font-weight:800;
+    }
+
+    .loading{ display:none; margin-top:10px; color:var(--muted); font-size:13px; }
+    .results{
+      margin-top:10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(2,6,23,.35);
+      display:none;
+      max-height:320px;
+      overflow:auto;
+    }
+    .resultItem{
+      padding:10px 12px;
+      cursor:pointer;
+      border-top:1px solid rgba(148,163,184,.14);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .resultItem:first-child{ border-top:none; }
+    .resultItem:hover{ background:rgba(96,165,250,.10); }
+    .rTitle{ font-size:13px; font-weight:800; }
+    .rMeta{ font-size:12px; color:var(--muted); margin-top:2px; }
+    .badge{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.25);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .factsTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+      margin-top:14px;
+    }
+    .foodName{ margin:0; font-size:15px; font-weight:900; }
+    .basis{ margin:6px 0 0; color:var(--muted); font-size:12px; }
+    .factsGrid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (min-width: 520px){
+      .factsGrid{ grid-template-columns: repeat(4, 1fr); }
+    }
+    .fact{
+      border:1px solid rgba(148,163,184,.22);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(2,6,23,.30);
+    }
+    .fact .label{ color:var(--muted); font-size:12px; margin-bottom:6px; }
+    .fact .num{
+      font-size:28px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      line-height:1;
+    }
+    .fact .unit{ font-size:12px; color:var(--muted); margin-top:4px; }
+
+    .note{ margin-top:12px; color:var(--muted); font-size:12px; line-height:1.45; }
+
+    .links{ display:grid; grid-template-columns:1fr; gap:10px; }
+    .linkCard{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(148,163,184,.22);
+      background:rgba(2,6,23,.26);
+      text-decoration:none;
+      color:var(--fg);
+    }
+    .linkCard:hover{ background:rgba(74,222,128,.08); }
+    .linkCard .t{ font-weight:900; }
+    .linkCard .d{ color:var(--muted); font-size:12px; margin-top:3px; }
+  </style>
 </head>
+
 <body>
-<header class="ts-header">
-  <div class="left">
-    <a href="../../index.html" class="ts-badge">🏠 Home</a>
-    <span class="ts-badge">Health</span>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>Health Tools</h1>
+        <p>Nutrition lookup (USDA) + quick calculators. Built to be useful daily.</p>
+      </div>
+      <a class="pill" href="../../">Home</a>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: USDA Nutrition -->
+      <section class="card">
+        <h2>Nutrition Lookup</h2>
+        <p class="sub">Search foods and instantly show bold calories/macros.</p>
+
+        <div class="searchRow">
+          <input id="q" type="text" inputmode="search" placeholder="Search: banana, chicken breast, greek yogurt…" autocomplete="off" />
+          <button id="btn">Search</button>
+        </div>
+
+        <div id="loading" class="loading">Loading…</div>
+
+        <div id="results" class="results" aria-label="Search results"></div>
+
+        <div id="facts" style="display:none;">
+          <div class="factsTop">
+            <div>
+              <p id="foodName" class="foodName"></p>
+              <p id="basis" class="basis"></p>
+            </div>
+            <div class="badge" id="dtype"></div>
+          </div>
+
+          <div class="factsGrid">
+            <div class="fact">
+              <div class="label">Calories</div>
+              <div class="num" id="cal">—</div>
+              <div class="unit">kcal</div>
+            </div>
+            <div class="fact">
+              <div class="label">Protein</div>
+              <div class="num" id="pro">—</div>
+              <div class="unit">g</div>
+            </div>
+            <div class="fact">
+              <div class="label">Carbs</div>
+              <div class="num" id="carb">—</div>
+              <div class="unit">g</div>
+            </div>
+            <div class="fact">
+              <div class="label">Fat</div>
+              <div class="num" id="fat">—</div>
+              <div class="unit">g</div>
+            </div>
+          </div>
+
+          <div class="factsGrid" style="margin-top:10px;">
+            <div class="fact">
+              <div class="label">Fiber</div>
+              <div class="num" id="fib">—</div>
+              <div class="unit">g</div>
+            </div>
+            <div class="fact">
+              <div class="label">Sugar</div>
+              <div class="num" id="sug">—</div>
+              <div class="unit">g</div>
+            </div>
+            <div class="fact">
+              <div class="label">Sodium</div>
+              <div class="num" id="sod">—</div>
+              <div class="unit">mg</div>
+            </div>
+            <div class="fact">
+              <div class="label">Last Saved</div>
+              <div class="num" id="saved">—</div>
+              <div class="unit">food</div>
+            </div>
+          </div>
+
+          <p class="note">Tip: click a search result to load full nutrition.</p>
+        </div>
+      </section>
+
+      <!-- RIGHT: Existing tools links -->
+      <aside class="card">
+        <h2>Quick Tools</h2>
+        <p class="sub">Fast daily checks people actually use.</p>
+
+        <div class="links">
+          <a class="linkCard" href="./bmi-calculator.html">
+            <div>
+              <div class="t">BMI Calculator</div>
+              <div class="d">Body mass index + category.</div>
+            </div>
+            <div class="badge">Open</div>
+          </a>
+
+          <a class="linkCard" href="./calorie-needs.html">
+            <div>
+              <div class="t">Calorie Needs</div>
+              <div class="d">Maintenance + deficit/surplus target.</div>
+            </div>
+            <div class="badge">Open</div>
+          </a>
+
+          <a class="linkCard" href="./body-fat-estimate.html">
+            <div>
+              <div class="t">Body Fat Estimate</div>
+              <div class="d">Quick estimate using measurements.</div>
+            </div>
+            <div class="badge">Open</div>
+          </a>
+        </div>
+
+        <p class="note">
+          Next upgrade (later): “Meal total” (add multiple foods + grams → daily totals).
+        </p>
+      </aside>
+    </div>
   </div>
-  <div class="right">
-    <a class="ts-badge" href="index.html">⬅ Back to Health tools</a>
-  </div>
-</header>
-<main class="ts-container">
-  <h1>Health Tools</h1>
-  <p class="ts-sub">Quick, clean tools for your Toolstack site.</p>
-  <div class="ts-grid cols-2">
-<div class="ts-card">
-      <h3 style="margin:0 0 6px">BMI Calculator</h3>
-      <p class="ts-sub" style="margin:0 0 10px">Body Mass Index + healthy weight range.</p>
-      <a href="bmi-calculator.html">Open →</a>
-    </div>
-<div class="ts-card">
-      <h3 style="margin:0 0 6px">Calorie Needs Calculator</h3>
-      <p class="ts-sub" style="margin:0 0 10px">BMR & TDEE using Mifflin-St Jeor.</p>
-      <a href="calorie-needs.html">Open →</a>
-    </div>
-<div class="ts-card">
-      <h3 style="margin:0 0 6px">Body Fat Estimate (US Navy)</h3>
-      <p class="ts-sub" style="margin:0 0 10px">Estimate body fat % using tape measurements.</p>
-      <a href="body-fat-estimate.html">Open →</a>
-    </div>
-</div>
-<div class="ts-note">Tip: if your site has a global tools index, add a link to this folder’s <code class="ts-inline">index.html</code>.</div>
-</main>
-<footer class="ts-footer">Toolstack add-on pages • Works offline • Single-file tools</footer>
-<script>
-/* no script */
-</script>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const q = $("q");
+    const btn = $("btn");
+    const results = $("results");
+    const loading = $("loading");
+
+    const facts = $("facts");
+    const foodName = $("foodName");
+    const basis = $("basis");
+    const dtype = $("dtype");
+
+    const cal = $("cal"), pro = $("pro"), carb = $("carb"), fat = $("fat");
+    const fib = $("fib"), sug = $("sug"), sod = $("sod");
+    const saved = $("saved");
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+    function fmt(n, digits=0){
+      if (n === null || n === undefined || !isFinite(n)) return "—";
+      const v = Number(n);
+      return digits ? v.toFixed(digits) : String(Math.round(v));
+    }
+
+    function renderResults(items){
+      if (!items.length){
+        results.style.display = "none";
+        results.innerHTML = "";
+        return;
+      }
+      results.style.display = "block";
+      results.innerHTML = items.map((it) => {
+        const brand = [it.brandName, it.brandOwner].filter(Boolean).join(" • ");
+        const meta = [it.dataType, brand].filter(Boolean).join(" — ");
+        return `
+          <div class="resultItem" data-id="${it.fdcId}">
+            <div>
+              <div class="rTitle">${escapeHtml(it.description || "")}</div>
+              <div class="rMeta">${escapeHtml(meta || "")}</div>
+            </div>
+            <div class="badge">#${it.fdcId}</div>
+          </div>
+        `;
+      }).join("");
+
+      results.querySelectorAll(".resultItem").forEach((row) => {
+        row.addEventListener("click", async () => {
+          const id = row.getAttribute("data-id");
+          await fetchFood(id);
+          results.style.display = "none";
+        });
+      });
+    }
+
+    async function searchFoods(){
+      const term = q.value.trim();
+      if (term.length < 2) return;
+
+      loading.style.display = "block";
+      facts.style.display = "none";
+
+      try{
+        const res = await fetch(`/api/usda-search?q=${encodeURIComponent(term)}&pageSize=12`);
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Search failed");
+        renderResults(data.items || []);
+      } catch(e){
+        results.style.display = "block";
+        results.innerHTML = `<div class="resultItem"><div class="rTitle">Error</div><div class="rMeta">${escapeHtml(e.message)}</div></div>`;
+      } finally{
+        loading.style.display = "none";
+      }
+    }
+
+    async function fetchFood(fdcId){
+      loading.style.display = "block";
+      try{
+        const res = await fetch(`/api/usda-food?fdcId=${encodeURIComponent(fdcId)}`);
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || "Food fetch failed");
+
+        facts.style.display = "block";
+        foodName.textContent = data.description || "Selected food";
+        dtype.textContent = data.dataType || "";
+
+        // Your usda-food endpoint returns nutrients map (calories/protein/carbs/fat/fiber/sugars/sodium)
+        const N = data.nutrients || {};
+        cal.textContent  = fmt(N.calories ?? null);
+        pro.textContent  = fmt(N.protein ?? null, 1);
+        carb.textContent = fmt(N.carbs ?? null, 1);
+        fat.textContent  = fmt(N.fat ?? null, 1);
+        fib.textContent  = fmt(N.fiber ?? null, 1);
+        sug.textContent  = fmt(N.sugars ?? null, 1);
+        sod.textContent  = fmt(N.sodium ?? null, 0);
+
+        basis.textContent = "Values depend on USDA item type (often per 100g for SR/Foundation).";
+
+        // Save last picked food
+        localStorage.setItem("health_lastFood", JSON.stringify({ fdcId: data.fdcId, description: data.description }));
+        saved.textContent = (data.description || "").slice(0, 12) + ((data.description||"").length > 12 ? "…" : "");
+      } catch(e){
+        facts.style.display = "block";
+        foodName.textContent = "Could not load nutrition";
+        basis.textContent = e.message;
+        dtype.textContent = "";
+      } finally{
+        loading.style.display = "none";
+      }
+    }
+
+    // Debounced typing
+    let t = null;
+    q.addEventListener("input", () => {
+      clearTimeout(t);
+      t = setTimeout(searchFoods, 250);
+    });
+    btn.addEventListener("click", searchFoods);
+    q.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") searchFoods();
+    });
+
+    // Restore last saved food (optional)
+    try{
+      const last = JSON.parse(localStorage.getItem("health_lastFood") || "null");
+      if (last?.fdcId) {
+        saved.textContent = (last.description || "Saved").slice(0, 12) + ((last.description||"").length > 12 ? "…" : "");
+      }
+    } catch {}
+  </script>
 </body>
 </html>
