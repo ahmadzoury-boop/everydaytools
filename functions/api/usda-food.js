@@ -15,24 +15,16 @@ export function onRequestOptions() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }
 
-function extractNutrients(food) {
-  const map = {};
-  const list = food.foodNutrients || [];
-  const byName = (n) => n?.nutrientName?.toLowerCase() || "";
-
-  for (const n of list) {
-    const name = byName(n);
-    const value = n.value;
-    if (name.includes("energy") && name.includes("kcal")) map.calories = value;
-    if (name === "protein") map.protein = value;
-    if (name.includes("carbohydrate")) map.carbs = value;
-    if (name === "total lipid (fat)") map.fat = value;
-    if (name.includes("fiber")) map.fiber = value;
-    if (name.includes("sugars")) map.sugars = value;
-    if (name.includes("sodium")) map.sodium = value;
-  }
-
-  return map;
+function findNutrient(foodNutrients, keys) {
+  if (!Array.isArray(foodNutrients)) return null;
+  const match = foodNutrients.find((n) => {
+    const name = (n.nutrient?.name || "").toLowerCase();
+    const number = n.nutrient?.number;
+    return keys.some((k) => name.includes(k) || number === k);
+  });
+  if (!match) return null;
+  const amount = match.amount || match.value;
+  return isFinite(amount) ? amount : null;
 }
 
 export async function onRequest({ request, env }) {
@@ -55,7 +47,33 @@ export async function onRequest({ request, env }) {
 
     const data = await res.json();
 
-    const nutrients = extractNutrients(data);
+    let nutrients = {};
+    // If Branded item → use labelNutrients
+    if (data.labelNutrients) {
+      const ln = data.labelNutrients;
+      nutrients = {
+        calories: ln.calories?.value,
+        protein: ln.protein?.value,
+        carbs: ln.carbohydrates?.value,
+        fat: ln.fat?.value,
+        fiber: ln.fiber?.value,
+        sugars: ln.sugars?.value,
+        sodium: ln.sodium?.value,
+      };
+    }
+    // Otherwise parse SR Legacy / Foundation
+    else if (data.foodNutrients?.length) {
+      const fn = data.foodNutrients;
+      nutrients = {
+        calories: findNutrient(fn, ["energy", "208"]),
+        protein: findNutrient(fn, ["protein", "203"]),
+        carbs: findNutrient(fn, ["carbohydrate", "205"]),
+        fat: findNutrient(fn, ["fat", "204", "lipid"]),
+        fiber: findNutrient(fn, ["fiber", "291"]),
+        sugars: findNutrient(fn, ["sugar", "269"]),
+        sodium: findNutrient(fn, ["sodium", "307"]),
+      };
+    }
 
     return json(
       {
