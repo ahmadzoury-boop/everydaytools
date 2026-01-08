@@ -12,7 +12,7 @@
     :root{
       --bg:#05060a; --fg:#e5e7eb; --muted:#94a3b8;
       --card:rgba(11,18,32,.86); --line:rgba(148,163,184,.22);
-      --accent:#4ade80; --accent2:#60a5fa;
+      --accent:#4ade80; --accent2:#60a5fa; --danger:#fb7185;
       --shadow: 0 18px 55px rgba(0,0,0,.45);
       --r:18px;
     }
@@ -99,6 +99,72 @@
 
     .note{ margin-top:12px; color:var(--muted); font-size:12px; line-height:1.45; }
 
+    .row{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .row input{
+      width:120px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      padding:10px 10px;
+      background:rgba(2,6,23,.45);
+      color:var(--fg);
+      outline:none;
+      font-size:14px;
+    }
+    .btnSmall{
+      border-radius:12px;
+      border:1px solid var(--line);
+      padding:10px 12px;
+      background:rgba(96,165,250,.14);
+      color:var(--fg);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .btnDanger{
+      background:rgba(251,113,133,.16);
+    }
+
+    .mealList{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(2,6,23,.28);
+    }
+    .mealItem{
+      display:grid;
+      grid-template-columns: 1fr 90px 90px;
+      gap:10px;
+      align-items:center;
+      padding:10px 12px;
+      border-top:1px solid rgba(148,163,184,.14);
+    }
+    .mealItem:first-child{ border-top:none; }
+    .mealName{ font-weight:900; font-size:13px; }
+    .mealSub{ color:var(--muted); font-size:12px; margin-top:2px; }
+    .mealItem input{
+      width:90px;
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,.22);
+      padding:8px 8px;
+      background:rgba(2,6,23,.35);
+      color:var(--fg);
+      outline:none;
+      font-size:13px;
+      text-align:center;
+    }
+    .mealItem button{
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,.22);
+      padding:8px 10px;
+      background:rgba(251,113,133,.16);
+      color:var(--fg);
+      cursor:pointer;
+      font-weight:900;
+    }
+
     .links{ display:grid; grid-template-columns:1fr; gap:10px; }
     .linkCard{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -116,7 +182,7 @@
     <header>
       <div class="brand">
         <h1>Health Tools</h1>
-        <p>Nutrition lookup (USDA) + quick calculators. Built to be useful daily.</p>
+        <p>Nutrition lookup (USDA) + meal totals for daily tracking.</p>
       </div>
       <a class="pill" href="../../">Home</a>
     </header>
@@ -124,7 +190,7 @@
     <div class="grid">
       <section class="card">
         <h2>Nutrition Lookup</h2>
-        <p class="sub">Type a food → click a result → see bold calories/macros.</p>
+        <p class="sub">Search foods → click a result → add to your meal and see totals.</p>
 
         <div class="searchRow">
           <input id="q" type="text" inputmode="search" placeholder="Search: banana, chicken breast, greek yogurt…" autocomplete="off" />
@@ -157,7 +223,31 @@
             <div class="fact"><div class="label">Saved</div><div class="num" id="saved">—</div><div class="unit">food</div></div>
           </div>
 
-          <p class="note">Tip: results may be per 100g or per serving depending on USDA item type.</p>
+          <div class="row">
+            <input id="grams" type="number" min="1" step="1" value="100" />
+            <button id="addMeal" class="btnSmall">Add to Meal</button>
+            <button id="clearMeal" class="btnSmall btnDanger">Clear Meal</button>
+            <span class="note" style="margin:0;">Tip: enter grams then “Add to Meal”.</span>
+          </div>
+
+          <h2 style="margin-top:14px;">Meal Total</h2>
+          <p class="sub">Totals update automatically as you change grams.</p>
+
+          <div class="factsGrid">
+            <div class="fact"><div class="label">Total Calories</div><div class="num" id="tcal">—</div><div class="unit">kcal</div></div>
+            <div class="fact"><div class="label">Total Protein</div><div class="num" id="tpro">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Total Carbs</div><div class="num" id="tcarb">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Total Fat</div><div class="num" id="tfat">—</div><div class="unit">g</div></div>
+          </div>
+
+          <div class="factsGrid" style="margin-top:10px;">
+            <div class="fact"><div class="label">Total Fiber</div><div class="num" id="tfib">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Total Sugar</div><div class="num" id="tsug">—</div><div class="unit">g</div></div>
+            <div class="fact"><div class="label">Total Sodium</div><div class="num" id="tsod">—</div><div class="unit">mg</div></div>
+            <div class="fact"><div class="label">Items</div><div class="num" id="titems">0</div><div class="unit">foods</div></div>
+          </div>
+
+          <div id="mealList" class="mealList" style="display:none;"></div>
         </div>
       </section>
 
@@ -180,7 +270,7 @@
           </a>
         </div>
 
-        <p class="note">Next (optional): “Meal total” (add multiple foods + grams → daily totals).</p>
+        <p class="note">This page now supports daily tracking with “Meal Total”.</p>
       </aside>
     </div>
   </div>
@@ -193,6 +283,15 @@
     const cal = $("cal"), pro = $("pro"), carb = $("carb"), fat = $("fat");
     const fib = $("fib"), sug = $("sug"), sod = $("sod"), saved = $("saved");
 
+    const gramsInput = $("grams"), addMealBtn = $("addMeal"), clearMealBtn = $("clearMeal");
+    const mealListEl = $("mealList");
+
+    const tcal = $("tcal"), tpro = $("tpro"), tcarb = $("tcarb"), tfat = $("tfat");
+    const tfib = $("tfib"), tsug = $("tsug"), tsod = $("tsod"), titems = $("titems");
+
+    let currentFood = null; // {fdcId, description, basis, nutrients}
+    let meal = []; // [{fdcId, description, grams, nutrients}]
+
     function escapeHtml(s){
       return String(s).replace(/[&<>"']/g, (c) => ({
         "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -203,10 +302,103 @@
       const v = Number(n);
       return digits ? v.toFixed(digits) : String(Math.round(v));
     }
-
     function setSavedLabel(desc){
       if (!desc) { saved.textContent = "—"; return; }
       saved.textContent = desc.slice(0, 12) + (desc.length > 12 ? "…" : "");
+    }
+
+    function saveMeal(){
+      localStorage.setItem("health_meal", JSON.stringify(meal));
+    }
+    function loadMeal(){
+      try{
+        const m = JSON.parse(localStorage.getItem("health_meal") || "[]");
+        if (Array.isArray(m)) meal = m;
+      } catch {}
+    }
+
+    function scale(n, grams){
+      // nutrients assumed per 100g OR per serving label (still treated as 1 unit)
+      // For SR/Foundation (per 100g): grams/100
+      // For Branded per serving: user can still input grams, approximation (better than nothing)
+      const factor = grams / 100;
+      return (typeof n === "number" && isFinite(n)) ? n * factor : null;
+    }
+
+    function calcTotals(){
+      const totals = { calories:0, protein:0, carbs:0, fat:0, fiber:0, sugars:0, sodium:0 };
+      let hasAny = false;
+
+      for (const item of meal){
+        const g = Number(item.grams) || 0;
+        const N = item.nutrients || {};
+        for (const k of Object.keys(totals)){
+          const v = scale(N[k], g);
+          if (typeof v === "number" && isFinite(v)){
+            totals[k] += v;
+            hasAny = true;
+          }
+        }
+      }
+
+      titems.textContent = String(meal.length);
+
+      if (!meal.length || !hasAny){
+        tcal.textContent = tpro.textContent = tcarb.textContent = tfat.textContent = "—";
+        tfib.textContent = tsug.textContent = tsod.textContent = "—";
+        return;
+      }
+
+      tcal.textContent = fmt(totals.calories, 0);
+      tpro.textContent = fmt(totals.protein, 1);
+      tcarb.textContent = fmt(totals.carbs, 1);
+      tfat.textContent = fmt(totals.fat, 1);
+      tfib.textContent = fmt(totals.fiber, 1);
+      tsug.textContent = fmt(totals.sugars, 1);
+      tsod.textContent = fmt(totals.sodium, 0);
+    }
+
+    function renderMeal(){
+      if (!meal.length){
+        mealListEl.style.display = "none";
+        mealListEl.innerHTML = "";
+        calcTotals();
+        return;
+      }
+
+      mealListEl.style.display = "block";
+      mealListEl.innerHTML = meal.map((it, idx) => `
+        <div class="mealItem" data-idx="${idx}">
+          <div>
+            <div class="mealName">${escapeHtml(it.description || "Food")}</div>
+            <div class="mealSub">per 100g basis • fdcId ${escapeHtml(String(it.fdcId))}</div>
+          </div>
+          <input type="number" min="1" step="1" value="${escapeHtml(String(it.grams || 100))}" />
+          <button type="button">Remove</button>
+        </div>
+      `).join("");
+
+      // grams change
+      mealListEl.querySelectorAll(".mealItem").forEach((row) => {
+        const idx = Number(row.getAttribute("data-idx"));
+        const input = row.querySelector("input");
+        const btn = row.querySelector("button");
+
+        input.addEventListener("input", () => {
+          const g = Math.max(1, Number(input.value || 1));
+          meal[idx].grams = g;
+          saveMeal();
+          calcTotals();
+        });
+
+        btn.addEventListener("click", () => {
+          meal.splice(idx, 1);
+          saveMeal();
+          renderMeal();
+        });
+      });
+
+      calcTotals();
     }
 
     function renderResults(items){
@@ -254,7 +446,7 @@
         const items = data.items || [];
         renderResults(items);
 
-        // Auto-load first result (fast UX)
+        // auto load first for fast UX
         if (items.length) fetchFood(items[0].fdcId);
       } catch(e){
         results.style.display = "block";
@@ -279,13 +471,28 @@
           : (data.basis || "");
 
         const N = data.nutrients || {};
-        cal.textContent  = fmt(N.calories ?? null);
+        cal.textContent  = fmt(N.calories ?? null, 0);
         pro.textContent  = fmt(N.protein ?? null, 1);
         carb.textContent = fmt(N.carbs ?? null, 1);
         fat.textContent  = fmt(N.fat ?? null, 1);
         fib.textContent  = fmt(N.fiber ?? null, 1);
         sug.textContent  = fmt(N.sugars ?? null, 1);
         sod.textContent  = fmt(N.sodium ?? null, 0);
+
+        currentFood = {
+          fdcId: data.fdcId,
+          description: data.description,
+          basis: data.basis,
+          nutrients: {
+            calories: N.calories ?? null,
+            protein: N.protein ?? null,
+            carbs: N.carbs ?? null,
+            fat: N.fat ?? null,
+            fiber: N.fiber ?? null,
+            sugars: N.sugars ?? null,
+            sodium: N.sodium ?? null,
+          },
+        };
 
         localStorage.setItem("health_lastFood", JSON.stringify({ fdcId: data.fdcId, description: data.description }));
         setSavedLabel(data.description || "");
@@ -299,6 +506,26 @@
       }
     }
 
+    addMealBtn.addEventListener("click", () => {
+      if (!currentFood) return;
+
+      const g = Math.max(1, Number(gramsInput.value || 100));
+      meal.push({
+        fdcId: currentFood.fdcId,
+        description: currentFood.description,
+        grams: g,
+        nutrients: currentFood.nutrients
+      });
+      saveMeal();
+      renderMeal();
+    });
+
+    clearMealBtn.addEventListener("click", () => {
+      meal = [];
+      saveMeal();
+      renderMeal();
+    });
+
     // Debounce typing
     let t = null;
     q.addEventListener("input", () => {
@@ -308,11 +535,14 @@
     btn.addEventListener("click", searchFoods);
     q.addEventListener("keydown", (e) => { if (e.key === "Enter") searchFoods(); });
 
-    // Restore saved label on load
+    // Init saved label + load meal
     try{
       const last = JSON.parse(localStorage.getItem("health_lastFood") || "null");
       if (last?.description) setSavedLabel(last.description);
     } catch {}
+
+    loadMeal();
+    renderMeal();
   </script>
 </body>
 </html>
