@@ -15,16 +15,27 @@ export function onRequestOptions() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }
 
-function findNutrient(foodNutrients, keys) {
-  if (!Array.isArray(foodNutrients)) return null;
-  const match = foodNutrients.find((n) => {
-    const name = (n.nutrient?.name || "").toLowerCase();
-    const number = n.nutrient?.number;
-    return keys.some((k) => name.includes(k) || number === k);
-  });
-  if (!match) return null;
-  const amount = match.amount || match.value;
-  return isFinite(amount) ? amount : null;
+// Map of nutrient IDs used by USDA (stable across data types)
+const NUTRIENT_IDS = {
+  calories: [1008, "208"],
+  protein: [1003, "203"],
+  fat: [1004, "204"],
+  carbs: [1005, "205"],
+  fiber: [1079, "291"],
+  sugars: [2000, "269"],
+  sodium: [1093, "307"],
+};
+
+function findAmount(list, ids) {
+  for (const n of list) {
+    const nut = n.nutrient || {};
+    const id = nut.id;
+    const number = nut.number;
+    if (ids.includes(id) || ids.includes(number)) {
+      return n.amount || n.value || null;
+    }
+  }
+  return null;
 }
 
 export async function onRequest({ request, env }) {
@@ -42,13 +53,14 @@ export async function onRequest({ request, env }) {
     const res = await fetch(endpoint);
     if (!res.ok) {
       const text = await res.text();
-      return json({ ok: false, error: "USDA fetch failed", details: text.slice(0, 300) }, 502);
+      return json({ ok: false, error: "USDA fetch failed", details: text.slice(0, 400) }, 502);
     }
 
     const data = await res.json();
 
     let nutrients = {};
-    // If Branded item → use labelNutrients
+
+    // For branded foods, labelNutrients exists
     if (data.labelNutrients) {
       const ln = data.labelNutrients;
       nutrients = {
@@ -60,19 +72,12 @@ export async function onRequest({ request, env }) {
         sugars: ln.sugars?.value,
         sodium: ln.sodium?.value,
       };
-    }
-    // Otherwise parse SR Legacy / Foundation
-    else if (data.foodNutrients?.length) {
+    } else if (Array.isArray(data.foodNutrients)) {
+      // For SR Legacy and Foundation foods
       const fn = data.foodNutrients;
-      nutrients = {
-        calories: findNutrient(fn, ["energy", "208"]),
-        protein: findNutrient(fn, ["protein", "203"]),
-        carbs: findNutrient(fn, ["carbohydrate", "205"]),
-        fat: findNutrient(fn, ["fat", "204", "lipid"]),
-        fiber: findNutrient(fn, ["fiber", "291"]),
-        sugars: findNutrient(fn, ["sugar", "269"]),
-        sodium: findNutrient(fn, ["sodium", "307"]),
-      };
+      nutrients = Object.fromEntries(
+        Object.entries(NUTRIENT_IDS).map(([key, ids]) => [key, findAmount(fn, ids)])
+      );
     }
 
     return json(
