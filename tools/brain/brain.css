@@ -99,3 +99,16 @@ button:disabled{
   padding:16px;
 }
 .hidden{ display:none; }
+/* Difficulty filter buttons */
+button.active {
+  outline: 2px solid var(--border);
+  outline-offset: 2px;
+  transform: translateY(-1px);
+}
+
+button#filter-all,
+button#filter-easy,
+button#filter-medium,
+button#filter-hard {
+  cursor: pointer;
+}
