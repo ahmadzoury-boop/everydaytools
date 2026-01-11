@@ -31,23 +31,60 @@
 
   <!-- Main Brain App -->
   <main class="container" style="padding-top:20px;">
+
+    <!-- Hero -->
     <section class="hero" style="padding-bottom:10px;">
       <h1>🧠 Daily Brain</h1>
-      <p class="lead">Train your memory, focus, and logic with daily challenges.</p>
-    </section>
-<div class="row" style="margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-  <span class="badge">Show:</span>
-  <button id="filter-all">All</button>
-  <button id="filter-easy">Easy</button>
-  <button id="filter-medium">Medium</button>
-  <button id="filter-hard">Hard</button>
-</div>
 
+      <p class="lead">
+        A daily brain workout with short, smart challenges designed to improve
+        <strong>memory</strong>, <strong>focus</strong>, and <strong>logical thinking</strong>.
+      </p>
+
+      <p class="small" style="margin-top:6px">
+        Every day resets at midnight (UTC). Complete challenges, build streaks, and track your progress over time.
+      </p>
+    </section>
+
+    <!-- How it works -->
+    <div class="hint" style="margin-bottom:16px">
+      <strong>How it works:</strong>
+      <ul style="margin:6px 0 0 16px">
+        <li>Each day has <strong>3 difficulty levels</strong>: Easy → Medium → Hard</li>
+        <li>Complete Easy to unlock Medium, Medium to unlock Hard</li>
+        <li>Your score and streak are saved on this device</li>
+        <li>The challenge resets every day at <strong>00:00 UTC</strong></li>
+      </ul>
+    </div>
+
+    <!-- Difficulty filter -->
+    <div class="row" style="margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+      <span class="badge">Show:</span>
+      <button id="filter-all">All</button>
+      <button id="filter-easy">Easy</button>
+      <button id="filter-medium">Medium</button>
+      <button id="filter-hard">Hard</button>
+    </div>
+
+    <!-- App -->
     <section id="app">
       <div id="status"></div>
+
+      <p class="small" style="margin-top:6px">
+        🔥 Your streak increases when you complete <strong>Easy + Medium</strong> on the same day.
+      </p>
+
       <div id="levels"></div>
       <div id="result"></div>
+
+      <!-- Email pre-frame (no form yet) -->
+      <div class="hint" style="margin-top:20px">
+        <strong>Want a reminder?</strong><br />
+        You can optionally subscribe to receive the daily brain challenge by email.
+        No spam, no ads — just one short challenge per day.
+      </div>
     </section>
+
   </main>
 
   <!-- Footer -->
@@ -65,7 +102,7 @@
   <!-- Brain logic -->
   <script type="module" src="./brain.js"></script>
 
-  <!-- 🔑 REQUIRED global script -->
+  <!-- Global script -->
   <script src="../../assets/js/main.js"></script>
 </body>
 </html>
