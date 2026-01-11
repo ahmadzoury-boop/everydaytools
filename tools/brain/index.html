@@ -77,11 +77,40 @@
       <div id="levels"></div>
       <div id="result"></div>
 
-      <!-- Email pre-frame (no form yet) -->
+      <!-- Email subscription (Step 3) -->
       <div class="hint" style="margin-top:20px">
-        <strong>Want a reminder?</strong><br />
-        You can optionally subscribe to receive the daily brain challenge by email.
-        No spam, no ads — just one short challenge per day.
+        <strong>Get the Daily Brain by email 🧠</strong>
+
+        <p class="small" style="margin-top:6px">
+          Receive one short brain challenge per day.
+          No spam. No ads. Unsubscribe anytime.
+        </p>
+
+        <form id="brain-subscribe-form" style="margin-top:10px">
+          <div class="row" style="gap:8px; flex-wrap:wrap;">
+            <input
+              type="text"
+              id="brain-name"
+              placeholder="Your name (optional)"
+              autocomplete="name"
+            />
+            <input
+              type="email"
+              id="brain-email"
+              placeholder="Your email"
+              required
+              autocomplete="email"
+            />
+            <button type="submit">Subscribe</button>
+            <button type="button" id="brain-unsubscribe-btn" style="background:#b62324">Unsubscribe</button>
+          </div>
+
+          <p id="brain-subscribe-msg" class="small" style="margin-top:6px"></p>
+
+          <p class="small" style="margin-top:4px; opacity:0.8">
+            We only store your name and email for Daily Brain reminders.
+          </p>
+        </form>
       </div>
     </section>
 
