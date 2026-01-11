@@ -1,1 +1,994 @@
+{
+  "version": "1.0",
+  "reset": "UTC_MIDNIGHT",
+  "range": { "from": "2026-01-12", "to": "2026-02-10" },
+  "sets": [
+    {
+      "date": "2026-01-12",
+      "setNo": 1,
+      "theme": "Time",
+      "easy": {
+        "type": "clues",
+        "clues": ["Has hands", "Has a face", "No mouth", "Tells time", "Often on a wall"],
+        "answer": "CLOCK",
+        "accepted": ["CLOCK", "A CLOCK"],
+        "hint": "It has hands but no arms.",
+        "explain": "A clock has hands and a face that show the time.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "3, 6, 12, 24, ?",
+        "answer": "48",
+        "accepted": ["48"],
+        "hint": "It doubles each step.",
+        "explain": "Multiply by 2 each time.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A bat and a ball cost £1.10 in total. The bat costs £1.00 more than the ball. How much does the ball cost?",
+        "answer": "£0.05",
+        "accepted": ["0.05", "5p", "£0.05", "5 pence", "0.05 pounds"],
+        "hint": "If the ball were 10p, the total wouldn’t match.",
+        "explain": "Ball = 5p, bat = £1.05, total = £1.10.",
+        "maxAttempts": 2
+      }
+    },
+    {
+      "date": "2026-01-13",
+      "setNo": 2,
+      "theme": "Shapes",
+      "easy": {
+        "type": "odd",
+        "options": ["CUBE", "SPHERE", "PYRAMID", "CIRCLE"],
+        "answer": "CIRCLE",
+        "accepted": ["CIRCLE"],
+        "hint": "Three are 3D.",
+        "explain": "Circle is 2D; the others are 3D solids.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "2, 6, 12, 20, 30, ?",
+        "answer": "42",
+        "accepted": ["42"],
+        "hint": "Add 4, then 6, then 8…",
+        "explain": "Differences are +4, +6, +8, +10, +12 → next is +14 → 42.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "Two fathers and two sons go fishing. They catch 3 fish total, and each person gets exactly 1 fish. How is that possible?",
+        "answer": "THREE PEOPLE",
+        "accepted": ["THREE", "3", "THREE PEOPLE", "GRANDFATHER FATHER SON"],
+        "hint": "Think family generations.",
+        "explain": "They are grandfather, father, and son (3 people).",
+        "maxAttempts": 2
+      }
+    },
+    {
+      "date": "2026-01-14",
+      "setNo": 3,
+      "theme": "Nature",
+      "easy": {
+        "type": "clues",
+        "clues": ["Cold", "White", "Falls", "Melts", "Can form a snowman"],
+        "answer": "SNOW",
+        "accepted": ["SNOW"],
+        "hint": "It’s common in winter.",
+        "explain": "Snow is frozen precipitation that can melt.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 4, 9, 16, 25, ?",
+        "answer": "36",
+        "accepted": ["36"],
+        "hint": "Perfect squares.",
+        "explain": "These are squares: 1², 2², 3², 4², 5² → next is 6² = 36.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "riddle",
+        "prompt": "I get wetter the more I dry. What am I?",
+        "answer": "TOWEL",
+        "accepted": ["TOWEL", "A TOWEL"],
+        "hint": "Used after a shower.",
+        "explain": "A towel absorbs water while drying you.",
+        "maxAttempts": 2
+      }
+    },
 
+    {
+      "date": "2026-01-15",
+      "setNo": 4,
+      "theme": "Music",
+      "easy": {
+        "type": "odd",
+        "options": ["PIANO", "GUITAR", "FLUTE", "DRUM"],
+        "answer": "DRUM",
+        "accepted": ["DRUM"],
+        "hint": "Three are typically melodic.",
+        "explain": "A drum is primarily percussion (no fixed pitch like the others).",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "5, 10, 20, 40, 80, ?",
+        "answer": "160",
+        "accepted": ["160"],
+        "hint": "Multiply by 2.",
+        "explain": "Each term doubles.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "You have two ropes that each take 60 minutes to burn. They burn unevenly. How can you measure 45 minutes?",
+        "answer": "BURN BOTH ENDS THEN ONE END",
+        "accepted": ["BURN ONE ROPE BOTH ENDS AND THE OTHER ONE END THEN SWITCH", "BURN BOTH ENDS OF ONE ROPE AND ONE END OF THE OTHER", "BURN BOTH ENDS OF ONE ROPE THEN LIGHT OTHER BOTH ENDS WHEN FIRST FINISHES"],
+        "hint": "Light more than one end.",
+        "explain": "Light rope A at both ends + rope B at one end. When A finishes (30 min), light the other end of B; it finishes in 15 more → 45.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-16",
+      "setNo": 5,
+      "theme": "Everyday",
+      "easy": {
+        "type": "clues",
+        "clues": ["Full of keys", "Used to type", "Connects to a computer", "Has letters", "Not a lock"],
+        "answer": "KEYBOARD",
+        "accepted": ["KEYBOARD", "A KEYBOARD"],
+        "hint": "You’re using it right now (maybe).",
+        "explain": "A keyboard has keys but doesn’t open doors.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "10, 9, 7, 4, 0, ?",
+        "answer": "-5",
+        "accepted": ["-5", "−5"],
+        "hint": "Subtract 1, then 2, then 3…",
+        "explain": "10-1=9, 9-2=7, 7-3=4, 4-4=0, 0-5=-5.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "riddle",
+        "prompt": "The more you take, the more you leave behind. What are they?",
+        "answer": "FOOTSTEPS",
+        "accepted": ["FOOTSTEPS", "STEPS", "FOOTPRINTS"],
+        "hint": "Think walking.",
+        "explain": "Taking steps leaves footprints behind.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-17",
+      "setNo": 6,
+      "theme": "Logic",
+      "easy": {
+        "type": "odd",
+        "options": ["SUNDAY", "MONDAY", "TUESDAY", "JANUARY"],
+        "answer": "JANUARY",
+        "accepted": ["JANUARY"],
+        "hint": "One is not a day.",
+        "explain": "January is a month; the others are weekdays.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 1, 2, 3, 5, 8, ?",
+        "answer": "13",
+        "accepted": ["13"],
+        "hint": "Add the previous two.",
+        "explain": "Fibonacci sequence.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A farmer has 17 sheep. All but 9 run away. How many are left?",
+        "answer": "9",
+        "accepted": ["9", "NINE"],
+        "hint": "Read carefully.",
+        "explain": "‘All but 9’ means 9 remain.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-18",
+      "setNo": 7,
+      "theme": "Travel",
+      "easy": {
+        "type": "clues",
+        "clues": ["Used at borders", "Has pages", "Proves identity", "Can expire", "You carry it"],
+        "answer": "PASSPORT",
+        "accepted": ["PASSPORT", "A PASSPORT"],
+        "hint": "Needed for many international flights.",
+        "explain": "A passport identifies you when travelling abroad.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "7, 10, 8, 11, 9, 12, ?",
+        "answer": "10",
+        "accepted": ["10"],
+        "hint": "Two interleaved sequences.",
+        "explain": "Odd positions: 7,8,9,10… Even positions: 10,11,12…",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "You see a number plate that reads '0O0'. How many different characters are there?",
+        "answer": "2",
+        "accepted": ["2", "TWO"],
+        "hint": "Zero vs the letter O.",
+        "explain": "There are two different characters: ‘0’ and ‘O’.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-19",
+      "setNo": 8,
+      "theme": "Food",
+      "easy": {
+        "type": "odd",
+        "options": ["APPLE", "BANANA", "CARROT", "ORANGE"],
+        "answer": "CARROT",
+        "accepted": ["CARROT"],
+        "hint": "Three are fruits.",
+        "explain": "Carrot is a vegetable; the others are fruits.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "4, 9, 19, 39, ?",
+        "answer": "79",
+        "accepted": ["79"],
+        "hint": "Double then add 1.",
+        "explain": "4→9 (×2+1), 9→19, 19→39, 39→79.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "riddle",
+        "prompt": "I’m taken from a mine, and shut in a wooden case, from which I’m never released, yet I’m used by almost everyone. What am I?",
+        "answer": "PENCIL LEAD",
+        "accepted": ["PENCIL LEAD", "GRAPHITE", "LEAD", "PENCIL"],
+        "hint": "You write with it.",
+        "explain": "Graphite (‘lead’) is used inside pencils.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-20",
+      "setNo": 9,
+      "theme": "Money",
+      "easy": {
+        "type": "clues",
+        "clues": ["Round", "Has a head and tails", "Used to pay", "Often metal", "Can be flipped"],
+        "answer": "COIN",
+        "accepted": ["COIN", "A COIN"],
+        "hint": "Heads or tails?",
+        "explain": "A coin is used as money and can be flipped.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 2, 6, 24, ?",
+        "answer": "120",
+        "accepted": ["120"],
+        "hint": "Multiply by increasing numbers.",
+        "explain": "×2, ×3, ×4, ×5 → 24×5 = 120.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "If you have £20 and spend 25% of it, how much is left?",
+        "answer": "£15",
+        "accepted": ["15", "£15", "FIFTEEN"],
+        "hint": "25% is a quarter.",
+        "explain": "25% of £20 is £5, so £20-£5 = £15.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-21",
+      "setNo": 10,
+      "theme": "Light",
+      "easy": {
+        "type": "clues",
+        "clues": ["Follows you", "No weight", "Needs light", "Changes shape", "Can look scary"],
+        "answer": "SHADOW",
+        "accepted": ["SHADOW", "A SHADOW"],
+        "hint": "It appears on the ground.",
+        "explain": "A shadow forms when something blocks light.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "2, 5, 11, 23, ?",
+        "answer": "47",
+        "accepted": ["47"],
+        "hint": "Double then add 1.",
+        "explain": "2→5 (×2+1), 5→11, 11→23, 23→47.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A room has 3 light switches outside and 1 bulb inside. You can enter the room only once. How do you tell which switch controls the bulb?",
+        "answer": "USE HEAT",
+        "accepted": ["TURN ONE ON, TURN IT OFF, TURN ANOTHER ON, CHECK HEAT", "CHECK WARM BULB", "USE HEAT METHOD"],
+        "hint": "Bulbs can be warm.",
+        "explain": "Turn switch A on for a bit, off; switch B on; enter: lit= B, warm= A, cold= C.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-22",
+      "setNo": 11,
+      "theme": "Words",
+      "easy": {
+        "type": "odd",
+        "options": ["READ", "WRITE", "SPEAK", "SILENT"],
+        "answer": "SILENT",
+        "accepted": ["SILENT"],
+        "hint": "Three are actions.",
+        "explain": "Read/write/speak are actions; silent is a state/description.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "A, C, F, J, O, ?",
+        "answer": "U",
+        "accepted": ["U"],
+        "hint": "Increasing jumps in the alphabet: +2, +3, +4...",
+        "explain": "A(+2)=C(+3)=F(+4)=J(+5)=O(+6)=U.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "riddle",
+        "prompt": "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
+        "answer": "ECHO",
+        "accepted": ["ECHO", "AN ECHO"],
+        "hint": "It repeats you.",
+        "explain": "An echo is sound reflected back to you.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-23",
+      "setNo": 12,
+      "theme": "Tech",
+      "easy": {
+        "type": "clues",
+        "clues": ["Connects people", "Has websites", "Uses Wi-Fi", "Browsers access it", "Not a physical place"],
+        "answer": "INTERNET",
+        "accepted": ["INTERNET", "THE INTERNET"],
+        "hint": "Bigger than one website.",
+        "explain": "The internet connects computers and services worldwide.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "9, 18, 16, 32, 30, ?",
+        "answer": "60",
+        "accepted": ["60"],
+        "hint": "×2, then -2 repeating.",
+        "explain": "9×2=18, 18-2=16, 16×2=32, 32-2=30, 30×2=60.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A password must be 4 digits. How many combinations are there if digits can repeat (0000 to 9999)?",
+        "answer": "10000",
+        "accepted": ["10000", "10,000", "TEN THOUSAND"],
+        "hint": "10 choices per position.",
+        "explain": "10×10×10×10 = 10,000 combinations.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-24",
+      "setNo": 13,
+      "theme": "Water",
+      "easy": {
+        "type": "odd",
+        "options": ["RIVER", "LAKE", "OCEAN", "MOUNTAIN"],
+        "answer": "MOUNTAIN",
+        "accepted": ["MOUNTAIN"],
+        "hint": "Three are water bodies.",
+        "explain": "Mountain is land; the others are water.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 3, 6, 10, 15, ?",
+        "answer": "21",
+        "accepted": ["21"],
+        "hint": "Add 2, then 3, then 4...",
+        "explain": "Triangular numbers: +2 +3 +4 +5 +6 → next +6 = 21.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "You have a 3L jug and a 5L jug. How can you measure exactly 4L?",
+        "answer": "FILL 5 POUR INTO 3 THEN REFILL 5 POUR REMAINDER",
+        "accepted": ["CLASSIC 3 AND 5 JUG 4L", "MEASURE 4L USING 3L AND 5L"],
+        "hint": "Use the 3L jug to leave 2L behind.",
+        "explain": "Fill 5 → pour into 3 (2 left). Empty 3. Pour 2 into 3. Fill 5. Pour into 3 until full (needs 1) → 4 left in 5.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-25",
+      "setNo": 14,
+      "theme": "Speed",
+      "easy": {
+        "type": "clues",
+        "clues": ["Has wheels", "Moves people", "Uses roads", "Needs fuel or power", "Can be electric"],
+        "answer": "CAR",
+        "accepted": ["CAR", "A CAR", "AUTO", "AUTOMOBILE"],
+        "hint": "Common transport.",
+        "explain": "A car is a road vehicle with wheels.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "6, 11, 21, 41, ?",
+        "answer": "81",
+        "accepted": ["81"],
+        "hint": "Double then subtract 1.",
+        "explain": "6×2-1=11, 11×2-1=21, 21×2-1=41, 41×2-1=81.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "If 3 workers finish a job in 12 days, how many days for 6 workers (same rate)?",
+        "answer": "6",
+        "accepted": ["6", "SIX"],
+        "hint": "Work = workers × days.",
+        "explain": "3×12 = 36 worker-days. 36/6 = 6 days.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-26",
+      "setNo": 15,
+      "theme": "Space",
+      "easy": {
+        "type": "odd",
+        "options": ["MARS", "VENUS", "MOON", "JUPITER"],
+        "answer": "MOON",
+        "accepted": ["MOON", "THE MOON"],
+        "hint": "Three are planets.",
+        "explain": "Moon is a natural satellite; the others are planets.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 2, 4, 7, 11, ?",
+        "answer": "16",
+        "accepted": ["16"],
+        "hint": "Add 1,2,3,4,5...",
+        "explain": "Differences: +1 +2 +3 +4 +5 → next +5 = 16.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "sequence",
+        "prompt": "1, 11, 21, 1211, 111221, ?",
+        "answer": "312211",
+        "accepted": ["312211"],
+        "hint": "Describe the previous term.",
+        "explain": "Look-and-say sequence: 111221 is ‘three 1, two 2, one 1’ → 312211.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-27",
+      "setNo": 16,
+      "theme": "Health",
+      "easy": {
+        "type": "clues",
+        "clues": ["Needed to breathe", "In the air", "Feeds fire", "Used by cells", "Also causes rust"],
+        "answer": "OXYGEN",
+        "accepted": ["OXYGEN"],
+        "hint": "It’s about 21% of air.",
+        "explain": "Oxygen is essential for respiration and combustion.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "8, 4, 12, 6, 18, ?",
+        "answer": "9",
+        "accepted": ["9", "NINE"],
+        "hint": "÷2, ×3 repeating.",
+        "explain": "8÷2=4, 4×3=12, 12÷2=6, 6×3=18, 18÷2=9.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A 500ml bottle is 80% full. How many ml must you drink so it becomes 50% full?",
+        "answer": "150",
+        "accepted": ["150", "150ml", "150 ml"],
+        "hint": "Find current amount first.",
+        "explain": "80% of 500 = 400ml. 50% of 500 = 250ml. Drink 400-250 = 150ml.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-28",
+      "setNo": 17,
+      "theme": "Objects",
+      "easy": {
+        "type": "odd",
+        "options": ["GLASS", "PLASTIC", "WOOD", "WATER"],
+        "answer": "WATER",
+        "accepted": ["WATER"],
+        "hint": "Three are solid materials.",
+        "explain": "Water is liquid at room temperature; others are solids.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "100, 50, 25, 12.5, ?",
+        "answer": "6.25",
+        "accepted": ["6.25", "6.250", "6,25"],
+        "hint": "Half each time.",
+        "explain": "Divide by 2 each step.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "riddle",
+        "prompt": "What has cities but no houses, rivers but no water, and roads but no cars?",
+        "answer": "MAP",
+        "accepted": ["MAP", "A MAP"],
+        "hint": "It’s a representation.",
+        "explain": "A map shows places and features, not the real objects.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-29",
+      "setNo": 18,
+      "theme": "Building",
+      "easy": {
+        "type": "clues",
+        "clues": ["Goes up and down", "In buildings", "Has doors", "Uses buttons", "Carries people"],
+        "answer": "LIFT",
+        "accepted": ["LIFT", "ELEVATOR", "A LIFT", "AN ELEVATOR"],
+        "hint": "UK word: lift.",
+        "explain": "A lift/elevator moves people between floors.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "2, 3, 5, 8, 13, ?",
+        "answer": "21",
+        "accepted": ["21"],
+        "hint": "Add the previous two.",
+        "explain": "Fibonacci continues with 21.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A rectangle has perimeter 30. One side is 8. What is the other side?",
+        "answer": "7",
+        "accepted": ["7", "SEVEN"],
+        "hint": "Perimeter = 2(a+b).",
+        "explain": "2(8+b)=30 → 8+b=15 → b=7.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-30",
+      "setNo": 19,
+      "theme": "Language",
+      "easy": {
+        "type": "odd",
+        "options": ["RUN", "JUMP", "SWIM", "BLUE"],
+        "answer": "BLUE",
+        "accepted": ["BLUE"],
+        "hint": "Three are verbs.",
+        "explain": "Blue is a color; the others are actions.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "12, 15, 19, 24, 30, ?",
+        "answer": "37",
+        "accepted": ["37"],
+        "hint": "Add 3,4,5,6...",
+        "explain": "Differences: +3 +4 +5 +6 → next +7 = 37.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "If you rearrange the letters of 'CREDIT', you get a type of… what?",
+        "answer": "DIRECT",
+        "accepted": ["DIRECT"],
+        "hint": "Same letters.",
+        "explain": "CREDIT rearranges to DIRECT.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-01-31",
+      "setNo": 20,
+      "theme": "Weather",
+      "easy": {
+        "type": "clues",
+        "clues": ["Hot drink", "From beans", "Morning favorite", "Can be espresso", "Smells strong"],
+        "answer": "COFFEE",
+        "accepted": ["COFFEE"],
+        "hint": "Often contains caffeine.",
+        "explain": "Coffee is brewed from roasted beans.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 5, 14, 30, 55, ?",
+        "answer": "91",
+        "accepted": ["91"],
+        "hint": "Add increasing amounts: +4, +9, +16…",
+        "explain": "Differences are squares: 2²,3²,4²,5²,6² → next +36 → 91.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A clock shows 3:15. What is the smallest angle between the hour and minute hands (degrees)?",
+        "answer": "7.5",
+        "accepted": ["7.5", "7.50", "7.5°", "7.5 degrees"],
+        "hint": "Hour hand moves between numbers.",
+        "explain": "Minute hand = 90°. Hour hand = 3.25×30=97.5°. Difference = 7.5°.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-01",
+      "setNo": 21,
+      "theme": "Animals",
+      "easy": {
+        "type": "odd",
+        "options": ["EAGLE", "SHARK", "SPARROW", "OWL"],
+        "answer": "SHARK",
+        "accepted": ["SHARK"],
+        "hint": "Three can fly.",
+        "explain": "Shark is a fish; others are birds.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "20, 18, 15, 11, 6, ?",
+        "answer": "0",
+        "accepted": ["0", "ZERO"],
+        "hint": "Subtract 2,3,4,5,6...",
+        "explain": "20-2=18, -3=15, -4=11, -5=6, -6=0.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "If a car travels 60 km in 50 minutes, what is its average speed in km/h?",
+        "answer": "72",
+        "accepted": ["72", "72 km/h", "72km/h"],
+        "hint": "Convert minutes to hours.",
+        "explain": "50 min = 5/6 hour. Speed = 60 ÷ (5/6) = 72 km/h.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-02",
+      "setNo": 22,
+      "theme": "Logic",
+      "easy": {
+        "type": "clues",
+        "clues": ["Shows your reflection", "Not alive", "Can break", "Often glass", "In bathrooms"],
+        "answer": "MIRROR",
+        "accepted": ["MIRROR", "A MIRROR"],
+        "hint": "You look into it.",
+        "explain": "A mirror reflects light to show an image.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 8, 27, 64, ?",
+        "answer": "125",
+        "accepted": ["125"],
+        "hint": "Cubes.",
+        "explain": "1³, 2³, 3³, 4³ → next 5³ = 125.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "Three boxes are labeled APPLES, ORANGES, MIXED — all labels are wrong. You can take one fruit from one box. Which box do you pick from to relabel correctly?",
+        "answer": "MIXED",
+        "accepted": ["MIXED", "THE MIXED BOX", "BOX LABELED MIXED"],
+        "hint": "Pick from the box that guarantees a wrong label.",
+        "explain": "The ‘MIXED’ label is wrong, so it must be all apples or all oranges. One draw tells you which, then you deduce the rest.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-03",
+      "setNo": 23,
+      "theme": "Numbers",
+      "easy": {
+        "type": "odd",
+        "options": ["2", "3", "5", "9"],
+        "answer": "9",
+        "accepted": ["9", "NINE"],
+        "hint": "Three are prime.",
+        "explain": "9 is not prime; 2,3,5 are primes.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "11, 13, 17, 19, ?",
+        "answer": "23",
+        "accepted": ["23"],
+        "hint": "Prime numbers.",
+        "explain": "These are consecutive primes; next is 23.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "sequence",
+        "prompt": "2, 10, 12, 16, 17, 18, ?",
+        "answer": "19",
+        "accepted": ["19"],
+        "hint": "Numbers that start with ‘t’ in English.",
+        "explain": "Two, ten, twelve, sixteen, seventeen, eighteen, nineteen.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-04",
+      "setNo": 24,
+      "theme": "Finance",
+      "easy": {
+        "type": "clues",
+        "clues": ["A percentage tax", "Often in receipts", "UK term: VAT", "Added to prices", "Government"],
+        "answer": "VAT",
+        "accepted": ["VAT", "VALUE ADDED TAX"],
+        "hint": "Common in the UK.",
+        "explain": "VAT is a consumption tax added to goods/services.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "30, 27, 23, 18, 12, ?",
+        "answer": "5",
+        "accepted": ["5", "FIVE"],
+        "hint": "Subtract 3,4,5,6,7...",
+        "explain": "30-3=27, -4=23, -5=18, -6=12, -7=5.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A price is £80 before VAT. VAT is 20%. What is the total price?",
+        "answer": "£96",
+        "accepted": ["96", "£96", "NINETY SIX"],
+        "hint": "20% of 80 is 16.",
+        "explain": "£80 + £16 = £96.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-05",
+      "setNo": 25,
+      "theme": "Focus",
+      "easy": {
+        "type": "odd",
+        "options": ["MINUTE", "HOUR", "SECOND", "KILOGRAM"],
+        "answer": "KILOGRAM",
+        "accepted": ["KILOGRAM"],
+        "hint": "Three measure time.",
+        "explain": "Kilogram measures mass, not time.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "6, 12, 21, 33, 48, ?",
+        "answer": "66",
+        "accepted": ["66"],
+        "hint": "Add 6,9,12,15...",
+        "explain": "Differences: +6, +9, +12, +15 → next +18 = 66.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A train leaves at 14:20 and arrives at 17:05. How long is the journey?",
+        "answer": "2:45",
+        "accepted": ["2:45", "2h45m", "2 hours 45 minutes", "2 hours 45 mins", "2h 45m"],
+        "hint": "Subtract times carefully.",
+        "explain": "From 14:20 to 17:05 is 2 hours 45 minutes.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-06",
+      "setNo": 26,
+      "theme": "Patterns",
+      "easy": {
+        "type": "clues",
+        "clues": ["Has a screen", "Shows images", "Used for work", "Has apps", "Can be a phone"],
+        "answer": "COMPUTER",
+        "accepted": ["COMPUTER", "PC", "LAPTOP", "A COMPUTER"],
+        "hint": "You browse the web with it.",
+        "explain": "A computer is an electronic device for processing information.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "3, 9, 27, ?",
+        "answer": "81",
+        "accepted": ["81"],
+        "hint": "Multiply by 3.",
+        "explain": "3×3=9, 9×3=27, 27×3=81.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "You have 12 matches. You can arrange them to make 3 squares of equal size. How many matches are in each square (counting shared sides)?",
+        "answer": "4",
+        "accepted": ["4", "FOUR"],
+        "hint": "A square needs 4 sides.",
+        "explain": "Each square has 4 sides; matches can be shared between squares in an arrangement.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-07",
+      "setNo": 27,
+      "theme": "Nature",
+      "easy": {
+        "type": "odd",
+        "options": ["RAINBOW", "THUNDER", "LIGHTNING", "WIND"],
+        "answer": "RAINBOW",
+        "accepted": ["RAINBOW"],
+        "hint": "One is mainly visual color arc.",
+        "explain": "Rainbow is a light phenomenon; the others are weather forces/sounds.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "2, 4, 8, 16, 32, ?",
+        "answer": "64",
+        "accepted": ["64"],
+        "hint": "Powers of 2.",
+        "explain": "Doubling sequence.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "riddle",
+        "prompt": "I have branches, but no fruit, trunk, or leaves. What am I?",
+        "answer": "BANK",
+        "accepted": ["BANK", "A BANK"],
+        "hint": "Money context.",
+        "explain": "A bank has branches (locations) but no tree parts.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-08",
+      "setNo": 28,
+      "theme": "Daily life",
+      "easy": {
+        "type": "clues",
+        "clues": ["Used to call", "Has apps", "Fits in pocket", "Has a camera", "Has a screen"],
+        "answer": "PHONE",
+        "accepted": ["PHONE", "MOBILE", "MOBILE PHONE", "SMARTPHONE", "A PHONE"],
+        "hint": "You probably have it near you.",
+        "explain": "A phone is used for calls and many daily tasks.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "4, 7, 13, 25, ?",
+        "answer": "49",
+        "accepted": ["49"],
+        "hint": "Double then subtract 1.",
+        "explain": "4×2-1=7, 7×2-1=13, 13×2-1=25, 25×2-1=49.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "If today is Sunday, what day of the week will it be 100 days from now?",
+        "answer": "TUESDAY",
+        "accepted": ["TUESDAY"],
+        "hint": "Use modulo 7.",
+        "explain": "100 mod 7 = 2. Sunday + 2 days = Tuesday.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-09",
+      "setNo": 29,
+      "theme": "Words",
+      "easy": {
+        "type": "odd",
+        "options": ["HOT", "COLD", "WARM", "TELEVISION"],
+        "answer": "TELEVISION",
+        "accepted": ["TELEVISION", "TV"],
+        "hint": "Three are temperatures.",
+        "explain": "Television is an object; the others describe temperature.",
+        "maxAttempts": 1
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "1, 2, 4, 8, 16, 32, ?",
+        "answer": "64",
+        "accepted": ["64"],
+        "hint": "Double each step.",
+        "explain": "Powers of 2.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "logic",
+        "prompt": "A shop offers 30% off, then an extra 10% off the discounted price. Is that the same as 40% off?",
+        "answer": "NO",
+        "accepted": ["NO", "NOT THE SAME", "NOPE"],
+        "hint": "Discounts multiply.",
+        "explain": "After 30% off, price is 70%. Then 10% off → 70%×90% = 63% → total 37% off, not 40%.",
+        "maxAttempts": 2
+      }
+    },
+
+    {
+      "date": "2026-02-10",
+      "setNo": 30,
+      "theme": "Finish strong",
+      "easy": {
+        "type": "clues",
+        "clues": ["Cracked", "Told", "Made", "Played", "Can be funny"],
+        "answer": "JOKE",
+        "accepted": ["JOKE", "A JOKE"],
+        "hint": "People laugh at it.",
+        "explain": "A joke can be cracked, told, made, or played.",
+        "maxAttempts": 6
+      },
+      "medium": {
+        "type": "sequence",
+        "prompt": "2, 7, 16, 29, 46, ?",
+        "answer": "67",
+        "accepted": ["67"],
+        "hint": "Add consecutive odd numbers: +5, +9, +13, +17...",
+        "explain": "Differences: 5,9,13,17 → next 21 → 46+21=67.",
+        "maxAttempts": 3
+      },
+      "hard": {
+        "type": "riddle",
+        "prompt": "I’m always in front of you but can’t be seen. What am I?",
+        "answer": "FUTURE",
+        "accepted": ["FUTURE", "THE FUTURE"],
+        "hint": "Time-related.",
+        "explain": "The future is ahead of you, but you can’t see it.",
+        "maxAttempts": 2
+      }
+    }
+  ]
+}
