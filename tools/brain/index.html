@@ -15,5 +15,50 @@
 </head>
 <body>
 
-  <!-- Header (consistent with ToolStack) -->
-  <header class="site-header
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="../../index.html" aria-label="ToolStack Home">
+        <span class="brand-mark">⧉</span>
+        <span class="brand-name">ToolStack</span>
+      </a>
+      <nav class="nav">
+        <a href="../../tools/">All Tools</a>
+        <a href="../../index.html#categories">Categories</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Brain App -->
+  <main class="container" style="padding-top:20px;">
+    <section class="hero" style="padding-bottom:10px;">
+      <h1>🧠 Daily Brain</h1>
+      <p class="lead">Train your memory, focus, and logic with daily challenges.</p>
+    </section>
+
+    <section id="app">
+      <div id="status"></div>
+      <div id="levels"></div>
+      <div id="result"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-row">
+      <div class="footer-links">
+        <a href="../../privacy.html">Privacy</a>
+        <a href="../../terms.html">Terms</a>
+        <a href="../../contact.html">Contact</a>
+      </div>
+      <div class="footer-note">© <span id="year"></span> ToolStack</div>
+    </div>
+  </footer>
+
+  <!-- Brain logic -->
+  <script type="module" src="./brain.js"></script>
+
+  <!-- 🔑 REQUIRED global script -->
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>
