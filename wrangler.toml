@@ -9,4 +9,4 @@ preview_id = "9a2c1ed3550f49bf87105e29aff94ef6"
 [[d1_databases]]
 binding = "DB"
 database_name = "brain_leaderboard"
-
+database_id = 4c3a8492-29b1-40e0-90d4-d9eac6c22b3d
