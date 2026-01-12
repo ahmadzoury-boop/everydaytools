@@ -6,3 +6,7 @@ compatibility_date = "2025-12-27"
 binding = "SUBSCRIBERS"
 id = "9a2c1ed3550f49bf87105e29aff94ef6"
 preview_id = "9a2c1ed3550f49bf87105e29aff94ef6"
+[[d1_databases]]
+binding = "DB"
+database_name = "brain_leaderboard"
+
