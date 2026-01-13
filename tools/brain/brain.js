@@ -129,15 +129,31 @@ function render(set, store) {
         </button>
       </div>
 
-      <button id="h-${l}" style="margin-top:10px;background:#1f6feb">Hint</button>
+      <!-- ✅ Better Hint UX -->
+      <button id="h-${l}" class="hint-btn">💡 Show hint</button>
       <div id="hint-${l}" class="hint hidden"></div>
     `;
     levelsEl.appendChild(box);
 
-    document.getElementById(`h-${l}`).onclick = () => {
+    // ✅ Hint: show once + disable button
+    const hintBtn = document.getElementById(`h-${l}`);
+    const hintBox = document.getElementById(`hint-${l}`);
+
+    if (r.hintUsed) {
+      hintBtn.disabled = true;
+      hintBtn.textContent = "Hint shown";
+      hintBox.textContent = d.hint || "No hint.";
+      hintBox.classList.remove("hidden");
+    }
+
+    hintBtn.onclick = (e) => {
       r.hintUsed = true;
-      document.getElementById(`hint-${l}`).textContent = d.hint || "No hint.";
-      document.getElementById(`hint-${l}`).classList.remove("hidden");
+      hintBox.textContent = d.hint || "No hint.";
+      hintBox.classList.remove("hidden");
+
+      e.currentTarget.disabled = true;
+      e.currentTarget.textContent = "Hint shown";
+
       saveStore(store);
     };
 
