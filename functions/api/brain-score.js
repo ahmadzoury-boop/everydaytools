@@ -22,12 +22,72 @@ export async function onRequest({ request, env }) {
       let body;
       try {
         body = await request.json();
-      } catch {
-        return new Response(
-          JSON.stringify({ ok: false, error: "Invalid JSON" }),
-          { status: 400, headers }
-        );
-      }
+      } catch (err) {
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      error: err.message,
+      stack: err.stack,
+    }),
+    { status: 500, headers }
+  );
+}
+
+      } catch (err) {
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      error: err.message,
+      stack: err.stack,
+    }),
+    { status: 500, headers }
+  );
+}
+
+      } catch (err) {
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      error: err.message,
+      stack: err.stack,
+    }),
+    { status: 500, headers }
+  );
+}
+
+      } catch (err) {
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      error: err.message,
+      stack: err.stack,
+    }),
+    { status: 500, headers }
+  );
+}
+
+      } catch (err) {
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      error: err.message,
+      stack: err.stack,
+    }),
+    { status: 500, headers }
+  );
+}
+
+      } catch (err) {
+  return new Response(
+    JSON.stringify({
+      ok: false,
+      error: err.message,
+      stack: err.stack,
+    }),
+    { status: 500, headers }
+  );
+}
+
 
       let { name, score, level } = body;
 
