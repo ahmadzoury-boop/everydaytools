@@ -1,38 +1,79 @@
-export async function onRequest({ env }) {
+const headers = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export function onRequestOptions() {
+  return new Response(null, { status: 204, headers });
+}
+
+export async function onRequest({ request, env }) {
   try {
-    if (!env.DB) {
+    const url = new URL(request.url);
+
+    // =========================
+    // POST → submit brain score
+    // =========================
+    if (request.method === "POST") {
+      const body = await request.json();
+      const { name, score, level } = body;
+
+      if (!name || typeof score !== "number") {
+        return new Response(
+          JSON.stringify({ ok: false, error: "Invalid payload" }),
+          { status: 400, headers }
+        );
+      }
+
+      await env.DB.prepare(
+        `
+        INSERT INTO brain_scores (name, score, level)
+        VALUES (?, ?, ?)
+        `
+      )
+        .bind(name.trim(), score, level || "easy")
+        .run();
+
       return new Response(
-        JSON.stringify({
-          ok: false,
-          error: "DB binding is missing",
-          envKeys: Object.keys(env),
-        }),
-        { status: 500 }
+        JSON.stringify({ ok: true, message: "Score saved" }),
+        { headers }
       );
     }
 
-    const test = await env.DB.prepare(
-      "SELECT name FROM sqlite_master WHERE type='table'"
-    ).all();
+    // =========================
+    // GET → leaderboard
+    // =========================
+    const level = url.searchParams.get("level") || "easy";
+
+    const result = await env.DB.prepare(
+      `
+      SELECT name, score, level, created_at
+      FROM brain_scores
+      WHERE level = ?
+      ORDER BY score DESC
+      LIMIT 20
+      `
+    )
+      .bind(level)
+      .all();
 
     return new Response(
       JSON.stringify({
         ok: true,
-        message: "D1 connected successfully",
-        tables: test.results,
+        level,
+        leaderboard: result.results,
       }),
-      {
-        headers: { "Content-Type": "application/json" },
-      }
+      { headers }
     );
   } catch (err) {
     return new Response(
       JSON.stringify({
         ok: false,
         error: err.message,
-        stack: err.stack,
       }),
-      { status: 500 }
+      { status: 500, headers }
     );
   }
 }
