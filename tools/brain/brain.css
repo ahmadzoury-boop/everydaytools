@@ -6,8 +6,12 @@
   --border:#30363d;
   --green:#2ea043;
   --green2:#238636;
+  --red:#f85149;
 }
 
+/* =====================
+   Base reset
+===================== */
 *{
   box-sizing:border-box;
 }
@@ -25,7 +29,7 @@ body{
   color:var(--text);
   display:flex;
   justify-content:center;
-  padding:16px; /* أقل للموبايل */
+  padding:16px;
 }
 
 #app{
@@ -38,7 +42,7 @@ body{
 ===================== */
 h1{
   margin:0 0 8px;
-  font-size:22px; /* أصغر للموبايل */
+  font-size:22px;
   line-height:1.3;
 }
 
@@ -46,6 +50,11 @@ h1{
   color:var(--muted);
   margin-bottom:16px;
   font-size:14px;
+}
+
+.small{
+  color:var(--muted);
+  font-size:13px;
 }
 
 /* =====================
@@ -65,19 +74,20 @@ h1{
   letter-spacing:.4px;
 }
 
-.small{
-  color:var(--muted);
-  font-size:13px;
+/* =====================
+   Question layout (NEW)
+===================== */
+.question-box{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:12px;
 }
 
-/* =====================
-   Layout rows
-===================== */
-.row{
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-  flex-wrap:wrap; /* 🔑 مهم للموبايل */
+.question-text{
+  font-size:18px;
+  font-weight:600;
+  line-height:1.4;
 }
 
 /* =====================
@@ -102,12 +112,12 @@ button{
   border-radius:10px;
   cursor:pointer;
   font-weight:600;
-  white-space:nowrap;
   font-size:15px;
-  min-height:44px; /* tap friendly */
+  min-height:44px;
+  white-space:nowrap;
 }
 
-button:hover{ 
+button:hover{
   background:var(--green);
 }
 
@@ -117,8 +127,35 @@ button:disabled{
   cursor:not-allowed;
 }
 
+/* زر الإرسال الأساسي */
+.primary-btn{
+  width:100%;
+}
+
 /* =====================
-   Hint / result
+   Answer feedback (NEW)
+===================== */
+.feedback{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:10px;
+  font-size:14px;
+}
+
+.feedback.ok{
+  background:rgba(46,160,67,.15);
+  color:#3fb950;
+  border:1px solid var(--green);
+}
+
+.feedback.bad{
+  background:rgba(248,81,73,.15);
+  color:var(--red);
+  border:1px solid var(--red);
+}
+
+/* =====================
+   Hint / Result
 ===================== */
 .hint{
   margin-top:10px;
@@ -146,14 +183,14 @@ button:disabled{
   padding:16px;
 }
 
-.hidden{ 
-  display:none; 
+.hidden{
+  display:none;
 }
 
 /* =====================
    Difficulty filter buttons
 ===================== */
-button.active {
+button.active{
   outline:2px solid var(--border);
   outline-offset:2px;
   transform:translateY(-1px);
@@ -162,7 +199,7 @@ button.active {
 button#filter-all,
 button#filter-easy,
 button#filter-medium,
-button#filter-hard {
+button#filter-hard{
   cursor:pointer;
 }
 
@@ -182,7 +219,21 @@ button#filter-hard {
     font-size:18px;
   }
 
-  .row{
-    flex-wrap:nowrap; /* يرجع صف واحد للديسكتوب */
+  .question-box{
+    flex-direction:row;
+    align-items:center;
+  }
+
+  .question-text{
+    flex:1;
+    font-size:20px;
+  }
+
+  .question-box input{
+    max-width:160px;
+  }
+
+  .primary-btn{
+    width:auto;
   }
 }
