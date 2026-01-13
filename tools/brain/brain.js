@@ -1,6 +1,6 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// STEP 5: Global Leaderboard (D1)
+// STEP 6: Global Leaderboard UI
 // ================================
 
 const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
@@ -85,6 +85,32 @@ function wireFilters(cb) {
   document.getElementById(`filter-${activeFilter}`)?.classList.add("active");
 }
 
+// ---------- Global submit ----------
+async function submitGlobal(score, level) {
+  try {
+    await fetch("/api/brain-score", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Player",
+        score,
+        level
+      })
+    });
+  } catch {}
+}
+
+// ---------- Fetch Global Leaderboard ----------
+async function fetchGlobalLeaderboard(level = "easy") {
+  try {
+    const res = await fetch(`/api/brain-score?level=${level}&limit=10`);
+    const data = await res.json();
+    return data.ok ? data.leaderboard : [];
+  } catch {
+    return [];
+  }
+}
+
 // ---------- Render ----------
 function render(set, store) {
   const k = todayKey();
@@ -164,23 +190,8 @@ function render(set, store) {
   showResult(set, store);
 }
 
-// ---------- Global submit ----------
-async function submitGlobal(score, level) {
-  try {
-    await fetch("/api/brain-score", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: "Player",
-        score,
-        level
-      })
-    });
-  } catch {}
-}
-
 // ---------- Result ----------
-function showResult(set, store) {
+async function showResult(set, store) {
   const k = todayKey();
   const r = dayRec(store, k);
   if (!r.levels.medium.done) return;
@@ -197,42 +208,36 @@ function showResult(set, store) {
 
   const score = LEVELS.reduce((s,l)=>s+(r.levels[l].points||0),0);
   resultEl.classList.remove("hidden");
-  resultEl.innerHTML = `
-    <h3>Today's Result</h3>
-    <div class="small">Score: ${score}/30</div>
-    ${localLeaderboard(store)}
-  `;
 
-  // ✅ Send to global leaderboard once per day
+  // ---- Global submit once per day ----
   const sent = JSON.parse(localStorage.getItem(GLOBAL_SENT_KEY) || "{}");
   if (!sent[k]) {
     submitGlobal(score, "easy");
     sent[k] = true;
     localStorage.setItem(GLOBAL_SENT_KEY, JSON.stringify(sent));
   }
-}
 
-// ---------- Leaderboard ----------
-function localLeaderboard(store) {
-  const rows = Object.values(store.history || {})
-    .map(r => ({
-      date: r.date,
-      score: LEVELS.reduce((s,l)=>s+(r.levels[l].points||0),0)
-    }))
-    .sort((a,b)=>b.score-a.score)
-    .slice(0,5);
+  // ---- Fetch global leaderboard ----
+  const globalRows = await fetchGlobalLeaderboard("easy");
 
-  if (!rows.length) return "";
+  resultEl.innerHTML = `
+    <h3>Today's Result</h3>
+    <div class="small">Score: ${score}/30</div>
 
-  return `
-    <h4 style="margin-top:16px">🏆 Your Best Days</h4>
-    <table style="width:100%; margin-top:6px">
-      ${rows.map(r=>`
-        <tr>
-          <td>${r.date}</td>
-          <td style="text-align:right">${r.score}/30</td>
-        </tr>`).join("")}
-    </table>`;
+    <h4 style="margin-top:16px">🌍 Global Leaderboard</h4>
+    ${
+      globalRows.length
+        ? `<table style="width:100%; margin-top:6px">
+            ${globalRows.map((r,i)=>`
+              <tr>
+                <td>#${i+1} ${esc(r.name)}</td>
+                <td style="text-align:right">${r.score}</td>
+              </tr>
+            `).join("")}
+          </table>`
+        : `<div class="small">No global scores yet.</div>`
+    }
+  `;
 }
 
 // ---------- Subscribe ----------
