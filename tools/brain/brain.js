@@ -1,13 +1,17 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// STEP 6: Global Leaderboard UI
+// STEP 7: Player Name + Anti-spam + Global Tabs
 // ================================
 
 const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
 const STORE_KEY = "et_brain_v1";
 const FILTER_KEY = "et_brain_filter_v1";
 const SUBSCRIBE_KEY = "et_brain_subscribed";
-const GLOBAL_SENT_KEY = "et_brain_global_sent";
+
+// Global leaderboard client-side controls
+const GLOBAL_SENT_KEY = "et_brain_global_sent_v2";
+const PLAYER_NAME_KEY = "et_brain_player_name_v1";
+const DEVICE_ID_KEY = "et_brain_device_id_v1";
 
 // ---------- Date helpers ----------
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -23,7 +27,6 @@ const fmt = ms => {
 // ---------- Storage ----------
 const loadStore = () => JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 const saveStore = s => localStorage.setItem(STORE_KEY, JSON.stringify(s));
-
 function dayRec(store, k) {
   store.history ||= {};
   store.history[k] ||= {
@@ -56,6 +59,29 @@ const esc = s => String(s).replace(/[&<>"']/g, m =>
 const norm = s => String(s || "").trim().toUpperCase().replace(/\s+/g, " ").replace(/,/g, "");
 const accepted = (i, a) => (a || []).some(v => norm(v) === norm(i));
 
+function ensureDeviceId() {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) {
+    // small random id (client-side only)
+    id = Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2);
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+  return id;
+}
+
+function getPlayerName() {
+  return (localStorage.getItem(PLAYER_NAME_KEY) || "").trim() || "Player";
+}
+
+function setPlayerName(name) {
+  const cleaned = String(name || "").trim().slice(0, 24);
+  if (!cleaned) {
+    localStorage.removeItem(PLAYER_NAME_KEY);
+    return;
+  }
+  localStorage.setItem(PLAYER_NAME_KEY, cleaned);
+}
+
 // ---------- Countdown ----------
 function countdown() {
   const t = () => {
@@ -85,30 +111,142 @@ function wireFilters(cb) {
   document.getElementById(`filter-${activeFilter}`)?.classList.add("active");
 }
 
-// ---------- Global submit ----------
+// ---------- Player UI (injected) ----------
+function initPlayerUI() {
+  // Inject a small "name" area right after #status (only once)
+  if (document.getElementById("player-box")) return;
+
+  const wrap = document.createElement("div");
+  wrap.id = "player-box";
+  wrap.className = "hint";
+  wrap.style.marginTop = "10px";
+
+  const current = esc(getPlayerName());
+
+  wrap.innerHTML = `
+    <strong>👤 Your name (for Global Leaderboard)</strong>
+    <div class="row" style="gap:8px; flex-wrap:wrap; margin-top:10px;">
+      <input id="player-name-input" placeholder="Enter your name" value="${current}" />
+      <button id="player-name-save">Save</button>
+      <button id="player-name-clear" style="background:#30363d">Clear</button>
+    </div>
+    <div id="player-name-msg" class="small" style="margin-top:6px"></div>
+  `;
+
+  statusEl.insertAdjacentElement("afterend", wrap);
+
+  document.getElementById("player-name-save").onclick = () => {
+    const v = document.getElementById("player-name-input").value;
+    setPlayerName(v);
+    document.getElementById("player-name-msg").textContent = `Saved as: ${getPlayerName()}`;
+    // refresh global block if shown
+    if (!resultEl.classList.contains("hidden")) {
+      showResult(window.__brainSet, window.__brainStore);
+    }
+  };
+
+  document.getElementById("player-name-clear").onclick = () => {
+    localStorage.removeItem(PLAYER_NAME_KEY);
+    document.getElementById("player-name-input").value = "";
+    document.getElementById("player-name-msg").textContent = "Name cleared.";
+    if (!resultEl.classList.contains("hidden")) {
+      showResult(window.__brainSet, window.__brainStore);
+    }
+  };
+}
+
+// ---------- Global submit (Anti-spam client-side) ----------
+function loadSentMap() {
+  return JSON.parse(localStorage.getItem(GLOBAL_SENT_KEY) || "{}");
+}
+function saveSentMap(m) {
+  localStorage.setItem(GLOBAL_SENT_KEY, JSON.stringify(m));
+}
+
 async function submitGlobal(score, level) {
+  // client-side anti-spam: once per day per level per device
+  const day = todayKey();
+  const sent = loadSentMap();
+  sent[day] ||= {};
+  if (sent[day][level]) return;
+
   try {
     await fetch("/api/brain-score", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: "Player",
+        name: getPlayerName(),
         score,
         level
       })
     });
-  } catch {}
+    sent[day][level] = true;
+    saveSentMap(sent);
+  } catch {
+    // do not mark as sent if failed
+  }
 }
 
-// ---------- Fetch Global Leaderboard ----------
-async function fetchGlobalLeaderboard(level = "easy") {
+// ---------- Global fetch ----------
+async function fetchGlobalLeaderboard(level, limit = 10) {
   try {
-    const res = await fetch(`/api/brain-score?level=${level}&limit=10`);
+    const res = await fetch(`/api/brain-score?level=${encodeURIComponent(level)}&limit=${limit}`);
     const data = await res.json();
-    return data.ok ? data.leaderboard : [];
+    return data && data.ok ? data.leaderboard : [];
   } catch {
     return [];
   }
+}
+
+function globalTabsHTML(active = "easy") {
+  const mk = (lvl, label) => `
+    <button
+      type="button"
+      id="gb-tab-${lvl}"
+      class="${active === lvl ? "active" : ""}"
+      style="margin-right:8px"
+    >${label}</button>
+  `;
+  return `
+    <div class="row" style="gap:8px; flex-wrap:wrap; margin-top:10px;">
+      <span class="badge">Global:</span>
+      ${mk("easy","Easy")}
+      ${mk("medium","Medium")}
+      ${mk("hard","Hard")}
+    </div>
+  `;
+}
+
+function renderGlobalRows(rows) {
+  if (!rows.length) return `<div class="small" style="margin-top:8px">No global scores yet.</div>`;
+  // keep as table; CSS already makes it card-like on mobile
+  return `
+    <table style="width:100%; margin-top:8px">
+      ${rows.map((r,i)=>`
+        <tr>
+          <td>#${i+1} ${esc(r.name || "Player")}</td>
+          <td style="text-align:right">${Number(r.score) || 0}</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+}
+
+async function updateGlobalBlock(level) {
+  const holder = document.getElementById("global-holder");
+  const body = document.getElementById("global-body");
+  if (!holder || !body) return;
+
+  // highlight active tab
+  ["easy","medium","hard"].forEach(lvl => {
+    const b = document.getElementById(`gb-tab-${lvl}`);
+    if (!b) return;
+    b.classList.toggle("active", lvl === level);
+  });
+
+  body.innerHTML = `<div class="small">Loading…</div>`;
+  const rows = await fetchGlobalLeaderboard(level, 10);
+  body.innerHTML = renderGlobalRows(rows);
 }
 
 // ---------- Render ----------
@@ -144,14 +282,16 @@ function render(set, store) {
     box.innerHTML += `
       <div class="question-box">
         <div class="question-text">${esc(d.prompt)}</div>
-        <input id="i-${l}" placeholder="Your answer" />
+        <input id="i-${l}" placeholder="Your answer" inputmode="text" />
         <button class="primary-btn" id="b-${l}">Submit Answer</button>
       </div>
+
       <button id="h-${l}" class="hint-btn">💡 Show hint</button>
       <div id="hint-${l}" class="hint hidden"></div>
     `;
     levelsEl.appendChild(box);
 
+    // Hint once
     const hintBtn = document.getElementById(`h-${l}`);
     const hintBox = document.getElementById(`hint-${l}`);
 
@@ -171,16 +311,24 @@ function render(set, store) {
       saveStore(store);
     };
 
+    // Submit
     document.getElementById(`b-${l}`).onclick = () => {
       r.attempts++;
       const ok = accepted(document.getElementById(`i-${l}`).value, d.accepted);
+
       if (ok || r.attempts >= d.maxAttempts) {
         r.done = true;
         r.correct = ok;
         r.points = ok
           ? Math.max(0, MAX[l] - (r.attempts - 1) * WRONG[l] - (r.hintUsed ? HINT[l] : 0))
           : 0;
+
         saveStore(store);
+
+        // ✅ Send per-level to global once, when level is completed
+        // (Anti-spam ensures once per day per level)
+        submitGlobal(r.points || 0, l);
+
         render(set, store);
         showResult(set, store);
       }
@@ -190,10 +338,39 @@ function render(set, store) {
   showResult(set, store);
 }
 
+// ---------- Leaderboard (Local) ----------
+function localLeaderboard(store) {
+  const rows = Object.values(store.history || {})
+    .map(r => ({
+      date: r.date,
+      score: LEVELS.reduce((s,l)=>s+(r.levels[l].points||0),0)
+    }))
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,5);
+
+  if (!rows.length) return "";
+
+  return `
+    <h4 style="margin-top:16px">🏆 Your Best Days</h4>
+    <table style="width:100%; margin-top:6px">
+      ${rows.map(r=>`
+        <tr>
+          <td>${r.date}</td>
+          <td style="text-align:right">${r.score}/30</td>
+        </tr>`).join("")}
+    </table>`;
+}
+
 // ---------- Result ----------
 async function showResult(set, store) {
+  // keep global for the player UI re-render
+  window.__brainSet = set;
+  window.__brainStore = store;
+
   const k = todayKey();
   const r = dayRec(store, k);
+
+  // only show daily result when medium done (your rule)
   if (!r.levels.medium.done) return;
 
   store.streak ||= { current:0,best:0,last:null };
@@ -206,38 +383,32 @@ async function showResult(set, store) {
   }
   saveStore(store);
 
-  const score = LEVELS.reduce((s,l)=>s+(r.levels[l].points||0),0);
+  const total = LEVELS.reduce((s,l)=>s+(r.levels[l].points||0),0);
+
   resultEl.classList.remove("hidden");
-
-  // ---- Global submit once per day ----
-  const sent = JSON.parse(localStorage.getItem(GLOBAL_SENT_KEY) || "{}");
-  if (!sent[k]) {
-    submitGlobal(score, "easy");
-    sent[k] = true;
-    localStorage.setItem(GLOBAL_SENT_KEY, JSON.stringify(sent));
-  }
-
-  // ---- Fetch global leaderboard ----
-  const globalRows = await fetchGlobalLeaderboard("easy");
-
   resultEl.innerHTML = `
     <h3>Today's Result</h3>
-    <div class="small">Score: ${score}/30</div>
+    <div class="small">Score: ${total}/30</div>
+    <div class="small" style="margin-top:4px; opacity:.9">Global name: <strong>${esc(getPlayerName())}</strong></div>
 
-    <h4 style="margin-top:16px">🌍 Global Leaderboard</h4>
-    ${
-      globalRows.length
-        ? `<table style="width:100%; margin-top:6px">
-            ${globalRows.map((r,i)=>`
-              <tr>
-                <td>#${i+1} ${esc(r.name)}</td>
-                <td style="text-align:right">${r.score}</td>
-              </tr>
-            `).join("")}
-          </table>`
-        : `<div class="small">No global scores yet.</div>`
-    }
+    ${localLeaderboard(store)}
+
+    <div id="global-holder" style="margin-top:18px">
+      <h4 style="margin:0">🌍 Global Leaderboard</h4>
+      ${globalTabsHTML("easy")}
+      <div id="global-body"></div>
+    </div>
   `;
+
+  // Wire tabs
+  ["easy","medium","hard"].forEach(lvl => {
+    const b = document.getElementById(`gb-tab-${lvl}`);
+    if (!b) return;
+    b.onclick = () => updateGlobalBlock(lvl);
+  });
+
+  // Default load Easy
+  updateGlobalBlock("easy");
 }
 
 // ---------- Subscribe ----------
@@ -264,7 +435,10 @@ function initSubscribe() {
 
 // ---------- Main ----------
 async function main() {
+  ensureDeviceId(); // client-side fingerprint base (local only)
   countdown();
+  initPlayerUI();
+
   const store = loadStore();
   saveStore(store);
 
