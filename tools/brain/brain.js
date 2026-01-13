@@ -1,12 +1,13 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// STEP 4: Local Leaderboard added
+// STEP 5: Global Leaderboard (D1)
 // ================================
 
 const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
 const STORE_KEY = "et_brain_v1";
 const FILTER_KEY = "et_brain_filter_v1";
 const SUBSCRIBE_KEY = "et_brain_subscribed";
+const GLOBAL_SENT_KEY = "et_brain_global_sent";
 
 // ---------- Date helpers ----------
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -22,6 +23,7 @@ const fmt = ms => {
 // ---------- Storage ----------
 const loadStore = () => JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 const saveStore = s => localStorage.setItem(STORE_KEY, JSON.stringify(s));
+
 function dayRec(store, k) {
   store.history ||= {};
   store.history[k] ||= {
@@ -113,29 +115,17 @@ function render(set, store) {
       return levelsEl.appendChild(box);
     }
 
-    // ✅ FIXED QUESTION LAYOUT
     box.innerHTML += `
       <div class="question-box">
         <div class="question-text">${esc(d.prompt)}</div>
-
-        <input
-          id="i-${l}"
-          placeholder="Your answer"
-          inputmode="text"
-        />
-
-        <button class="primary-btn" id="b-${l}">
-          Submit Answer
-        </button>
+        <input id="i-${l}" placeholder="Your answer" />
+        <button class="primary-btn" id="b-${l}">Submit Answer</button>
       </div>
-
-      <!-- ✅ Better Hint UX -->
       <button id="h-${l}" class="hint-btn">💡 Show hint</button>
       <div id="hint-${l}" class="hint hidden"></div>
     `;
     levelsEl.appendChild(box);
 
-    // ✅ Hint: show once + disable button
     const hintBtn = document.getElementById(`h-${l}`);
     const hintBox = document.getElementById(`hint-${l}`);
 
@@ -146,14 +136,12 @@ function render(set, store) {
       hintBox.classList.remove("hidden");
     }
 
-    hintBtn.onclick = (e) => {
+    hintBtn.onclick = e => {
       r.hintUsed = true;
       hintBox.textContent = d.hint || "No hint.";
       hintBox.classList.remove("hidden");
-
       e.currentTarget.disabled = true;
       e.currentTarget.textContent = "Hint shown";
-
       saveStore(store);
     };
 
@@ -176,27 +164,19 @@ function render(set, store) {
   showResult(set, store);
 }
 
-// ---------- Leaderboard ----------
-function localLeaderboard(store) {
-  const rows = Object.values(store.history || {})
-    .map(r => ({
-      date: r.date,
-      score: LEVELS.reduce((s,l)=>s+(r.levels[l].points||0),0)
-    }))
-    .sort((a,b)=>b.score-a.score)
-    .slice(0,5);
-
-  if (!rows.length) return "";
-
-  return `
-    <h4 style="margin-top:16px">🏆 Your Best Days</h4>
-    <table style="width:100%; margin-top:6px">
-      ${rows.map(r=>`
-        <tr>
-          <td>${r.date}</td>
-          <td style="text-align:right">${r.score}/30</td>
-        </tr>`).join("")}
-    </table>`;
+// ---------- Global submit ----------
+async function submitGlobal(score, level) {
+  try {
+    await fetch("/api/brain-score", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Player",
+        score,
+        level
+      })
+    });
+  } catch {}
 }
 
 // ---------- Result ----------
@@ -222,6 +202,37 @@ function showResult(set, store) {
     <div class="small">Score: ${score}/30</div>
     ${localLeaderboard(store)}
   `;
+
+  // ✅ Send to global leaderboard once per day
+  const sent = JSON.parse(localStorage.getItem(GLOBAL_SENT_KEY) || "{}");
+  if (!sent[k]) {
+    submitGlobal(score, "easy");
+    sent[k] = true;
+    localStorage.setItem(GLOBAL_SENT_KEY, JSON.stringify(sent));
+  }
+}
+
+// ---------- Leaderboard ----------
+function localLeaderboard(store) {
+  const rows = Object.values(store.history || {})
+    .map(r => ({
+      date: r.date,
+      score: LEVELS.reduce((s,l)=>s+(r.levels[l].points||0),0)
+    }))
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,5);
+
+  if (!rows.length) return "";
+
+  return `
+    <h4 style="margin-top:16px">🏆 Your Best Days</h4>
+    <table style="width:100%; margin-top:6px">
+      ${rows.map(r=>`
+        <tr>
+          <td>${r.date}</td>
+          <td style="text-align:right">${r.score}/30</td>
+        </tr>`).join("")}
+    </table>`;
 }
 
 // ---------- Subscribe ----------
