@@ -23,71 +23,14 @@ export async function onRequest({ request, env }) {
       try {
         body = await request.json();
       } catch (err) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      error: err.message,
-      stack: err.stack,
-    }),
-    { status: 500, headers }
-  );
-}
-
-      } catch (err) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      error: err.message,
-      stack: err.stack,
-    }),
-    { status: 500, headers }
-  );
-}
-
-      } catch (err) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      error: err.message,
-      stack: err.stack,
-    }),
-    { status: 500, headers }
-  );
-}
-
-      } catch (err) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      error: err.message,
-      stack: err.stack,
-    }),
-    { status: 500, headers }
-  );
-}
-
-      } catch (err) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      error: err.message,
-      stack: err.stack,
-    }),
-    { status: 500, headers }
-  );
-}
-
-      } catch (err) {
-  return new Response(
-    JSON.stringify({
-      ok: false,
-      error: err.message,
-      stack: err.stack,
-    }),
-    { status: 500, headers }
-  );
-}
-
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: "Invalid JSON",
+          }),
+          { status: 400, headers }
+        );
+      }
 
       let { name, score, level } = body;
 
@@ -128,10 +71,9 @@ export async function onRequest({ request, env }) {
       ? url.searchParams.get("level")
       : "easy";
 
-    const limit = Math.min(
-      Number(url.searchParams.get("limit")) || 20,
-      50
-    );
+    // ⚠️ IMPORTANT: LIMIT must be injected, not bound
+    const limitRaw = Number(url.searchParams.get("limit")) || 20;
+    const limit = Math.min(Math.max(limitRaw, 1), 50);
 
     const result = await env.DB.prepare(
       `
@@ -139,10 +81,10 @@ export async function onRequest({ request, env }) {
       FROM brain_scores
       WHERE level = ?
       ORDER BY score DESC, created_at ASC
-      LIMIT ?
+      LIMIT ${limit}
       `
     )
-      .bind(level, limit)
+      .bind(level)
       .all();
 
     return new Response(
@@ -157,7 +99,7 @@ export async function onRequest({ request, env }) {
     return new Response(
       JSON.stringify({
         ok: false,
-        error: "Server error",
+        error: err.message,
       }),
       { status: 500, headers }
     );
