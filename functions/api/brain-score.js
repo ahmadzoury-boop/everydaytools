@@ -9,8 +9,6 @@ export function onRequestOptions() {
   return new Response(null, { status: 204, headers });
 }
 
-const ALLOWED_LEVELS = ["easy", "medium", "hard"];
-
 export async function onRequest({ request, env }) {
   try {
     const url = new URL(request.url);
@@ -22,19 +20,15 @@ export async function onRequest({ request, env }) {
       let body;
       try {
         body = await request.json();
-      } catch (err) {
+      } catch {
         return new Response(
-          JSON.stringify({
-            ok: false,
-            error: "Invalid JSON",
-          }),
+          JSON.stringify({ ok: false, error: "Invalid JSON" }),
           { status: 400, headers }
         );
       }
 
-      let { name, score, level } = body;
+      let { name, score } = body;
 
-      // ---- Validation ----
       if (typeof score !== "number" || score < 0) {
         return new Response(
           JSON.stringify({ ok: false, error: "Invalid score" }),
@@ -42,20 +36,15 @@ export async function onRequest({ request, env }) {
         );
       }
 
-      level = ALLOWED_LEVELS.includes(level) ? level : "easy";
+      name = String(name || "Anonymous").trim().slice(0, 24);
 
-      name = String(name || "Anonymous")
-        .trim()
-        .slice(0, 24);
-
-      // ---- Insert ----
       await env.DB.prepare(
         `
-        INSERT INTO brain_scores (name, score, level)
-        VALUES (?, ?, ?)
+        INSERT INTO brain_scores (name, score)
+        VALUES (?, ?)
         `
       )
-        .bind(name, score, level)
+        .bind(name, score)
         .run();
 
       return new Response(
@@ -67,11 +56,6 @@ export async function onRequest({ request, env }) {
     // =========================
     // GET → global leaderboard
     // =========================
-    const level = ALLOWED_LEVELS.includes(url.searchParams.get("level"))
-      ? url.searchParams.get("level")
-      : "easy";
-
-    // ⚠️ IMPORTANT: LIMIT must be injected, not bound
     const limitRaw = Number(url.searchParams.get("limit")) || 20;
     const limit = Math.min(Math.max(limitRaw, 1), 50);
 
@@ -79,18 +63,14 @@ export async function onRequest({ request, env }) {
       `
       SELECT name, score, created_at
       FROM brain_scores
-      WHERE level = ?
       ORDER BY score DESC, created_at ASC
       LIMIT ${limit}
       `
-    )
-      .bind(level)
-      .all();
+    ).all();
 
     return new Response(
       JSON.stringify({
         ok: true,
-        level,
         leaderboard: result.results,
       }),
       { headers }
