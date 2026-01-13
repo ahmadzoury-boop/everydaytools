@@ -75,7 +75,7 @@ h1{
 }
 
 /* =====================
-   Question layout (NEW)
+   Question layout
 ===================== */
 .question-box{
   display:flex;
@@ -101,7 +101,7 @@ input{
   background:#0b0f14;
   color:var(--text);
   outline:none;
-  font-size:16px; /* يمنع zoom في iOS */
+  font-size:16px;
 }
 
 button{
@@ -127,13 +127,12 @@ button:disabled{
   cursor:not-allowed;
 }
 
-/* زر الإرسال الأساسي */
 .primary-btn{
   width:100%;
 }
 
 /* =====================
-   Answer feedback (NEW)
+   Feedback
 ===================== */
 .feedback{
   margin-top:8px;
@@ -183,12 +182,42 @@ button:disabled{
   padding:16px;
 }
 
-.hidden{
-  display:none;
+/* =====================
+   Leaderboard (Mobile-first)
+===================== */
+
+/* table reset */
+#result table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0 8px;
+}
+
+/* each row becomes a card */
+#result tr{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#0b0f14;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px 12px;
+}
+
+/* date */
+#result td:first-child{
+  font-size:14px;
+  color:var(--text);
+}
+
+/* score */
+#result td:last-child{
+  font-weight:600;
+  color:var(--green);
 }
 
 /* =====================
-   Difficulty filter buttons
+   Filters
 ===================== */
 button.active{
   outline:2px solid var(--border);
@@ -201,6 +230,10 @@ button#filter-easy,
 button#filter-medium,
 button#filter-hard{
   cursor:pointer;
+}
+
+.hidden{
+  display:none;
 }
 
 /* =====================
@@ -235,5 +268,17 @@ button#filter-hard{
 
   .primary-btn{
     width:auto;
+  }
+
+  /* leaderboard desktop = table feel */
+  #result tr{
+    display:table-row;
+    background:transparent;
+    border:none;
+    padding:0;
+  }
+
+  #result td{
+    padding:6px 0;
   }
 }
