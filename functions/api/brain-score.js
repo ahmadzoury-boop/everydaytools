@@ -1,52 +1,37 @@
-export async function onRequestPost({ request, env }) {
+export async function onRequest({ env }) {
   try {
-    const body = await request.json();
-    const { date, score, name, device_hash } = body;
-
-    // Basic validation
-    if (
-      !date ||
-      typeof score !== "number" ||
-      score < 0 ||
-      score > 30 ||
-      !device_hash
-    ) {
+    if (!env.DB) {
       return new Response(
-        JSON.stringify({ error: "Invalid payload" }),
-        { status: 400 }
+        JSON.stringify({
+          ok: false,
+          error: "DB binding is missing",
+          envKeys: Object.keys(env),
+        }),
+        { status: 500 }
       );
     }
 
-    const displayName =
-      typeof name === "string" && name.trim()
-        ? name.trim().slice(0, 32)
-        : "Anonymous";
-
-    await env.DB.prepare(
-      `
-      INSERT INTO brain_scores (date, score, name, device_hash)
-      VALUES (?, ?, ?, ?)
-      `
-    )
-      .bind(date, score, displayName, device_hash)
-      .run();
+    const test = await env.DB.prepare(
+      "SELECT name FROM sqlite_master WHERE type='table'"
+    ).all();
 
     return new Response(
-      JSON.stringify({ success: true }),
-      { status: 200 }
+      JSON.stringify({
+        ok: true,
+        message: "D1 connected successfully",
+        tables: test.results,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
     );
-
   } catch (err) {
-    // Duplicate submission
-    if (String(err).includes("UNIQUE")) {
-      return new Response(
-        JSON.stringify({ error: "Score already submitted today" }),
-        { status: 409 }
-      );
-    }
-
     return new Response(
-      JSON.stringify({ error: "Server error" }),
+      JSON.stringify({
+        ok: false,
+        error: err.message,
+        stack: err.stack,
+      }),
       { status: 500 }
     );
   }
