@@ -50,6 +50,7 @@ let activeFilter = localStorage.getItem(FILTER_KEY) || "all";
 const statusEl = document.getElementById("status");
 const levelsEl = document.getElementById("levels");
 const resultEl = document.getElementById("result");
+const themeEl  = document.getElementById("brain-theme");
 
 // ---------- Utils ----------
 const esc = s => String(s).replace(/[&<>"']/g, m =>
@@ -144,8 +145,8 @@ function render(set,store){
       (l==="hard"&&!rec.levels.medium.done);
 
     const box=document.createElement("section");
-    box.className="level";
-    box.innerHTML=`<h2>${l.toUpperCase()}</h2><div class="small">${esc(set.theme||"")}</div>`;
+    box.className="level brain-card";
+    box.innerHTML=`<h2>${l.toUpperCase()}</h2>`;
 
     if(locked){
       box.innerHTML+=`<div class="hint">Complete previous level to unlock.</div>`;
@@ -309,6 +310,11 @@ async function main(){
   if(!set){
     levelsEl.innerHTML=`<div class="level">Today's set not found</div>`;
     return;
+  }
+
+  // 🔹 Show theme ONCE
+  if(themeEl && set.theme){
+    themeEl.textContent = `Theme: ${set.theme}`;
   }
 
   wireFilters(()=>render(set,store));
