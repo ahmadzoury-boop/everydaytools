@@ -1,146 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Daily Brain — EverydayTools</title>
 
-  <title>Brain Tools — ToolStack</title>
-  <meta name="description" content="Daily brain training tools to improve memory, focus, logic, and thinking skills." />
+<style>
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  box-sizing: border-box;
+}
 
-  <!-- Global ToolStack styles -->
-  <link rel="stylesheet" href="../../assets/css/style.css" />
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0b0f14;
+  color: #e6e6e6;
+}
 
-  <!-- Brain-specific styles -->
-  <link rel="stylesheet" href="./brain.css" />
+/* =========================
+   PAGE WRAPPER
+========================= */
+.brain-page {
+  padding: 16px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* =========================
+   HEADER TEXT
+========================= */
+.brain-intro {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+/* =========================
+   FILTER BUTTONS
+========================= */
+.brain-filters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.brain-filters button {
+  padding: 12px 0;
+  border-radius: 14px;
+  border: none;
+  background: #1f8f3a;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.brain-filters button.active {
+  background: #26b44a;
+}
+
+/* =========================
+   STATUS BAR
+========================= */
+.brain-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.85;
+  margin-bottom: 14px;
+}
+
+.brain-pill {
+  background: #151b23;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+/* =========================
+   CARD
+========================= */
+.brain-card {
+  background: #10161d;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.brain-difficulty {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.brain-category {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.brain-question {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  min-height: 48px;
+}
+
+/* =========================
+   INPUT & BUTTONS
+========================= */
+.brain-card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #0b0f14;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.brain-card button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background: #26b44a;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.btn-hint {
+  background: #1f8f3a;
+  color: #fff;
+}
+
+/* =========================
+   MOBILE SAFETY
+========================= */
+@media (max-width: 480px) {
+  body {
+    overflow-x: hidden;
+  }
+}
+</style>
 </head>
+
 <body>
+<div class="brain-page">
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="container header-row">
-      <a class="brand" href="../../index.html" aria-label="ToolStack Home">
-        <span class="brand-mark">⧉</span>
-        <span class="brand-name">ToolStack</span>
-      </a>
-      <nav class="nav">
-        <a href="../../tools/">All Tools</a>
-        <a href="../../index.html#categories">Categories</a>
-      </nav>
-    </div>
-  </header>
+  <div class="brain-intro">
+    Every day resets at midnight (UTC). Complete challenges, build streaks, and track your progress.
+  </div>
 
-  <!-- Main Brain App -->
-  <main class="container brain-page">
+  <!-- FILTERS -->
+  <div class="brain-filters">
+    <button class="active" data-filter="all">All</button>
+    <button data-filter="easy">Easy</button>
+    <button data-filter="medium">Medium</button>
+    <button data-filter="hard">Hard</button>
+  </div>
 
-    <!-- Hero -->
-    <section class="brain-hero">
-      <h1>🧠 Daily Brain</h1>
+  <!-- STATUS -->
+  <div class="brain-status">
+    <div class="brain-pill">Resets in <span id="resetTimer">--:--:--</span></div>
+    <div class="brain-pill">🔥 Streak <span id="streak">0</span></div>
+    <div class="brain-pill">Best <span id="best">0</span></div>
+  </div>
 
-      <p class="lead">
-        A daily brain workout with short, smart challenges designed to improve
-        <strong>memory</strong>, <strong>focus</strong>, and <strong>logical thinking</strong>.
-      </p>
+  <!-- CARD -->
+  <div class="brain-card">
+    <div class="brain-difficulty" id="difficulty">EASY</div>
+    <div class="brain-category" id="category">Music</div>
+    <div class="brain-question" id="question"></div>
 
-      <p class="small brain-sub">
-        Every day resets at midnight (UTC). Complete challenges, build streaks, and track your progress over time.
-      </p>
-    </section>
+    <input type="text" placeholder="Your answer" />
+    <button class="btn-submit">Submit</button>
+    <button class="btn-hint">💡 Show hint</button>
+  </div>
 
-    <!-- Card wrapper like Countdown Timer -->
-    <section class="brain-card">
+</div>
 
-      <!-- Filters (like timer presets) -->
-      <div class="brain-filterbar">
-        <div class="brain-filter-label">Show:</div>
+<script>
+/* =========================
+   DATA (SAMPLE)
+========================= */
+const QUESTIONS = {
+  easy: {
+    difficulty: "EASY",
+    category: "Music",
+    question: "Which instrument has 88 keys?"
+  }
+};
 
-        <div class="brain-filters">
-          <button id="filter-all" class="brain-chip">All</button>
-          <button id="filter-easy" class="brain-chip">Easy</button>
-          <button id="filter-medium" class="brain-chip">Medium</button>
-          <button id="filter-hard" class="brain-chip">Hard</button>
-        </div>
-      </div>
+/* =========================
+   RENDER
+========================= */
+function renderQuestion() {
+  const q = QUESTIONS.easy;
 
-      <!-- Status -->
-      <div id="status"></div>
-      <div id="brain-theme" class="small brain-theme"></div>
+  document.getElementById("difficulty").textContent = q.difficulty || "";
+  document.getElementById("category").textContent = q.category || "";
+  document.getElementById("question").textContent = q.question || "";
+}
 
+/* =========================
+   RESET TIMER
+========================= */
+function updateResetTimer() {
+  const now = new Date();
+  const next = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() + 1
+  );
+  const diff = next - Date.now();
 
-      <p class="small brain-streak-note">
-        🔥 Your streak increases when you complete <strong>Easy + Medium</strong> on the same day.
-      </p>
+  const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
 
-      <!-- Levels injected by brain.js -->
-      <div id="levels"></div>
+  document.getElementById("resetTimer").textContent = `${h}:${m}:${s}`;
+}
 
-      <div id="result"></div>
+setInterval(updateResetTimer, 1000);
+updateResetTimer();
+renderQuestion();
+</script>
 
-      <!-- How it works (collapsible like timer page) -->
-      <details class="brain-how">
-        <summary>How it works</summary>
-        <ul>
-          <li>Each day has <strong>3 difficulty levels</strong>: Easy → Medium → Hard</li>
-          <li>Complete Easy to unlock Medium, Medium to unlock Hard</li>
-          <li>Your score and streak are saved on this device</li>
-          <li>The challenge resets every day at <strong>00:00 UTC</strong></li>
-        </ul>
-      </details>
-
-      <!-- Email subscription -->
-      <div class="brain-subscribe hint">
-        <strong>Get the Daily Brain by email 🧠</strong>
-
-        <p class="small" style="margin-top:6px">
-          Receive one short brain challenge per day.
-          No spam. No ads. Unsubscribe anytime.
-        </p>
-
-        <form id="brain-subscribe-form" class="brain-form">
-          <div class="brain-form-row">
-            <input
-              type="text"
-              id="brain-name"
-              placeholder="Your name (optional)"
-              autocomplete="name"
-            />
-            <input
-              type="email"
-              id="brain-email"
-              placeholder="Your email"
-              required
-              autocomplete="email"
-            />
-            <button type="submit">Subscribe</button>
-            <button type="button" id="brain-unsubscribe-btn" class="danger">Unsubscribe</button>
-          </div>
-
-          <p id="brain-subscribe-msg" class="small" style="margin-top:6px"></p>
-
-          <p class="small" style="margin-top:4px; opacity:0.8">
-            We only store your name and email for Daily Brain reminders.
-          </p>
-        </form>
-      </div>
-
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer class="site-footer">
-    <div class="footer-row">
-      <div class="footer-links">
-        <a href="../../privacy.html">Privacy</a>
-        <a href="../../terms.html">Terms</a>
-        <a href="../../contact.html">Contact</a>
-      </div>
-      <div class="footer-note">© <span id="year"></span> ToolStack</div>
-    </div>
-  </footer>
-
-  <!-- Brain logic -->
-  <script type="module" src="./brain.js"></script>
-
-  <!-- Global script -->
-  <script src="../../assets/js/main.js"></script>
 </body>
 </html>
