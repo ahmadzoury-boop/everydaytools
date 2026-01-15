@@ -6,176 +6,134 @@
 <title>Daily Brain — EverydayTools</title>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #0b0f14;
-  color: #e6e6e6;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#0b0f14;
+  color:#e6e6e6
 }
-
-.brain-page {
-  padding: 16px;
-  max-width: 420px;
-  margin: 0 auto;
+.brain-page{
+  padding:16px;
+  max-width:420px;
+  margin:0 auto
 }
-
-.brain-intro {
-  font-size: 14px;
-  opacity: .8;
-  margin-bottom: 14px;
-  text-align: center;
+.brain-intro{
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:14px;
+  text-align:center
 }
 
 /* FILTERS */
-.brain-filters {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
+.brain-filters{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-bottom:16px
 }
-
-.brain-filters button {
-  padding: 12px 0;
-  border-radius: 14px;
-  border: none;
-  background: #1f8f3a;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
+.brain-filters button{
+  padding:12px 0;
+  border-radius:14px;
+  border:none;
+  background:#1f8f3a;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer
 }
-
-.brain-filters button.active { background: #26b44a; }
-.brain-filters button.locked { opacity: .4; cursor: not-allowed; }
+.brain-filters button.active{background:#26b44a}
+.brain-filters button.locked{opacity:.4;cursor:not-allowed}
 
 /* STATUS */
-.brain-status {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 13px;
-  margin-bottom: 14px;
-  justify-content: center;
+.brain-status{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  font-size:13px;
+  margin-bottom:14px;
+  justify-content:center
 }
-
-.brain-pill {
-  background: #151b23;
-  padding: 6px 10px;
-  border-radius: 999px;
+.brain-pill{
+  background:#151b23;
+  padding:6px 10px;
+  border-radius:999px
 }
 
 /* CARD */
-.brain-card {
-  background: #10161d;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+.brain-card{
+  background:#10161d;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.4)
 }
-
-.brain-difficulty { font-weight: 700; margin-bottom: 4px; }
-.brain-category { font-size: 13px; opacity: .7; margin-bottom: 10px; }
-
-.brain-question {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 14px;
-  white-space: pre-line;
-  min-height: 48px;
+.brain-difficulty{font-weight:700;margin-bottom:4px}
+.brain-category{font-size:13px;opacity:.7;margin-bottom:10px}
+.brain-question{
+  font-size:16px;
+  line-height:1.6;
+  margin-bottom:14px;
+  white-space:pre-line
 }
 
 /* INPUT + BUTTONS */
-input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  background: #0b0f14;
-  color: #fff;
-  margin-bottom: 10px;
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:#0b0f14;
+  color:#fff;
+  margin-bottom:10px
 }
-
-button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 600;
+button{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-weight:600
 }
-
-.btn-submit { background: #26b44a; color: #fff; }
-.btn-hint { background: #1f8f3a; color: #fff; margin-top: 6px; }
+.btn-submit{background:#26b44a;color:#fff}
+.btn-hint{background:#1f8f3a;color:#fff;margin-top:6px}
 
 /* FEEDBACK + EXPLAIN */
-.feedback {
-  margin-top: 12px;
-  font-size: 14px;
-  text-align: center;
+.feedback{
+  margin-top:12px;
+  font-size:14px;
+  text-align:center
 }
-
-.explain-box {
-  margin-top: 10px;
-  background: #0b0f14;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 13px;
-  line-height: 1.5;
-  opacity: .95;
+.explain-box{
+  margin-top:10px;
+  background:#0b0f14;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:12px;
+  font-size:13px;
+  line-height:1.5
 }
+.explain-title{font-weight:700;margin-bottom:6px}
 
-.explain-title {
-  font-weight: 700;
-  margin-bottom: 6px;
-  opacity: .95;
-}
-
-/* SUBSCRIBE */
+/* SUBSCRIBE (UI ONLY) */
 .subscribe-card{
-  margin-top: 14px;
-  background: #10161d;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  margin-top:16px;
+  background:#10161d;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.35)
 }
-
-.subscribe-title{
-  font-weight: 800;
-  margin-bottom: 6px;
-}
-
+.subscribe-title{font-weight:800;margin-bottom:6px}
 .subscribe-sub{
-  font-size: 13px;
-  opacity: .8;
-  margin-bottom: 12px;
-  line-height: 1.4;
+  font-size:13px;
+  opacity:.8;
+  margin-bottom:12px;
+  line-height:1.4
 }
-
-.subscribe-row{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-
-.btn-secondary{
-  background:#151b23;
-  color:#e6e6e6;
-}
-
+.subscribe-row{display:grid;gap:10px}
+.btn-secondary{background:#151b23;color:#e6e6e6}
 .small-note{
-  margin-top: 10px;
-  font-size: 12px;
-  opacity: .75;
-  text-align: center;
-}
-
-.badge{
-  display:inline-block;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background:#151b23;
-  font-size: 12px;
-  opacity: .9;
+  margin-top:10px;
+  font-size:12px;
+  opacity:.75;
+  text-align:center
 }
 </style>
 </head>
@@ -188,10 +146,10 @@ button {
   </div>
 
   <div class="brain-filters">
-    <button class="active" data-filter="all">All</button>
-    <button data-filter="easy">Easy</button>
+    <button class="active" data-filter="easy">Easy</button>
     <button data-filter="medium">Medium</button>
     <button data-filter="hard" id="hardBtn">Hard 🔒</button>
+    <button data-filter="all">All</button>
   </div>
 
   <div class="brain-status">
@@ -211,326 +169,187 @@ button {
 
     <div class="feedback" id="feedback"></div>
 
-    <div class="explain-box" id="explainBox" style="display:none;">
+    <div class="explain-box" id="explainBox" style="display:none">
       <div class="explain-title">Why?</div>
       <div id="explainText"></div>
     </div>
   </div>
 
-  <!-- SUBSCRIPTION (RESTORED) -->
+  <!-- SUBSCRIPTION -->
   <div class="subscribe-card">
     <div class="subscribe-title">Get the Daily Brain by email 🧠</div>
     <div class="subscribe-sub">
-      Receive one short brain challenge per day. No spam. Unsubscribe anytime.
+      One short brain challenge per day. No spam. Unsubscribe anytime.
     </div>
 
-    <div id="subStatus" class="small-note"></div>
-
     <div class="subscribe-row">
-      <input id="email" type="email" placeholder="Email address" autocomplete="email" />
-      <button class="btn-submit" id="subscribeBtn">Subscribe</button>
-      <button class="btn-secondary" id="unsubscribeBtn">Unsubscribe</button>
+      <input id="subEmail" type="email" placeholder="Email address" />
+      <button class="btn-submit" id="subBtn">Subscribe</button>
+      <button class="btn-secondary" id="unsubBtn">Unsubscribe</button>
     </div>
 
     <div class="small-note">
-      <span class="badge" id="subBadge">Not subscribed</span>
+      <span id="subStatus">Not subscribed</span>
     </div>
   </div>
 
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded",()=>{
 
-  // =========================
-  // CONFIG
-  // =========================
-  const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
+const DATA_URL="/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
+const STORE_KEY="et_brain_state_v1";
+const SUB_KEY="et_brain_sub_ui_v1";
+const POINTS={easy:10,medium:20,hard:30};
 
-  // 🔁 Update these 2 if your function routes differ:
-  const SUBSCRIBE_URL = "/api/brain-subscribe";
-  const UNSUBSCRIBE_URL = "/api/brain-unsubscribe";
+let dailySet,currentFilter="easy",currentQuestion;
+let state=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
 
-  const STORE_KEY = "et_brain_v3";
-  const SUB_KEY = "et_brain_subscribed_v1"; // { email, ts }
+const today=new Date().toISOString().slice(0,10);
+state[today]??={solved:{},attempts:{},score:0,finished:{}};
 
-  const POINTS = { easy: 10, medium: 20, hard: 30 };
+const $=id=>document.getElementById(id);
 
-  // =========================
-  // STATE
-  // =========================
-  let dailySet, currentFilter = "easy", currentQuestion;
-  let state = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+/* TIMER */
+function tick(){
+  const n=new Date();
+  const t=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1)-Date.now();
+  $("timer").textContent=[t/36e5,(t/6e4)%60,(t/1e3)%60]
+    .map(v=>String(Math.floor(v)).padStart(2,"0")).join(":");
+}
+setInterval(tick,1000);tick();
 
-  const today = new Date().toISOString().slice(0,10);
-  state[today] ??= { solved:{}, attempts:{}, score:0, finished:{} };
+/* LOAD DATA */
+fetch(DATA_URL).then(r=>r.json()).then(j=>{
+  dailySet=j.sets.find(s=>s.date===today);
+  pick();
+  updateUI();
+  updateStreak();
+  renderSub();
+}).catch(()=>{$("question").textContent="Failed to load today's challenge."});
 
-  const $ = (id) => document.getElementById(id);
+/* QUESTION */
+function pick(){
+  const lvl=currentFilter==="all"?"easy":currentFilter;
+  currentQuestion={level:lvl,theme:dailySet.theme,...dailySet[lvl]};
+  render();
+  renderState();
+}
+function render(){
+  $("difficulty").textContent=currentQuestion.level.toUpperCase();
+  $("category").textContent=currentQuestion.theme;
+  let q="";
+  if(currentQuestion.type==="odd")
+    q="Which one does not belong?\n\n"+currentQuestion.options.join(" • ");
+  else if(currentQuestion.type==="clues")
+    q=currentQuestion.clues.join(" • ");
+  else q=currentQuestion.prompt;
+  $("question").textContent=q;
+}
+function norm(s){
+  return String(s||"").trim().toUpperCase().replace(/\s+/g," ").replace(/[£$€]/g,"");
+}
+function renderState(){
+  const l=currentQuestion.level;
+  const used=state[today].attempts[l]||0;
+  const max=currentQuestion.maxAttempts||1;
+  const solved=state[today].solved[l];
+  const finished=state[today].finished[l]||used>=max;
 
-  // =========================
-  // TIMER
-  // =========================
-  function updateTimer(){
-    const n=new Date();
-    const t=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1)-Date.now();
-    $("timer").textContent =
-      [t/36e5,(t/6e4)%60,(t/1e3)%60].map(v=>String(Math.floor(v)).padStart(2,"0")).join(":");
+  $("answer").disabled=solved||finished;
+  $("submitBtn").disabled=solved||finished;
+
+  if(solved){
+    $("feedback").textContent=`✅ Correct! +${POINTS[l]} pts`;
+    showExplain();
+  }else if(finished){
+    $("feedback").textContent=`❌ Wrong (${used}/${max}) — Answer: ${currentQuestion.answer}`;
+    showExplain();
+  }else if(used){
+    $("feedback").textContent=`❌ Wrong (${used}/${max}) — Try again`;
+    hideExplain();
+  }else{
+    $("feedback").textContent="";
+    hideExplain();
   }
-  setInterval(updateTimer,1000); updateTimer();
+}
+function showExplain(){
+  $("explainText").textContent=currentQuestion.explain||"";
+  $("explainBox").style.display="block";
+}
+function hideExplain(){
+  $("explainBox").style.display="none";
+}
 
-  // =========================
-  // LOAD DATA
-  // =========================
-  fetch(DATA_URL).then(r=>r.json()).then(j=>{
-    dailySet = j.sets.find(s=>s.date===today);
-    pickQuestion();
-    updateUI();
-    updateStreak();
-    renderSubUI();
-  }).catch(()=> {
-    $("question").textContent = "Failed to load today's challenge.";
-    renderSubUI();
+/* FILTERS */
+document.querySelectorAll(".brain-filters button").forEach(b=>{
+  b.onclick=()=>{
+    if(b.classList.contains("locked"))return;
+    document.querySelectorAll(".brain-filters button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    currentFilter=b.dataset.filter;
+    pick();
+  };
+});
+
+/* SUBMIT */
+$("submitBtn").onclick=()=>{
+  const l=currentQuestion.level;
+  const max=currentQuestion.maxAttempts||1;
+  state[today].attempts[l]=(state[today].attempts[l]||0)+1;
+  const ok=currentQuestion.accepted.map(norm).includes(norm($("answer").value));
+  if(ok){
+    state[today].solved[l]=true;
+    state[today].score+=POINTS[l];
+    state[today].finished[l]=true;
+  }else if(state[today].attempts[l]>=max){
+    state[today].finished[l]=true;
+  }
+  localStorage.setItem(STORE_KEY,JSON.stringify(state));
+  updateUI();updateStreak();renderState();
+};
+
+/* HINT */
+$("hintBtn").onclick=()=>alert(currentQuestion.hint||"No hint");
+
+/* UI */
+function updateUI(){
+  $("score").textContent=state[today].score;
+  const unlock=state[today].solved.easy&&state[today].solved.medium;
+  $("hardBtn").classList.toggle("locked",!unlock);
+  $("hardBtn").textContent=unlock?"Hard":"Hard 🔒";
+}
+function updateStreak(){
+  let s=0;
+  Object.keys(state).sort().reverse().every(d=>{
+    if(state[d].solved.easy&&state[d].solved.medium){s++;return true}
+    return false;
   });
+  $("streak").textContent=s;
+}
 
-  // =========================
-  // QUESTIONS
-  // =========================
-  function pickQuestion(){
-    if(!dailySet){
-      $("question").textContent = "No challenge available today.";
-      return;
-    }
-    const lvl = currentFilter==="all" ? "easy" : currentFilter;
-    currentQuestion = { level:lvl, theme:dailySet.theme, ...dailySet[lvl] };
-    render();
-    renderProgressState();
+/* SUBSCRIBE UI ONLY */
+function renderSub(){
+  const d=JSON.parse(localStorage.getItem(SUB_KEY)||"null");
+  if(d?.email){
+    $("subStatus").textContent="✅ Subscribed as "+d.email;
+    $("subEmail").value=d.email;
+  }else{
+    $("subStatus").textContent="Not subscribed";
+    $("subEmail").value="";
   }
-
-  function render(){
-    $("difficulty").textContent = currentQuestion.level.toUpperCase();
-    $("category").textContent = currentQuestion.theme;
-
-    let q="";
-    if(currentQuestion.type==="odd")
-      q="Which one does not belong?\n\n"+currentQuestion.options.join(" • ");
-    else if(currentQuestion.type==="clues")
-      q=currentQuestion.clues.join(" • ");
-    else
-      q=currentQuestion.prompt || "";
-
-    $("question").textContent = q;
-  }
-
-  function norm(s){
-    return String(s || "")
-      .trim()
-      .toUpperCase()
-      .replace(/\s+/g, " ")
-      .replace(/[£$€]/g, "");
-  }
-
-  function acceptedSet(q){
-    const arr = Array.isArray(q.accepted) ? q.accepted : [];
-    return new Set(arr.map(norm));
-  }
-
-  function showExplain(text){
-    $("explainText").textContent = text || "";
-    $("explainBox").style.display = text ? "block" : "none";
-  }
-
-  function hideExplain(){
-    $("explainBox").style.display = "none";
-    $("explainText").textContent = "";
-  }
-
-  function renderProgressState(){
-    const lvl = currentQuestion.level;
-    const solvedLvl = !!state[today].solved[lvl];
-    const used = state[today].attempts[lvl] || 0;
-    const maxA = currentQuestion.maxAttempts ?? 1;
-    const finished = !!state[today].finished[lvl] || used >= maxA;
-
-    const lock = solvedLvl || finished;
-    $("answer").disabled = lock;
-    $("submitBtn").disabled = lock;
-    $("submitBtn").style.opacity = lock ? 0.5 : 1;
-
-    if (solvedLvl) {
-      $("feedback").textContent = `✅ Correct! +${POINTS[lvl]} pts`;
-      showExplain(currentQuestion.explain || "");
-    } else if (finished) {
-      $("feedback").textContent = `❌ Wrong (${used}/${maxA}) — Answer: ${currentQuestion.answer}`;
-      showExplain(currentQuestion.explain || "");
-    } else if (used > 0) {
-      $("feedback").textContent = `❌ Wrong (${used}/${maxA}) — Try again`;
-      hideExplain();
-    } else {
-      $("feedback").textContent = "";
-      hideExplain();
-    }
-  }
-
-  // Filters
-  document.querySelectorAll(".brain-filters button").forEach(b=>{
-    b.onclick=()=>{
-      if(b.classList.contains("locked")) return;
-      document.querySelectorAll(".brain-filters button").forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-      currentFilter=b.dataset.filter;
-      pickQuestion();
-    };
-  });
-
-  // Submit
-  $("submitBtn").onclick=()=>{
-    if(!currentQuestion) return;
-
-    const lvl=currentQuestion.level;
-    const used = state[today].attempts[lvl] || 0;
-    const maxA = currentQuestion.maxAttempts ?? 1;
-
-    if (state[today].finished[lvl] || used >= maxA || state[today].solved[lvl]) {
-      renderProgressState();
-      return;
-    }
-
-    const user = norm($("answer").value);
-    if(!user) return;
-
-    state[today].attempts[lvl] = used + 1;
-
-    const ok = acceptedSet(currentQuestion).has(user);
-
-    if(ok){
-      if(!state[today].solved[lvl]){
-        state[today].solved[lvl]=true;
-        state[today].score += POINTS[lvl];
-      }
-      state[today].finished[lvl] = true;
-      $("answer").value = "";
-    } else {
-      if (state[today].attempts[lvl] >= maxA) {
-        state[today].finished[lvl] = true;
-      }
-    }
-
-    save();
-    updateUI();
-    updateStreak();
-    renderProgressState();
-  };
-
-  // Hint
-  $("hintBtn").onclick=()=>{
-    alert(currentQuestion?.hint || "No hint.");
-  };
-
-  function updateUI(){
-    $("score").textContent = state[today].score;
-
-    const hardUnlocked = !!state[today].solved.easy && !!state[today].solved.medium;
-    const hb=$("hardBtn");
-    hb.classList.toggle("locked",!hardUnlocked);
-    hb.textContent = hardUnlocked ? "Hard" : "Hard 🔒";
-  }
-
-  function updateStreak() {
-    let streak = 0;
-    const days = Object.keys(state).sort().reverse();
-
-    for (const d of days) {
-      if (state[d]?.solved?.easy && state[d]?.solved?.medium) streak++;
-      else break;
-    }
-    $("streak").textContent = streak;
-  }
-
-  function save(){
-    localStorage.setItem(STORE_KEY,JSON.stringify(state));
-  }
-
-  // =========================
-  // SUBSCRIPTION (RESTORED)
-  // =========================
-  function getSub(){
-    try { return JSON.parse(localStorage.getItem(SUB_KEY) || "null"); }
-    catch { return null; }
-  }
-  function setSub(obj){
-    localStorage.setItem(SUB_KEY, JSON.stringify(obj));
-  }
-  function clearSub(){
-    localStorage.removeItem(SUB_KEY);
-  }
-
-  function renderSubUI(){
-    const sub = getSub();
-    if (sub?.email) {
-      $("subBadge").textContent = "✅ Subscribed";
-      $("subStatus").textContent = `Subscribed as ${sub.email}`;
-      $("email").value = sub.email;
-    } else {
-      $("subBadge").textContent = "Not subscribed";
-      $("subStatus").textContent = "";
-    }
-  }
-
-  async function postJSON(url, body){
-    const r = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
-    let data = null;
-    try { data = await r.json(); } catch {}
-    if (!r.ok) {
-      const msg = data?.error || data?.message || `Request failed (${r.status})`;
-      throw new Error(msg);
-    }
-    return data;
-  }
-
-  $("subscribeBtn").onclick = async () => {
-    const email = $("email").value.trim();
-    if (!email) { alert("Please enter your email."); return; }
-
-    $("subscribeBtn").disabled = true;
-    $("subscribeBtn").textContent = "Subscribing...";
-
-    try {
-      await postJSON(SUBSCRIBE_URL, { email, source: "daily-brain" });
-      setSub({ email, ts: Date.now() });
-      renderSubUI();
-      alert("✅ Subscribed!");
-    } catch (e) {
-      alert("❌ " + e.message);
-    } finally {
-      $("subscribeBtn").disabled = false;
-      $("subscribeBtn").textContent = "Subscribe";
-    }
-  };
-
-  $("unsubscribeBtn").onclick = async () => {
-    const sub = getSub();
-    const email = $("email").value.trim() || sub?.email;
-    if (!email) { alert("Enter the email to unsubscribe."); return; }
-
-    $("unsubscribeBtn").disabled = true;
-    $("unsubscribeBtn").textContent = "Unsubscribing...";
-
-    try {
-      await postJSON(UNSUBSCRIBE_URL, { email });
-      clearSub();
-      renderSubUI();
-      alert("✅ Unsubscribed.");
-    } catch (e) {
-      alert("❌ " + e.message);
-    } finally {
-      $("unsubscribeBtn").disabled = false;
-      $("unsubscribeBtn").textContent = "Unsubscribe";
-    }
-  };
+}
+$("subBtn").onclick=()=>{
+  const e=$("subEmail").value.trim();
+  if(!e)return alert("Enter email");
+  localStorage.setItem(SUB_KEY,JSON.stringify({email:e,ts:Date.now()}));
+  renderSub();alert("Subscribed (local)");
+};
+$("unsubBtn").onclick=()=>{
+  localStorage.removeItem(SUB_KEY);
+  renderSub();alert("Unsubscribed");
+};
 
 });
 </script>
