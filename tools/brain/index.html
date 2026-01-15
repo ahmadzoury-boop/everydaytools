@@ -1,357 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Daily Brain — EverydayTools</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Brain – EverydayTools.uk</title>
 
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#0b0f14;
-  color:#e6e6e6
-}
-.brain-page{
-  padding:16px;
-  max-width:420px;
-  margin:0 auto
-}
-.brain-intro{
-  font-size:14px;
-  opacity:.8;
-  margin-bottom:14px;
-  text-align:center
-}
+  <!-- SEO -->
+  <meta name="description" content="One daily brain challenge to boost focus, logic, memory, and speed. Global leaderboard included." />
 
-/* FILTERS */
-.brain-filters{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  margin-bottom:16px
-}
-.brain-filters button{
-  padding:12px 0;
-  border-radius:14px;
-  border:none;
-  background:#1f8f3a;
-  color:#fff;
-  font-weight:600;
-  cursor:pointer
-}
-.brain-filters button.active{background:#26b44a}
-.brain-filters button.locked{opacity:.4;cursor:not-allowed}
+  <!-- OpenGraph -->
+  <meta property="og:title" content="Daily Brain – EverydayTools.uk" />
+  <meta property="og:description" content="Boost your thinking with one challenge per day. Track your streak, score, and compete globally." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://everydaytools.uk/brain" />
 
-/* STATUS */
-.brain-status{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  font-size:13px;
-  margin-bottom:14px;
-  justify-content:center
-}
-.brain-pill{
-  background:#151b23;
-  padding:6px 10px;
-  border-radius:999px
-}
+  <!-- Styles -->
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+      color: #222;
+      line-height: 1.5;
+    }
 
-/* CARD */
-.brain-card{
-  background:#10161d;
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,.4)
-}
-.brain-difficulty{font-weight:700;margin-bottom:4px}
-.brain-category{font-size:13px;opacity:.7;margin-bottom:10px}
-.brain-question{
-  font-size:16px;
-  line-height:1.6;
-  margin-bottom:14px;
-  white-space:pre-line
-}
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-/* INPUT + BUTTONS */
-input{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  background:#0b0f14;
-  color:#fff;
-  margin-bottom:10px
-}
-button{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  font-weight:600
-}
-.btn-submit{background:#26b44a;color:#fff}
-.btn-hint{background:#1f8f3a;color:#fff;margin-top:6px}
+    h1 {
+      text-align: center;
+      margin-bottom: 6px;
+      font-size: 28px;
+    }
 
-/* FEEDBACK + EXPLAIN */
-.feedback{
-  margin-top:12px;
-  font-size:14px;
-  text-align:center
-}
-.explain-box{
-  margin-top:10px;
-  background:#0b0f14;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:12px;
-  padding:12px;
-  font-size:13px;
-  line-height:1.5
-}
-.explain-title{font-weight:700;margin-bottom:6px}
+    .countdown {
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+    }
 
-/* SUBSCRIBE (UI ONLY) */
-.subscribe-card{
-  margin-top:16px;
-  background:#10161d;
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,.35)
-}
-.subscribe-title{font-weight:800;margin-bottom:6px}
-.subscribe-sub{
-  font-size:13px;
-  opacity:.8;
-  margin-bottom:12px;
-  line-height:1.4
-}
-.subscribe-row{display:grid;gap:10px}
-.btn-secondary{background:#151b23;color:#e6e6e6}
-.small-note{
-  margin-top:10px;
-  font-size:12px;
-  opacity:.75;
-  text-align:center
-}
-</style>
+    /* Difficulty Tabs */
+    #difficultyTabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    #difficultyTabs button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #ececec;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 15px;
+    }
+
+    #difficultyTabs button:hover {
+      background: #ddd;
+    }
+
+    /* Puzzle Card */
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 30px;
+    }
+
+    .category {
+      font-size: 13px;
+      color: #555;
+      text-transform: uppercase;
+    }
+
+    .level {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .prompt {
+      margin-top: 12px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    input#answerInput {
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button#submitAnswerBtn {
+      width: 100%;
+      background: #3a86ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    button#submitAnswerBtn:hover {
+      background: #256fe6;
+    }
+
+    #hintBtn {
+      margin-top: 10px;
+      background: transparent;
+      border: none;
+      color: #3a86ff;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: underline;
+    }
+
+    #hintText {
+      margin-top: 8px;
+      font-style: italic;
+      color: #555;
+      min-height: 20px;
+    }
+
+    /* Leaderboards */
+    h2 {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      font-size: 22px;
+    }
+
+    .lb-list {
+      padding-left: 20px;
+      margin-top: 6px;
+    }
+
+    .lb-list li {
+      margin-bottom: 6px;
+      font-size: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .lb-list li em {
+      font-size: 12px;
+      color: #666;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table th, table td {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+  </style>
 </head>
 
 <body>
-<div class="brain-page">
+  <div class="container">
 
-  <div class="brain-intro">
-    Every day resets at midnight (UTC). Complete Easy + Medium to unlock Hard and build streaks.
-  </div>
-
-  <div class="brain-filters">
-    <button class="active" data-filter="easy">Easy</button>
-    <button data-filter="medium">Medium</button>
-    <button data-filter="hard" id="hardBtn">Hard 🔒</button>
-    <button data-filter="all">All</button>
-  </div>
-
-  <div class="brain-status">
-    <div class="brain-pill">⏳ <span id="timer">--:--:--</span></div>
-    <div class="brain-pill">🔥 Streak <span id="streak">0</span></div>
-    <div class="brain-pill">⭐ Score <span id="score">0</span></div>
-  </div>
-
-  <div class="brain-card">
-    <div class="brain-difficulty" id="difficulty"></div>
-    <div class="brain-category" id="category"></div>
-    <div class="brain-question" id="question"></div>
-
-    <input id="answer" placeholder="Your answer" />
-    <button class="btn-submit" id="submitBtn">Submit</button>
-    <button class="btn-hint" id="hintBtn">💡 Show hint</button>
-
-    <div class="feedback" id="feedback"></div>
-
-    <div class="explain-box" id="explainBox" style="display:none">
-      <div class="explain-title">Why?</div>
-      <div id="explainText"></div>
-    </div>
-  </div>
-
-  <!-- SUBSCRIPTION -->
-  <div class="subscribe-card">
-    <div class="subscribe-title">Get the Daily Brain by email 🧠</div>
-    <div class="subscribe-sub">
-      One short brain challenge per day. No spam. Unsubscribe anytime.
+    <h1>🧠 Daily Brain</h1>
+    <div class="countdown">
+      Resets in <span id="countdownText">00:00:00</span> (UTC)
     </div>
 
-    <div class="subscribe-row">
-      <input id="subEmail" type="email" placeholder="Email address" />
-      <button class="btn-submit" id="subBtn">Subscribe</button>
-      <button class="btn-secondary" id="unsubBtn">Unsubscribe</button>
+    <!-- Difficulty Tabs -->
+    <div id="difficultyTabs">
+      <button data-level="easy">Easy</button>
+      <button data-level="medium">Medium</button>
+      <button data-level="hard">Hard</button>
     </div>
 
-    <div class="small-note">
-      <span id="subStatus">Not subscribed</span>
+    <!-- Puzzle Card -->
+    <div class="card">
+      <div class="category" id="questionCategory">Category</div>
+      <div class="level" id="questionLevel">EASY</div>
+      <div class="prompt" id="questionText">Loading...</div>
+
+      <input id="answerInput" placeholder="Your answer..." />
+
+      <button id="submitAnswerBtn">Submit</button>
+
+      <button id="hintBtn">💡 Show hint</button>
+      <div id="hintText"></div>
     </div>
+
+    <!-- Today's Result -->
+    <h2>Today's Result</h2>
+    <p>Score: <strong id="todayScoreText">0/30</strong></p>
+    <p>Streak 🔥 <strong id="streakValue">0</strong></p>
+    <p>Best <strong id="bestStreakValue">0</strong></p>
+
+    <!-- Local Leaderboard -->
+    <h2>🏆 Your Best Days</h2>
+    <div id="localLeaderboard">Loading...</div>
+
+    <!-- Global Leaderboard -->
+    <h2>🌍 Global Leaderboard</h2>
+    <div id="globalLeaderboard">Loading...</div>
+
   </div>
 
-</div>
+  <!-- JS -->
+  <script src="brain.js"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded",()=>{
-
-const DATA_URL="/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
-const STORE_KEY="et_brain_state_v1";
-const SUB_KEY="et_brain_sub_ui_v1";
-const POINTS={easy:10,medium:20,hard:30};
-
-let dailySet,currentFilter="easy",currentQuestion;
-let state=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
-
-const today=new Date().toISOString().slice(0,10);
-state[today]??={solved:{},attempts:{},score:0,finished:{}};
-
-const $=id=>document.getElementById(id);
-
-/* TIMER */
-function tick(){
-  const n=new Date();
-  const t=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1)-Date.now();
-  $("timer").textContent=[t/36e5,(t/6e4)%60,(t/1e3)%60]
-    .map(v=>String(Math.floor(v)).padStart(2,"0")).join(":");
-}
-setInterval(tick,1000);tick();
-
-/* LOAD DATA */
-fetch(DATA_URL).then(r=>r.json()).then(j=>{
-  dailySet=j.sets.find(s=>s.date===today);
-  pick();
-  updateUI();
-  updateStreak();
-  renderSub();
-}).catch(()=>{$("question").textContent="Failed to load today's challenge."});
-
-/* QUESTION */
-function pick(){
-  const lvl=currentFilter==="all"?"easy":currentFilter;
-  currentQuestion={level:lvl,theme:dailySet.theme,...dailySet[lvl]};
-  render();
-  renderState();
-}
-function render(){
-  $("difficulty").textContent=currentQuestion.level.toUpperCase();
-  $("category").textContent=currentQuestion.theme;
-  let q="";
-  if(currentQuestion.type==="odd")
-    q="Which one does not belong?\n\n"+currentQuestion.options.join(" • ");
-  else if(currentQuestion.type==="clues")
-    q=currentQuestion.clues.join(" • ");
-  else q=currentQuestion.prompt;
-  $("question").textContent=q;
-}
-function norm(s){
-  return String(s||"").trim().toUpperCase().replace(/\s+/g," ").replace(/[£$€]/g,"");
-}
-function renderState(){
-  const l=currentQuestion.level;
-  const used=state[today].attempts[l]||0;
-  const max=currentQuestion.maxAttempts||1;
-  const solved=state[today].solved[l];
-  const finished=state[today].finished[l]||used>=max;
-
-  $("answer").disabled=solved||finished;
-  $("submitBtn").disabled=solved||finished;
-
-  if(solved){
-    $("feedback").textContent=`✅ Correct! +${POINTS[l]} pts`;
-    showExplain();
-  }else if(finished){
-    $("feedback").textContent=`❌ Wrong (${used}/${max}) — Answer: ${currentQuestion.answer}`;
-    showExplain();
-  }else if(used){
-    $("feedback").textContent=`❌ Wrong (${used}/${max}) — Try again`;
-    hideExplain();
-  }else{
-    $("feedback").textContent="";
-    hideExplain();
-  }
-}
-function showExplain(){
-  $("explainText").textContent=currentQuestion.explain||"";
-  $("explainBox").style.display="block";
-}
-function hideExplain(){
-  $("explainBox").style.display="none";
-}
-
-/* FILTERS */
-document.querySelectorAll(".brain-filters button").forEach(b=>{
-  b.onclick=()=>{
-    if(b.classList.contains("locked"))return;
-    document.querySelectorAll(".brain-filters button").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    currentFilter=b.dataset.filter;
-    pick();
-  };
-});
-
-/* SUBMIT */
-$("submitBtn").onclick=()=>{
-  const l=currentQuestion.level;
-  const max=currentQuestion.maxAttempts||1;
-  state[today].attempts[l]=(state[today].attempts[l]||0)+1;
-  const ok=currentQuestion.accepted.map(norm).includes(norm($("answer").value));
-  if(ok){
-    state[today].solved[l]=true;
-    state[today].score+=POINTS[l];
-    state[today].finished[l]=true;
-  }else if(state[today].attempts[l]>=max){
-    state[today].finished[l]=true;
-  }
-  localStorage.setItem(STORE_KEY,JSON.stringify(state));
-  updateUI();updateStreak();renderState();
-};
-
-/* HINT */
-$("hintBtn").onclick=()=>alert(currentQuestion.hint||"No hint");
-
-/* UI */
-function updateUI(){
-  $("score").textContent=state[today].score;
-  const unlock=state[today].solved.easy&&state[today].solved.medium;
-  $("hardBtn").classList.toggle("locked",!unlock);
-  $("hardBtn").textContent=unlock?"Hard":"Hard 🔒";
-}
-function updateStreak(){
-  let s=0;
-  Object.keys(state).sort().reverse().every(d=>{
-    if(state[d].solved.easy&&state[d].solved.medium){s++;return true}
-    return false;
-  });
-  $("streak").textContent=s;
-}
-
-/* SUBSCRIBE UI ONLY */
-function renderSub(){
-  const d=JSON.parse(localStorage.getItem(SUB_KEY)||"null");
-  if(d?.email){
-    $("subStatus").textContent="✅ Subscribed as "+d.email;
-    $("subEmail").value=d.email;
-  }else{
-    $("subStatus").textContent="Not subscribed";
-    $("subEmail").value="";
-  }
-}
-$("subBtn").onclick=()=>{
-  const e=$("subEmail").value.trim();
-  if(!e)return alert("Enter email");
-  localStorage.setItem(SUB_KEY,JSON.stringify({email:e,ts:Date.now()}));
-  renderSub();alert("Subscribed (local)");
-};
-$("unsubBtn").onclick=()=>{
-  localStorage.removeItem(SUB_KEY);
-  renderSub();alert("Unsubscribed");
-};
-
-});
-</script>
 </body>
 </html>
