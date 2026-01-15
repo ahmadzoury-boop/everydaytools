@@ -118,10 +118,6 @@ button {
   color: #fff;
   margin-top: 6px;
 }
-
-@media (max-width: 480px) {
-  body { overflow-x: hidden; }
-}
 </style>
 </head>
 
@@ -132,7 +128,6 @@ button {
     Every day resets at midnight (UTC). Complete Easy + Medium to build streaks.
   </div>
 
-  <!-- FILTERS -->
   <div class="brain-filters">
     <button class="active" data-filter="all">All</button>
     <button data-filter="easy">Easy</button>
@@ -140,14 +135,12 @@ button {
     <button data-filter="hard">Hard</button>
   </div>
 
-  <!-- STATUS -->
   <div class="brain-status">
     <div class="brain-pill">Resets in <span id="timer">--:--:--</span></div>
     <div class="brain-pill">🔥 Streak <span id="streak">0</span></div>
     <div class="brain-pill">Best <span id="best">0</span></div>
   </div>
 
-  <!-- CARD -->
   <div class="brain-card">
     <div class="brain-difficulty" id="difficulty"></div>
     <div class="brain-category" id="category"></div>
@@ -163,25 +156,17 @@ button {
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================
-   CONFIG
-========================= */
-const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
+const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
 const STORE_KEY = "et_brain_v1";
 
-/* =========================
-   STATE
-========================= */
-let data = [];
+let dailySet = null;
 let currentFilter = "all";
 let currentQuestion = null;
 let solved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 
-/* =========================
-   HELPERS
-========================= */
 const todayKey = () => new Date().toISOString().slice(0,10);
 
+/* TIMER */
 function updateTimer() {
   const now = new Date();
   const next = Date.UTC(
@@ -189,111 +174,92 @@ function updateTimer() {
     now.getUTCMonth(),
     now.getUTCDate() + 1
   );
-  const diff = next - Date.now();
-  const h = String(Math.floor(diff / 3600000)).padStart(2,"0");
-  const m = String(Math.floor(diff % 3600000 / 60000)).padStart(2,"0");
-  const s = String(Math.floor(diff % 60000 / 1000)).padStart(2,"0");
+  const d = next - Date.now();
+  const h = String(Math.floor(d / 3600000)).padStart(2,"0");
+  const m = String(Math.floor(d % 3600000 / 60000)).padStart(2,"0");
+  const s = String(Math.floor(d % 60000 / 1000)).padStart(2,"0");
   document.getElementById("timer").textContent = `${h}:${m}:${s}`;
 }
 setInterval(updateTimer, 1000);
 updateTimer();
 
-/* =========================
-   LOAD DATA
-========================= */
+/* LOAD DATA */
 fetch(DATA_URL)
   .then(r => r.json())
   .then(json => {
-    data = json;
+    dailySet = json.sets.find(s => s.date === todayKey());
     pickQuestion();
-  })
-  .catch(() => {
-    document.getElementById("question").textContent =
-      "Failed to load today's challenge.";
   });
 
-/* =========================
-   PICK QUESTION
-========================= */
+/* PICK QUESTION */
 function pickQuestion() {
-  const today = todayKey();
-  const todays = data.filter(q => q.date === today);
-
-  let pool = todays;
-  if (currentFilter !== "all") {
-    pool = todays.filter(q => q.level === currentFilter);
-  }
-
-  currentQuestion = pool.length ? pool[0] : null;
-  render();
-}
-
-/* =========================
-   RENDER
-========================= */
-function render() {
-  if (!currentQuestion) {
-    document.getElementById("difficulty").textContent = "";
-    document.getElementById("category").textContent = "";
+  if (!dailySet) {
     document.getElementById("question").textContent =
-      "No challenge available.";
+      "No challenge available today.";
     return;
   }
 
+  if (currentFilter === "all") {
+    currentQuestion = {
+      level: "easy",
+      theme: dailySet.theme,
+      ...dailySet.easy
+    };
+  } else {
+    currentQuestion = {
+      level: currentFilter,
+      theme: dailySet.theme,
+      ...dailySet[currentFilter]
+    };
+  }
+
+  render();
+}
+
+/* RENDER */
+function render() {
   document.getElementById("difficulty").textContent =
     currentQuestion.level.toUpperCase();
 
   document.getElementById("category").textContent =
-    currentQuestion.category || "";
+    currentQuestion.theme;
 
   document.getElementById("question").textContent =
-    currentQuestion.question || "";
+    currentQuestion.prompt ||
+    currentQuestion.clues?.join(" • ") ||
+    "";
 }
 
-/* =========================
-   FILTERS
-========================= */
+/* FILTERS */
 document.querySelectorAll(".brain-filters button").forEach(btn => {
   btn.addEventListener("click", () => {
-    document
-      .querySelectorAll(".brain-filters button")
+    document.querySelectorAll(".brain-filters button")
       .forEach(b => b.classList.remove("active"));
-
     btn.classList.add("active");
     currentFilter = btn.dataset.filter;
     pickQuestion();
   });
 });
 
-/* =========================
-   SUBMIT
-========================= */
-document.getElementById("submitBtn").addEventListener("click", () => {
+/* SUBMIT */
+document.getElementById("submitBtn").onclick = () => {
   if (!currentQuestion) return;
 
-  const today = todayKey();
-  solved[today] ??= {};
-  solved[today][currentQuestion.level] = true;
+  const d = todayKey();
+  solved[d] ??= {};
+  solved[d][currentQuestion.level] = true;
 
   localStorage.setItem(STORE_KEY, JSON.stringify(solved));
   updateStreak();
-  alert("Answer saved ✔");
-});
+  alert("Saved ✔");
+};
 
-/* =========================
-   HINT
-========================= */
-document.getElementById("hintBtn").addEventListener("click", () => {
-  if (!currentQuestion?.hint) {
-    alert("No hint for this question.");
-    return;
-  }
-  alert("Hint: " + currentQuestion.hint);
-});
+/* HINT */
+document.getElementById("hintBtn").onclick = () => {
+  alert(currentQuestion.hint || "No hint available.");
+};
 
-/* =========================
-   STREAK LOGIC
-========================= */
+/* STREAK */
 function updateStreak() {
   let streak = 0, best = 0;
   const days = Object.keys(solved).sort().reverse();
