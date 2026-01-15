@@ -1,17 +1,16 @@
-import { ok, bad, readJson, options, isoNow, normEmail, isEmail } from "./_shared.js";
-
-export function onRequestOptions() { return options(); }
-
 export async function onRequest({ request, env }) {
-  const { email } = await readJson(request);
-  const e = normEmail(email);
-  if (!isEmail(e)) return bad("Invalid email");
+  const { email } = await request.json();
+  if (!email) return new Response("Invalid", { status: 400 });
 
   await env.DB.prepare(
     `INSERT INTO subscribers (email, status, created_at)
      VALUES (?, 'active', ?)
-     ON CONFLICT(email) DO UPDATE SET status='active', unsubscribed_at=NULL`
-  ).bind(e, isoNow()).run();
+     ON CONFLICT(email) DO UPDATE SET status='active'`
+  )
+    .bind(email.toLowerCase(), new Date().toISOString())
+    .run();
 
-  return ok({ message: "Subscribed", email: e });
+  return new Response(JSON.stringify({ ok: true }), {
+    headers: { "Content-Type": "application/json" }
+  });
 }

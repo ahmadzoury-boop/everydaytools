@@ -1,15 +1,15 @@
-import { ok, bad, readJson, options, isoNow, normEmail, isEmail } from "./_shared.js";
-
-export function onRequestOptions() { return options(); }
-
 export async function onRequest({ request, env }) {
-  const { email } = await readJson(request);
-  const e = normEmail(email);
-  if (!isEmail(e)) return bad("Invalid email");
+  const { email } = await request.json();
 
   await env.DB.prepare(
-    `UPDATE subscribers SET status='unsubscribed', unsubscribed_at=? WHERE email=?`
-  ).bind(isoNow(), e).run();
+    `UPDATE subscribers
+     SET status='unsubscribed', unsubscribed_at=?
+     WHERE email=?`
+  )
+    .bind(new Date().toISOString(), email.toLowerCase())
+    .run();
 
-  return ok({ message: "Unsubscribed", email: e });
+  return new Response(JSON.stringify({ ok: true }), {
+    headers: { "Content-Type": "application/json" }
+  });
 }
