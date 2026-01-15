@@ -27,6 +27,7 @@ body {
   margin-bottom: 14px;
 }
 
+/* FILTERS */
 .brain-filters {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -41,12 +42,14 @@ body {
   background: #1f8f3a;
   color: #fff;
   font-weight: 600;
+  cursor: pointer;
 }
 
 .brain-filters button.active {
   background: #26b44a;
 }
 
+/* STATUS */
 .brain-status {
   display: flex;
   flex-wrap: wrap;
@@ -61,6 +64,7 @@ body {
   border-radius: 999px;
 }
 
+/* CARD */
 .brain-card {
   background: #10161d;
   border-radius: 16px;
@@ -85,6 +89,7 @@ body {
   min-height: 48px;
 }
 
+/* INPUT + BUTTONS */
 input {
   width: 100%;
   padding: 12px;
@@ -103,8 +108,16 @@ button {
   font-weight: 600;
 }
 
-.btn-submit { background: #26b44a; color: #fff; }
-.btn-hint { background: #1f8f3a; color: #fff; margin-top: 6px; }
+.btn-submit {
+  background: #26b44a;
+  color: #fff;
+}
+
+.btn-hint {
+  background: #1f8f3a;
+  color: #fff;
+  margin-top: 6px;
+}
 
 @media (max-width: 480px) {
   body { overflow-x: hidden; }
@@ -148,6 +161,8 @@ button {
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", () => {
+
 /* =========================
    CONFIG
 ========================= */
@@ -167,7 +182,7 @@ let solved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 ========================= */
 const todayKey = () => new Date().toISOString().slice(0,10);
 
-function nextResetTimer() {
+function updateTimer() {
   const now = new Date();
   const next = Date.UTC(
     now.getUTCFullYear(),
@@ -180,8 +195,8 @@ function nextResetTimer() {
   const s = String(Math.floor(diff % 60000 / 1000)).padStart(2,"0");
   document.getElementById("timer").textContent = `${h}:${m}:${s}`;
 }
-setInterval(nextResetTimer, 1000);
-nextResetTimer();
+setInterval(updateTimer, 1000);
+updateTimer();
 
 /* =========================
    LOAD DATA
@@ -191,6 +206,10 @@ fetch(DATA_URL)
   .then(json => {
     data = json;
     pickQuestion();
+  })
+  .catch(() => {
+    document.getElementById("question").textContent =
+      "Failed to load today's challenge.";
   });
 
 /* =========================
@@ -205,7 +224,7 @@ function pickQuestion() {
     pool = todays.filter(q => q.level === currentFilter);
   }
 
-  currentQuestion = pool[0] || null;
+  currentQuestion = pool.length ? pool[0] : null;
   render();
 }
 
@@ -214,7 +233,10 @@ function pickQuestion() {
 ========================= */
 function render() {
   if (!currentQuestion) {
-    document.getElementById("question").textContent = "No challenge today.";
+    document.getElementById("difficulty").textContent = "";
+    document.getElementById("category").textContent = "";
+    document.getElementById("question").textContent =
+      "No challenge available.";
     return;
   }
 
@@ -222,39 +244,55 @@ function render() {
     currentQuestion.level.toUpperCase();
 
   document.getElementById("category").textContent =
-    currentQuestion.category;
+    currentQuestion.category || "";
 
   document.getElementById("question").textContent =
-    currentQuestion.question;
+    currentQuestion.question || "";
 }
 
 /* =========================
    FILTERS
 ========================= */
 document.querySelectorAll(".brain-filters button").forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll(".brain-filters button")
+  btn.addEventListener("click", () => {
+    document
+      .querySelectorAll(".brain-filters button")
       .forEach(b => b.classList.remove("active"));
+
     btn.classList.add("active");
     currentFilter = btn.dataset.filter;
     pickQuestion();
-  };
+  });
 });
 
 /* =========================
    SUBMIT
 ========================= */
-document.getElementById("submitBtn").onclick = () => {
+document.getElementById("submitBtn").addEventListener("click", () => {
   if (!currentQuestion) return;
 
-  solved[todayKey()] ??= {};
-  solved[todayKey()][currentQuestion.level] = true;
+  const today = todayKey();
+  solved[today] ??= {};
+  solved[today][currentQuestion.level] = true;
+
   localStorage.setItem(STORE_KEY, JSON.stringify(solved));
-  alert("Saved ✔");
-};
+  updateStreak();
+  alert("Answer saved ✔");
+});
 
 /* =========================
-   STREAK LOGIC (Easy + Medium)
+   HINT
+========================= */
+document.getElementById("hintBtn").addEventListener("click", () => {
+  if (!currentQuestion?.hint) {
+    alert("No hint for this question.");
+    return;
+  }
+  alert("Hint: " + currentQuestion.hint);
+});
+
+/* =========================
+   STREAK LOGIC
 ========================= */
 function updateStreak() {
   let streak = 0, best = 0;
@@ -271,6 +309,8 @@ function updateStreak() {
   document.getElementById("best").textContent = best;
 }
 updateStreak();
+
+});
 </script>
 </body>
 </html>
