@@ -1,87 +1,37 @@
-const headers = {
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+import {
+  ok,
+  bad,
+  readJson,
+  options,
+  isoNow,
+  todayUTC
+} from "./_shared.js";
 
 export function onRequestOptions() {
-  return new Response(null, { status: 204, headers });
+  return options();
 }
 
 export async function onRequest({ request, env }) {
-  try {
-    const url = new URL(request.url);
+  const body = await readJson(request);
 
-    // =========================
-    // POST → submit brain score
-    // =========================
-    if (request.method === "POST") {
-      let body;
-      try {
-        body = await request.json();
-      } catch {
-        return new Response(
-          JSON.stringify({ ok: false, error: "Invalid JSON" }),
-          { status: 400, headers }
-        );
-      }
+  const day = String(body.day || todayUTC()).slice(0, 10);
+  const name = String(body.name || "Player").trim().slice(0, 30);
+  const score = Number(body.score);
 
-      let { name, score } = body;
-
-      if (typeof score !== "number" || score < 0) {
-        return new Response(
-          JSON.stringify({ ok: false, error: "Invalid score" }),
-          { status: 400, headers }
-        );
-      }
-
-      name = String(name || "Anonymous").trim().slice(0, 24);
-
-      await env.DB.prepare(
-        `
-        INSERT INTO brain_scores (name, score)
-        VALUES (?, ?)
-        `
-      )
-        .bind(name, score)
-        .run();
-
-      return new Response(
-        JSON.stringify({ ok: true, message: "Score saved" }),
-        { headers }
-      );
-    }
-
-    // =========================
-    // GET → global leaderboard
-    // =========================
-    const limitRaw = Number(url.searchParams.get("limit")) || 20;
-    const limit = Math.min(Math.max(limitRaw, 1), 50);
-
-    const result = await env.DB.prepare(
-      `
-      SELECT name, score, created_at
-      FROM brain_scores
-      ORDER BY score DESC, created_at ASC
-      LIMIT ${limit}
-      `
-    ).all();
-
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        leaderboard: result.results,
-      }),
-      { headers }
-    );
-  } catch (err) {
-    return new Response(
-      JSON.stringify({
-        ok: false,
-        error: err.message,
-      }),
-      { status: 500, headers }
-    );
+  if (!Number.isFinite(score) || score < 0 || score > 60) {
+    return bad("Invalid score");
   }
+
+  const bestRun =
+    body.bestRun ? JSON.stringify(body.bestRun).slice(0, 500) : null;
+
+  await env.DB.prepare(
+    `INSERT INTO brain_scores
+     (day, name, score, best_run, created_at)
+     VALUES (?, ?, ?, ?, ?)`
+  )
+    .bind(day, name, score, bestRun, isoNow())
+    .run();
+
+  return ok({ message: "Score saved", day, score });
 }
