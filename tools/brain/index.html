@@ -46,14 +46,8 @@ body {
   cursor: pointer;
 }
 
-.brain-filters button.active {
-  background: #26b44a;
-}
-
-.brain-filters button.locked {
-  opacity: .4;
-  cursor: not-allowed;
-}
+.brain-filters button.active { background: #26b44a; }
+.brain-filters button.locked { opacity: .4; cursor: not-allowed; }
 
 /* STATUS */
 .brain-status {
@@ -79,16 +73,8 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
-.brain-difficulty {
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.brain-category {
-  font-size: 13px;
-  opacity: .7;
-  margin-bottom: 10px;
-}
+.brain-difficulty { font-weight: 700; margin-bottom: 4px; }
+.brain-category { font-size: 13px; opacity: .7; margin-bottom: 10px; }
 
 .brain-question {
   font-size: 16px;
@@ -120,11 +106,28 @@ button {
 .btn-submit { background: #26b44a; color: #fff; }
 .btn-hint { background: #1f8f3a; color: #fff; margin-top: 6px; }
 
-/* RESULT */
-.result {
+/* FEEDBACK + EXPLAIN */
+.feedback {
   margin-top: 12px;
   font-size: 14px;
   text-align: center;
+}
+
+.explain-box {
+  margin-top: 10px;
+  background: #0b0f14;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: .95;
+}
+
+.explain-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+  opacity: .95;
 }
 </style>
 </head>
@@ -158,7 +161,12 @@ button {
     <button class="btn-submit" id="submitBtn">Submit</button>
     <button class="btn-hint" id="hintBtn">💡 Show hint</button>
 
-    <div class="result" id="result"></div>
+    <div class="feedback" id="feedback"></div>
+
+    <div class="explain-box" id="explainBox" style="display:none;">
+      <div class="explain-title">Why?</div>
+      <div id="explainText"></div>
+    </div>
   </div>
 
 </div>
@@ -167,7 +175,7 @@ button {
 document.addEventListener("DOMContentLoaded", () => {
 
 const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
-const STORE_KEY = "et_brain_v2";
+const STORE_KEY = "et_brain_v3";
 
 const POINTS = { easy: 10, medium: 20, hard: 30 };
 
@@ -175,12 +183,14 @@ let dailySet, currentFilter = "easy", currentQuestion;
 let state = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 
 const today = new Date().toISOString().slice(0,10);
-state[today] ??= { solved:{}, attempts:{}, score:0 };
+state[today] ??= { solved:{}, attempts:{}, score:0, finished:{} };
+
+function el(id){ return document.getElementById(id); }
 
 function updateTimer(){
   const n=new Date();
   const t=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1)-Date.now();
-  document.getElementById("timer").textContent =
+  el("timer").textContent =
     [t/36e5,(t/6e4)%60,(t/1e3)%60].map(v=>String(Math.floor(v)).padStart(2,"0")).join(":");
 }
 setInterval(updateTimer,1000); updateTimer();
@@ -189,17 +199,25 @@ fetch(DATA_URL).then(r=>r.json()).then(j=>{
   dailySet = j.sets.find(s=>s.date===today);
   pickQuestion();
   updateUI();
+  updateStreak();
+}).catch(()=> {
+  el("question").textContent = "Failed to load today's challenge.";
 });
 
 function pickQuestion(){
-  const lvl = currentFilter==="all"?"easy":currentFilter;
+  if(!dailySet){
+    el("question").textContent = "No challenge available today.";
+    return;
+  }
+  const lvl = currentFilter==="all" ? "easy" : currentFilter;
   currentQuestion = { level:lvl, theme:dailySet.theme, ...dailySet[lvl] };
   render();
+  renderProgressState();
 }
 
 function render(){
-  document.getElementById("difficulty").textContent = currentQuestion.level.toUpperCase();
-  document.getElementById("category").textContent = currentQuestion.theme;
+  el("difficulty").textContent = currentQuestion.level.toUpperCase();
+  el("category").textContent = currentQuestion.theme;
 
   let q="";
   if(currentQuestion.type==="odd")
@@ -207,11 +225,71 @@ function render(){
   else if(currentQuestion.type==="clues")
     q=currentQuestion.clues.join(" • ");
   else
-    q=currentQuestion.prompt;
+    q=currentQuestion.prompt || "";
 
-  document.getElementById("question").textContent=q;
+  el("question").textContent = q;
 }
 
+function norm(s){
+  return String(s || "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .replace(/[£$€]/g, ""); // make money answers more forgiving
+}
+
+function acceptedSet(q){
+  const arr = Array.isArray(q.accepted) ? q.accepted : [];
+  return new Set(arr.map(norm));
+}
+
+function isLockedOut(level){
+  const used = state[today].attempts[level] || 0;
+  const maxA = currentQuestion.maxAttempts ?? 1;
+  // If already finished (either solved or max attempts reached), lock input
+  return !!state[today].finished[level] || used >= maxA;
+}
+
+function showExplain(text){
+  el("explainText").textContent = text || "";
+  el("explainBox").style.display = text ? "block" : "none";
+}
+
+function hideExplain(){
+  el("explainBox").style.display = "none";
+  el("explainText").textContent = "";
+}
+
+function renderProgressState(){
+  const lvl = currentQuestion.level;
+  const solvedLvl = !!state[today].solved[lvl];
+  const used = state[today].attempts[lvl] || 0;
+  const maxA = currentQuestion.maxAttempts ?? 1;
+  const finished = !!state[today].finished[lvl] || used >= maxA;
+
+  // Input & submit availability
+  const lock = solvedLvl || finished;
+  el("answer").disabled = lock;
+  el("submitBtn").disabled = lock;
+  el("submitBtn").style.opacity = lock ? 0.5 : 1;
+
+  // Feedback
+  if (solvedLvl) {
+    el("feedback").textContent = `✅ Correct! +${POINTS[lvl]} pts`;
+    showExplain(currentQuestion.explain || "");
+  } else if (finished) {
+    el("feedback").textContent = `❌ Wrong (${used}/${maxA}) — Answer: ${currentQuestion.answer}`;
+    showExplain(currentQuestion.explain || "");
+  } else if (used > 0) {
+    el("feedback").textContent = `❌ Wrong (${used}/${maxA}) — Try again`;
+    hideExplain();
+  } else {
+    el("feedback").textContent = "";
+    hideExplain();
+  }
+}
+
+/* FILTERS */
 document.querySelectorAll(".brain-filters button").forEach(b=>{
   b.onclick=()=>{
     if(b.classList.contains("locked")) return;
@@ -222,41 +300,73 @@ document.querySelectorAll(".brain-filters button").forEach(b=>{
   };
 });
 
-document.getElementById("submitBtn").onclick=()=>{
-  const a=document.getElementById("answer").value.trim().toUpperCase();
-  if(!a) return;
+/* SUBMIT */
+el("submitBtn").onclick=()=>{
+  if(!currentQuestion) return;
 
   const lvl=currentQuestion.level;
+
+  if (isLockedOut(lvl)) {
+    renderProgressState();
+    return;
+  }
+
+  const raw = el("answer").value;
+  const user = norm(raw);
+  if(!user) return;
+
   state[today].attempts[lvl]=(state[today].attempts[lvl]||0)+1;
 
-  if(currentQuestion.accepted.map(x=>x.toUpperCase()).includes(a)){
+  const ok = acceptedSet(currentQuestion).has(user);
+
+  if(ok){
     if(!state[today].solved[lvl]){
       state[today].solved[lvl]=true;
-      state[today].score+=POINTS[lvl];
+      state[today].score += POINTS[lvl];
     }
-    document.getElementById("result").textContent=`✅ Correct! +${POINTS[lvl]} pts`;
+    state[today].finished[lvl] = true;
+    el("answer").value = "";
   } else {
-    document.getElementById("result").textContent=`❌ Wrong (${state[today].attempts[lvl]}/${currentQuestion.maxAttempts})`;
-    if(state[today].attempts[lvl]>=currentQuestion.maxAttempts){
-      document.getElementById("result").textContent+=
-        ` — Answer: ${currentQuestion.answer}`;
+    const used = state[today].attempts[lvl];
+    const maxA = currentQuestion.maxAttempts ?? 1;
+    if (used >= maxA) {
+      state[today].finished[lvl] = true;
     }
   }
 
   save();
   updateUI();
+  updateStreak();
+  renderProgressState();
 };
 
-document.getElementById("hintBtn").onclick=()=>{
-  alert(currentQuestion.hint||"No hint.");
+/* HINT */
+el("hintBtn").onclick=()=>{
+  alert(currentQuestion?.hint || "No hint.");
 };
 
 function updateUI(){
-  document.getElementById("score").textContent=state[today].score;
-  const hardUnlocked = state[today].solved.easy && state[today].solved.medium;
-  const hb=document.getElementById("hardBtn");
+  el("score").textContent=state[today].score;
+
+  // Lock Hard until easy+medium solved
+  const hardUnlocked = !!state[today].solved.easy && !!state[today].solved.medium;
+  const hb=el("hardBtn");
   hb.classList.toggle("locked",!hardUnlocked);
-  hb.textContent=hardUnlocked?"Hard":"Hard 🔒";
+  hb.textContent = hardUnlocked ? "Hard" : "Hard 🔒";
+}
+
+/* STREAK: counts consecutive days where easy+medium solved */
+function updateStreak() {
+  let streak = 0, best = 0;
+  const days = Object.keys(state).sort().reverse();
+
+  for (const d of days) {
+    if (state[d]?.solved?.easy && state[d]?.solved?.medium) {
+      streak++;
+      best = Math.max(best, streak);
+    } else break;
+  }
+  el("streak").textContent = streak;
 }
 
 function save(){
