@@ -135,3 +135,125 @@
     margin-right:auto;
   }
 }
+
+/* ===============================
+   Brain injected levels — mobile fix
+   Matches Countdown Timer layout
+================================ */
+
+/* Level card */
+.level{
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+  backdrop-filter: blur(6px);
+}
+
+/* Level title */
+.level h2{
+  font-size:18px;
+  margin-bottom:4px;
+}
+
+/* Question container */
+.question-box{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* Question text */
+.question-text{
+  font-size:16px;
+  line-height:1.4;
+}
+
+/* Inputs */
+.question-box input{
+  min-height:44px;
+  font-size:16px;
+  border-radius:12px;
+}
+
+/* Primary submit button */
+.primary-btn{
+  min-height:46px;
+  font-size:16px;
+  border-radius:14px;
+  width:100%;
+}
+
+/* Hint button */
+.hint-btn{
+  margin-top:8px;
+  min-height:40px;
+  font-size:15px;
+  border-radius:12px;
+}
+
+/* Hint text box */
+.hint{
+  margin-top:8px;
+  padding:10px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Status badges row */
+#status{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+#status > .badge{
+  white-space: nowrap;
+}
+
+/* Result card */
+#result{
+  margin-top:18px;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.18);
+}
+
+/* Tables (local + global leaderboard) */
+#result table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+#result td{
+  padding:6px 4px;
+  font-size:14px;
+}
+
+/* Prevent weird overflow on small phones */
+.brain-page,
+.brain-card,
+.level{
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Mobile tightening */
+@media (max-width:768px){
+
+  .level{
+    padding:12px;
+  }
+
+  .question-text{
+    font-size:15px;
+  }
+
+  #result{
+    padding:12px;
+  }
+}
