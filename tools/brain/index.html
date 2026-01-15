@@ -25,6 +25,7 @@ body {
   font-size: 14px;
   opacity: .8;
   margin-bottom: 14px;
+  text-align: center;
 }
 
 /* FILTERS */
@@ -49,6 +50,11 @@ body {
   background: #26b44a;
 }
 
+.brain-filters button.locked {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
 /* STATUS */
 .brain-status {
   display: flex;
@@ -56,6 +62,7 @@ body {
   gap: 8px;
   font-size: 13px;
   margin-bottom: 14px;
+  justify-content: center;
 }
 
 .brain-pill {
@@ -69,6 +76,7 @@ body {
   background: #10161d;
   border-radius: 16px;
   padding: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
 .brain-difficulty {
@@ -84,8 +92,9 @@ body {
 
 .brain-question {
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   margin-bottom: 14px;
+  white-space: pre-line;
   min-height: 48px;
 }
 
@@ -108,15 +117,14 @@ button {
   font-weight: 600;
 }
 
-.btn-submit {
-  background: #26b44a;
-  color: #fff;
-}
+.btn-submit { background: #26b44a; color: #fff; }
+.btn-hint { background: #1f8f3a; color: #fff; margin-top: 6px; }
 
-.btn-hint {
-  background: #1f8f3a;
-  color: #fff;
-  margin-top: 6px;
+/* RESULT */
+.result {
+  margin-top: 12px;
+  font-size: 14px;
+  text-align: center;
 }
 </style>
 </head>
@@ -125,20 +133,20 @@ button {
 <div class="brain-page">
 
   <div class="brain-intro">
-    Every day resets at midnight (UTC). Complete Easy + Medium to build streaks.
+    Every day resets at midnight (UTC). Complete Easy + Medium to unlock Hard and build streaks.
   </div>
 
   <div class="brain-filters">
     <button class="active" data-filter="all">All</button>
     <button data-filter="easy">Easy</button>
     <button data-filter="medium">Medium</button>
-    <button data-filter="hard">Hard</button>
+    <button data-filter="hard" id="hardBtn">Hard 🔒</button>
   </div>
 
   <div class="brain-status">
-    <div class="brain-pill">Resets in <span id="timer">--:--:--</span></div>
+    <div class="brain-pill">⏳ <span id="timer">--:--:--</span></div>
     <div class="brain-pill">🔥 Streak <span id="streak">0</span></div>
-    <div class="brain-pill">Best <span id="best">0</span></div>
+    <div class="brain-pill">⭐ Score <span id="score">0</span></div>
   </div>
 
   <div class="brain-card">
@@ -149,6 +157,8 @@ button {
     <input id="answer" placeholder="Your answer" />
     <button class="btn-submit" id="submitBtn">Submit</button>
     <button class="btn-hint" id="hintBtn">💡 Show hint</button>
+
+    <div class="result" id="result"></div>
   </div>
 
 </div>
@@ -157,124 +167,101 @@ button {
 document.addEventListener("DOMContentLoaded", () => {
 
 const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
-const STORE_KEY = "et_brain_v1";
+const STORE_KEY = "et_brain_v2";
 
-let dailySet = null;
-let currentFilter = "all";
-let currentQuestion = null;
-let solved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+const POINTS = { easy: 10, medium: 20, hard: 30 };
 
-const todayKey = () => new Date().toISOString().slice(0,10);
+let dailySet, currentFilter = "easy", currentQuestion;
+let state = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 
-/* TIMER */
-function updateTimer() {
-  const now = new Date();
-  const next = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + 1
-  );
-  const d = next - Date.now();
-  const h = String(Math.floor(d / 3600000)).padStart(2,"0");
-  const m = String(Math.floor(d % 3600000 / 60000)).padStart(2,"0");
-  const s = String(Math.floor(d % 60000 / 1000)).padStart(2,"0");
-  document.getElementById("timer").textContent = `${h}:${m}:${s}`;
+const today = new Date().toISOString().slice(0,10);
+state[today] ??= { solved:{}, attempts:{}, score:0 };
+
+function updateTimer(){
+  const n=new Date();
+  const t=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate()+1)-Date.now();
+  document.getElementById("timer").textContent =
+    [t/36e5,(t/6e4)%60,(t/1e3)%60].map(v=>String(Math.floor(v)).padStart(2,"0")).join(":");
 }
-setInterval(updateTimer, 1000);
-updateTimer();
+setInterval(updateTimer,1000); updateTimer();
 
-/* LOAD DATA */
-fetch(DATA_URL)
-  .then(r => r.json())
-  .then(json => {
-    dailySet = json.sets.find(s => s.date === todayKey());
-    pickQuestion();
-  });
+fetch(DATA_URL).then(r=>r.json()).then(j=>{
+  dailySet = j.sets.find(s=>s.date===today);
+  pickQuestion();
+  updateUI();
+});
 
-/* PICK QUESTION */
-function pickQuestion() {
-  if (!dailySet) {
-    document.getElementById("question").textContent =
-      "No challenge available today.";
-    return;
-  }
-
-  if (currentFilter === "all") {
-    currentQuestion = {
-      level: "easy",
-      theme: dailySet.theme,
-      ...dailySet.easy
-    };
-  } else {
-    currentQuestion = {
-      level: currentFilter,
-      theme: dailySet.theme,
-      ...dailySet[currentFilter]
-    };
-  }
-
+function pickQuestion(){
+  const lvl = currentFilter==="all"?"easy":currentFilter;
+  currentQuestion = { level:lvl, theme:dailySet.theme, ...dailySet[lvl] };
   render();
 }
 
-/* RENDER */
-function render() {
-  document.getElementById("difficulty").textContent =
-    currentQuestion.level.toUpperCase();
+function render(){
+  document.getElementById("difficulty").textContent = currentQuestion.level.toUpperCase();
+  document.getElementById("category").textContent = currentQuestion.theme;
 
-  document.getElementById("category").textContent =
-    currentQuestion.theme;
+  let q="";
+  if(currentQuestion.type==="odd")
+    q="Which one does not belong?\n\n"+currentQuestion.options.join(" • ");
+  else if(currentQuestion.type==="clues")
+    q=currentQuestion.clues.join(" • ");
+  else
+    q=currentQuestion.prompt;
 
-  document.getElementById("question").textContent =
-    currentQuestion.prompt ||
-    currentQuestion.clues?.join(" • ") ||
-    "";
+  document.getElementById("question").textContent=q;
 }
 
-/* FILTERS */
-document.querySelectorAll(".brain-filters button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".brain-filters button")
-      .forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentFilter = btn.dataset.filter;
+document.querySelectorAll(".brain-filters button").forEach(b=>{
+  b.onclick=()=>{
+    if(b.classList.contains("locked")) return;
+    document.querySelectorAll(".brain-filters button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    currentFilter=b.dataset.filter;
     pickQuestion();
-  });
+  };
 });
 
-/* SUBMIT */
-document.getElementById("submitBtn").onclick = () => {
-  if (!currentQuestion) return;
+document.getElementById("submitBtn").onclick=()=>{
+  const a=document.getElementById("answer").value.trim().toUpperCase();
+  if(!a) return;
 
-  const d = todayKey();
-  solved[d] ??= {};
-  solved[d][currentQuestion.level] = true;
+  const lvl=currentQuestion.level;
+  state[today].attempts[lvl]=(state[today].attempts[lvl]||0)+1;
 
-  localStorage.setItem(STORE_KEY, JSON.stringify(solved));
-  updateStreak();
-  alert("Saved ✔");
-};
-
-/* HINT */
-document.getElementById("hintBtn").onclick = () => {
-  alert(currentQuestion.hint || "No hint available.");
-};
-
-/* STREAK */
-function updateStreak() {
-  let streak = 0, best = 0;
-  const days = Object.keys(solved).sort().reverse();
-
-  for (const d of days) {
-    if (solved[d]?.easy && solved[d]?.medium) {
-      streak++;
-      best = Math.max(best, streak);
-    } else break;
+  if(currentQuestion.accepted.map(x=>x.toUpperCase()).includes(a)){
+    if(!state[today].solved[lvl]){
+      state[today].solved[lvl]=true;
+      state[today].score+=POINTS[lvl];
+    }
+    document.getElementById("result").textContent=`✅ Correct! +${POINTS[lvl]} pts`;
+  } else {
+    document.getElementById("result").textContent=`❌ Wrong (${state[today].attempts[lvl]}/${currentQuestion.maxAttempts})`;
+    if(state[today].attempts[lvl]>=currentQuestion.maxAttempts){
+      document.getElementById("result").textContent+=
+        ` — Answer: ${currentQuestion.answer}`;
+    }
   }
 
-  document.getElementById("streak").textContent = streak;
-  document.getElementById("best").textContent = best;
+  save();
+  updateUI();
+};
+
+document.getElementById("hintBtn").onclick=()=>{
+  alert(currentQuestion.hint||"No hint.");
+};
+
+function updateUI(){
+  document.getElementById("score").textContent=state[today].score;
+  const hardUnlocked = state[today].solved.easy && state[today].solved.medium;
+  const hb=document.getElementById("hardBtn");
+  hb.classList.toggle("locked",!hardUnlocked);
+  hb.textContent=hardUnlocked?"Hard":"Hard 🔒";
 }
-updateStreak();
+
+function save(){
+  localStorage.setItem(STORE_KEY,JSON.stringify(state));
+}
 
 });
 </script>
