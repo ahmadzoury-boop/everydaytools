@@ -12,21 +12,25 @@ export async function onRequest({ request, env }) {
     }
 
     const body = await request.json();
-    const {
-      name = "Player",
-      score = 0,
-      day = new Date().toISOString().slice(0, 10),
-    } = body;
+
+    const name = body.name || "Player";
+    const score = Number(body.score) || 0;
+    const day = body.day || new Date().toISOString().slice(0, 10);
+
+    // 🔑 REQUIRED FIELD
+    const device_hash =
+      body.device_hash ||
+      crypto.randomUUID(); // fallback for safety
 
     await env.DB.prepare(`
-      INSERT INTO brain_scores (name, score, date)
-      VALUES (?, ?, ?)
-    `).bind(name, score, day).run();
+      INSERT INTO brain_scores (name, score, date, device_hash)
+      VALUES (?, ?, ?, ?)
+    `).bind(name, score, day, device_hash).run();
 
     return new Response(
       JSON.stringify({
         ok: true,
-        saved: { name, score, day }
+        saved: { name, score, day, device_hash }
       }),
       { headers: { "Content-Type": "application/json" } }
     );
