@@ -30,10 +30,10 @@
   </header>
 
   <!-- Main Brain App -->
-  <main class="container" style="padding-top:16px;">
+  <main class="container brain-page">
 
     <!-- Hero -->
-    <section class="hero" style="padding-bottom:10px;">
+    <section class="brain-hero">
       <h1>🧠 Daily Brain</h1>
 
       <p class="lead">
@@ -41,46 +41,51 @@
         <strong>memory</strong>, <strong>focus</strong>, and <strong>logical thinking</strong>.
       </p>
 
-      <p class="small" style="margin-top:6px">
+      <p class="small brain-sub">
         Every day resets at midnight (UTC). Complete challenges, build streaks, and track your progress over time.
       </p>
     </section>
 
-    <!-- How it works -->
-    <div class="hint" style="margin-bottom:16px">
-      <strong>How it works:</strong>
-      <ul style="margin:6px 0 0 16px">
-        <li>Each day has <strong>3 difficulty levels</strong>: Easy → Medium → Hard</li>
-        <li>Complete Easy to unlock Medium, Medium to unlock Hard</li>
-        <li>Your score and streak are saved on this device</li>
-        <li>The challenge resets every day at <strong>00:00 UTC</strong></li>
-      </ul>
-    </div>
+    <!-- Card wrapper like Countdown Timer -->
+    <section class="brain-card">
 
-    <!-- Difficulty filter -->
-    <div class="row" style="margin-bottom:12px; gap:8px; flex-wrap:wrap;">
-      <span class="badge">Show:</span>
-      <button id="filter-all">All</button>
-      <button id="filter-easy">Easy</button>
-      <button id="filter-medium">Medium</button>
-      <button id="filter-hard">Hard</button>
-    </div>
+      <!-- Filters (like timer presets) -->
+      <div class="brain-filterbar">
+        <div class="brain-filter-label">Show:</div>
 
-    <!-- App -->
-    <section id="app">
+        <div class="brain-filters">
+          <button id="filter-all" class="brain-chip">All</button>
+          <button id="filter-easy" class="brain-chip">Easy</button>
+          <button id="filter-medium" class="brain-chip">Medium</button>
+          <button id="filter-hard" class="brain-chip">Hard</button>
+        </div>
+      </div>
+
+      <!-- Status -->
       <div id="status"></div>
 
-      <p class="small" style="margin-top:6px">
+      <p class="small brain-streak-note">
         🔥 Your streak increases when you complete <strong>Easy + Medium</strong> on the same day.
       </p>
 
-      <!-- 🔽 Brain levels are injected here by brain.js -->
+      <!-- Levels injected by brain.js -->
       <div id="levels"></div>
 
       <div id="result"></div>
 
+      <!-- How it works (collapsible like timer page) -->
+      <details class="brain-how">
+        <summary>How it works</summary>
+        <ul>
+          <li>Each day has <strong>3 difficulty levels</strong>: Easy → Medium → Hard</li>
+          <li>Complete Easy to unlock Medium, Medium to unlock Hard</li>
+          <li>Your score and streak are saved on this device</li>
+          <li>The challenge resets every day at <strong>00:00 UTC</strong></li>
+        </ul>
+      </details>
+
       <!-- Email subscription -->
-      <div class="hint" style="margin-top:20px">
+      <div class="brain-subscribe hint">
         <strong>Get the Daily Brain by email 🧠</strong>
 
         <p class="small" style="margin-top:6px">
@@ -88,8 +93,8 @@
           No spam. No ads. Unsubscribe anytime.
         </p>
 
-        <form id="brain-subscribe-form" style="margin-top:10px">
-          <div class="row" style="gap:8px; flex-wrap:wrap;">
+        <form id="brain-subscribe-form" class="brain-form">
+          <div class="brain-form-row">
             <input
               type="text"
               id="brain-name"
@@ -104,7 +109,7 @@
               autocomplete="email"
             />
             <button type="submit">Subscribe</button>
-            <button type="button" id="brain-unsubscribe-btn" style="background:#b62324">Unsubscribe</button>
+            <button type="button" id="brain-unsubscribe-btn" class="danger">Unsubscribe</button>
           </div>
 
           <p id="brain-subscribe-msg" class="small" style="margin-top:6px"></p>
@@ -114,8 +119,8 @@
           </p>
         </form>
       </div>
-    </section>
 
+    </section>
   </main>
 
   <!-- Footer -->

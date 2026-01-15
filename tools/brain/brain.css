@@ -1,284 +1,137 @@
-:root{
-  --bg:#0d1117;
-  --card:#161b22;
-  --text:#f0f6fc;
-  --muted:#8b949e;
-  --border:#30363d;
-  --green:#2ea043;
-  --green2:#238636;
-  --red:#f85149;
+/* Brain page layout — mobile-first, Countdown-Timer style card */
+
+.brain-page{
+  padding-top:16px;
 }
 
-/* =====================
-   Base reset
-===================== */
-*{
-  box-sizing:border-box;
+.brain-hero{
+  padding-bottom:10px;
 }
 
-html, body{
-  margin:0;
-  padding:0;
-  width:100%;
-  overflow-x:hidden;
+.brain-sub{
+  margin-top:6px;
 }
 
-body{
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-  justify-content:center;
-  padding:16px;
-}
-
-#app{
-  width:100%;
-  max-width:640px;
-}
-
-/* =====================
-   Typography
-===================== */
-h1{
-  margin:0 0 8px;
-  font-size:22px;
-  line-height:1.3;
-}
-
-#status{
-  color:var(--muted);
-  margin-bottom:16px;
-  font-size:14px;
-}
-
-.small{
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* =====================
-   Cards / Levels
-===================== */
-.level{
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:14px;
-  margin:14px 0;
-  background:var(--card);
-}
-
-.level h2{
-  margin:0 0 10px;
-  font-size:16px;
-  letter-spacing:.4px;
-}
-
-/* =====================
-   Question layout
-===================== */
-.question-box{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+/* The main centered card (like Countdown Timer) */
+.brain-card{
   margin-top:12px;
-}
-
-.question-text{
-  font-size:18px;
-  font-weight:600;
-  line-height:1.4;
-}
-
-/* =====================
-   Inputs & buttons
-===================== */
-input{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#0b0f14;
-  color:var(--text);
-  outline:none;
-  font-size:16px;
-}
-
-button{
-  background:var(--green2);
-  color:#fff;
-  border:none;
-  padding:12px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  font-size:15px;
-  min-height:44px;
-  white-space:nowrap;
-}
-
-button:hover{
-  background:var(--green);
-}
-
-button:disabled{
-  background:#1f6f2a;
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.primary-btn{
-  width:100%;
-}
-
-/* =====================
-   Feedback
-===================== */
-.feedback{
-  margin-top:8px;
-  padding:10px 12px;
-  border-radius:10px;
-  font-size:14px;
-}
-
-.feedback.ok{
-  background:rgba(46,160,67,.15);
-  color:#3fb950;
-  border:1px solid var(--green);
-}
-
-.feedback.bad{
-  background:rgba(248,81,73,.15);
-  color:var(--red);
-  border:1px solid var(--red);
-}
-
-/* =====================
-   Hint / Result
-===================== */
-.hint{
-  margin-top:10px;
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px dashed var(--border);
-  color:var(--muted);
-  font-size:14px;
-}
-
-.badge{
-  display:inline-block;
-  padding:4px 10px;
-  border:1px solid var(--border);
-  border-radius:999px;
-  font-size:12px;
-  color:var(--muted);
-}
-
-#result{
-  margin-top:16px;
-  border:1px solid var(--border);
-  background:var(--card);
-  border-radius:14px;
+  margin-bottom:18px;
   padding:16px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.16);
+  backdrop-filter: blur(6px);
 }
 
-/* =====================
-   Leaderboard (Mobile-first)
-===================== */
-
-/* table reset */
-#result table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0 8px;
-}
-
-/* each row becomes a card */
-#result tr{
+/* Filter bar */
+.brain-filterbar{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  background:#0b0f14;
-  border:1px solid var(--border);
-  border-radius:12px;
+  gap:10px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+
+.brain-filter-label{
+  font-size:13px;
+  opacity:0.85;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+}
+
+/* Buttons grid like timer presets */
+.brain-filters{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap:10px;
+  width:100%;
+}
+
+.brain-chip{
+  width:100%;
+  min-height:44px;
+  font-size:16px;
+  border-radius:14px;
+}
+
+/* Notes */
+.brain-streak-note{
+  margin-top:6px;
+}
+
+/* How it works collapsible */
+.brain-how{
+  margin-top:16px;
   padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.10);
 }
 
-/* date */
-#result td:first-child{
-  font-size:14px;
-  color:var(--text);
-}
-
-/* score */
-#result td:last-child{
-  font-weight:600;
-  color:var(--green);
-}
-
-/* =====================
-   Filters
-===================== */
-button.active{
-  outline:2px solid var(--border);
-  outline-offset:2px;
-  transform:translateY(-1px);
-}
-
-button#filter-all,
-button#filter-easy,
-button#filter-medium,
-button#filter-hard{
+.brain-how > summary{
   cursor:pointer;
+  user-select:none;
+  font-weight:700;
+  list-style:none;
 }
 
-.hidden{
+.brain-how > summary::-webkit-details-marker{
   display:none;
 }
 
-/* =====================
-   Desktop enhancement
-===================== */
-@media (min-width:768px){
-  body{
-    padding:24px;
+.brain-how > summary::before{
+  content:"▶ ";
+  opacity:0.9;
+}
+
+.brain-how[open] > summary::before{
+  content:"▼ ";
+}
+
+.brain-how ul{
+  margin:10px 0 0 18px;
+}
+
+/* Subscribe form layout */
+.brain-form{
+  margin-top:10px;
+}
+
+.brain-form-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.brain-form-row input{
+  min-height:44px;
+  font-size:16px;
+}
+
+.brain-form-row .danger{
+  background:#b62324;
+}
+
+/* Mobile: match Countdown Timer feel */
+@media (max-width: 768px){
+  .brain-card{
+    padding:14px;
+    border-radius:18px;
   }
 
-  h1{
-    font-size:28px;
+  /* 2x2 grid on mobile */
+  .brain-filters{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  .level h2{
-    font-size:18px;
-  }
-
-  .question-box{
-    flex-direction:row;
-    align-items:center;
-  }
-
-  .question-text{
-    flex:1;
-    font-size:20px;
-  }
-
-  .question-box input{
-    max-width:160px;
-  }
-
-  .primary-btn{
-    width:auto;
-  }
-
-  /* leaderboard desktop = table feel */
-  #result tr{
-    display:table-row;
-    background:transparent;
-    border:none;
-    padding:0;
-  }
-
-  #result td{
-    padding:6px 0;
+/* Larger screens: keep it tidy */
+@media (min-width: 1024px){
+  .brain-card{
+    padding:18px;
+    max-width: 860px;
+    margin-left:auto;
+    margin-right:auto;
   }
 }
