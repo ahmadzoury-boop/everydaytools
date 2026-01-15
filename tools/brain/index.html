@@ -6,7 +6,7 @@
   <title>Daily Brain – EverydayTools.uk</title>
 
   <!-- SEO -->
-  <meta name="description" content="One daily brain challenge to boost focus, logic, memory, and speed. Global leaderboard included." />
+  <meta name="description" content="One daily brain challenge to boost focus, logic, memory, and speed. Track your streak, score, achievements, and compete globally." />
 
   <!-- OpenGraph -->
   <meta property="og:title" content="Daily Brain – EverydayTools.uk" />
@@ -23,6 +23,17 @@
       background: #fafafa;
       color: #222;
       line-height: 1.5;
+      transition: 0.3s;
+    }
+
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+
+    body.dark .card {
+      background: #1e1e1e;
+      color: #eee;
     }
 
     .container {
@@ -42,6 +53,19 @@
       font-size: 14px;
       color: #777;
       margin-bottom: 20px;
+    }
+
+    #darkModeToggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #222;
+      color: white;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      z-index: 10;
     }
 
     /* Difficulty Tabs */
@@ -65,6 +89,15 @@
 
     #difficultyTabs button:hover {
       background: #ddd;
+    }
+
+    body.dark #difficultyTabs button {
+      background: #222;
+      color: #ddd;
+    }
+
+    body.dark #difficultyTabs button:hover {
+      background: #333;
     }
 
     /* Puzzle Card */
@@ -102,6 +135,12 @@
       font-size: 16px;
     }
 
+    body.dark input#answerInput {
+      background: #1f1f1f;
+      color: #eee;
+      border: 1px solid #444;
+    }
+
     button#submitAnswerBtn {
       width: 100%;
       background: #3a86ff;
@@ -112,10 +151,6 @@
       margin-top: 12px;
       font-size: 17px;
       cursor: pointer;
-    }
-
-    button#submitAnswerBtn:hover {
-      background: #256fe6;
     }
 
     #hintBtn {
@@ -172,60 +207,80 @@
       text-align: left;
     }
 
-    .center {
-      text-align: center;
+    #shareBtn {
+      margin-top: 12px;
+      width: 100%;
+      border: none;
+      background: #34c759;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
     }
 
+    /* Mobile */
+    @media (max-width: 480px) {
+      h1 { font-size: 22px; }
+      .card { padding: 16px; }
+      #difficultyTabs button { padding: 8px; font-size: 14px; }
+      input#answerInput { font-size: 15px; }
+      .lb-list li { font-size: 14px; }
+    }
   </style>
 </head>
 
 <body>
-  <div class="container">
 
-    <h1>🧠 Daily Brain</h1>
-    <div class="countdown">
-      Resets in <span id="countdownText">00:00:00</span> (UTC)
-    </div>
+<button id="darkModeToggle">🌙</button>
 
-    <!-- Difficulty Tabs -->
-    <div id="difficultyTabs">
-      <button data-level="easy">Easy</button>
-      <button data-level="medium">Medium</button>
-      <button data-level="hard">Hard</button>
-    </div>
+<div class="container">
 
-    <!-- Puzzle Card -->
-    <div class="card">
-      <div class="category" id="questionCategory">Category</div>
-      <div class="level" id="questionLevel">EASY</div>
-      <div class="prompt" id="questionText">Loading...</div>
-
-      <input id="answerInput" placeholder="Your answer..." />
-
-      <button id="submitAnswerBtn">Submit</button>
-
-      <button id="hintBtn">💡 Show hint</button>
-      <div id="hintText"></div>
-    </div>
-
-    <!-- Today's Result -->
-    <h2>Today's Result</h2>
-    <p>Score: <strong id="todayScoreText">0/30</strong></p>
-    <p>Streak 🔥 <strong id="streakValue">0</strong></p>
-    <p>Best <strong id="bestStreakValue">0</strong></p>
-
-    <!-- Local Leaderboard -->
-    <h2>🏆 Your Best Days</h2>
-    <div id="localLeaderboard">Loading...</div>
-
-    <!-- Global Leaderboard -->
-    <h2>🌍 Global Leaderboard</h2>
-    <div id="globalLeaderboard">Loading...</div>
-
+  <h1>🧠 Daily Brain</h1>
+  <div class="countdown">
+    Resets in <span id="countdownText">00:00:00</span> (UTC)
   </div>
 
-  <!-- JS -->
-  <script src="brain.js"></script>
+  <!-- Difficulty Tabs -->
+  <div id="difficultyTabs">
+    <button data-level="easy">Easy</button>
+    <button data-level="medium">Medium</button>
+    <button data-level="hard">Hard</button>
+  </div>
+
+  <!-- Puzzle Card -->
+  <div class="card">
+    <div class="category" id="questionCategory">Category</div>
+    <div class="level" id="questionLevel">EASY</div>
+    <div class="prompt" id="questionText">Loading...</div>
+
+    <input id="answerInput" placeholder="Your answer..." />
+
+    <button id="submitAnswerBtn">Submit</button>
+    <button id="hintBtn">💡 Show hint</button>
+    <div id="hintText"></div>
+  </div>
+
+  <!-- Today's Result -->
+  <h2>Today's Result</h2>
+  <p>Score: <strong id="todayScoreText">0/30</strong></p>
+  <p>Streak 🔥 <strong id="streakValue">0</strong></p>
+  <p>Best <strong id="bestStreakValue">0</strong></p>
+  <p>Achievement: <strong id="streakMedal"></strong></p>
+
+  <button id="shareBtn">Share My Score</button>
+
+  <!-- Local Leaderboard -->
+  <h2>🏆 Your Best Days</h2>
+  <div id="localLeaderboard">Loading...</div>
+
+  <!-- Global Leaderboard -->
+  <h2>🌍 Global Leaderboard</h2>
+  <div id="globalLeaderboard">Loading...</div>
+
+</div>
+
+<script src="brain.js"></script>
 
 </body>
 </html>
