@@ -1,6 +1,6 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// brain.js — Final Production Version
+// brain.js — v2.0 Production
 // ================================
 
 const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
@@ -22,13 +22,10 @@ const msToNextUtcMidnight = () => {
 const fmtCountdown = (ms) => {
   if (ms <= 0) return "00:00:00";
   const s = Math.floor(ms / 1000);
-  return (
-    String(Math.floor(s / 3600)).padStart(2, "0") +
-    ":" +
-    String(Math.floor((s % 3600) / 60)).padStart(2, "0") +
-    ":" +
-    String(s % 60).padStart(2, "0")
-  );
+  const hh = String(Math.floor(s / 3600)).padStart(2, "0");
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  return `${hh}:${mm}:${ss}`;
 };
 
 function parseISODate(str) {
@@ -41,15 +38,17 @@ function parseISODate(str) {
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (!raw)
+    if (!raw) {
       return {
         days: {},
         streak: { current: 0, best: 0, lastDay: null },
       };
+    }
     const parsed = JSON.parse(raw);
     if (!parsed.days) parsed.days = {};
-    if (!parsed.streak)
+    if (!parsed.streak) {
       parsed.streak = { current: 0, best: 0, lastDay: null };
+    }
     return parsed;
   } catch {
     return {
@@ -63,7 +62,7 @@ function saveState(state) {
   localStorage.setItem(STORE_KEY, JSON.stringify(state));
 }
 
-// ---------- Device Hash ----------
+// ---------- Device Hash & Player Name ----------
 
 function getDeviceHash() {
   const key = "et_device_hash";
@@ -75,12 +74,21 @@ function getDeviceHash() {
   return hash;
 }
 
+function getPlayerName() {
+  let name = localStorage.getItem("et_player_name");
+  if (!name || name.trim() === "") {
+    name = prompt("Choose your nickname:") || "Player";
+    name = name.trim();
+    localStorage.setItem("et_player_name", name);
+  }
+  return name;
+}
+
 // ---------- Global Variables ----------
 
 let brainData = null;
 let todaySet = null;
-let currentLevel = "easy";
-let submittingToday = false; // prevent multiple server submissions
+let currentLevel = "easy"; // "easy" | "medium" | "hard"
 
 // ---------- Load Puzzles Data ----------
 
@@ -119,7 +127,7 @@ function getPuzzleForLevel(level) {
   return todaySet[level];
 }
 
-// ---------- UI Rendering ----------
+// ---------- UI Rendering (Puzzle) ----------
 
 function renderCurrentPuzzle() {
   const puzzle = getPuzzleForLevel(currentLevel);
@@ -141,7 +149,15 @@ function renderCurrentPuzzle() {
   if (answerInput) answerInput.value = "";
 }
 
-// ---------- Difficulty Tabs ----------
+// ---------- Difficulty Locking ----------
+
+function getUnlockedLevels(dayState) {
+  return {
+    easy: true,
+    medium: dayState.easyCorrect === true,
+    hard: dayState.mediumCorrect === true,
+  };
+}
 
 function initDifficultyTabs() {
   const container = document.getElementById("difficultyTabs");
@@ -150,12 +166,28 @@ function initDifficultyTabs() {
   container.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-level]");
     if (!btn) return;
-    currentLevel = btn.dataset.level;
+
+    const level = btn.dataset.level;
+    const state = loadState();
+    const today = todayKey();
+    const day = state.days[today] || {
+      easyCorrect: false,
+      mediumCorrect: false,
+      hardCorrect: false,
+    };
+    const unlock = getUnlockedLevels(day);
+
+    if (!unlock[level]) {
+      alert("You must solve the previous difficulty first!");
+      return;
+    }
+
+    currentLevel = level;
     renderCurrentPuzzle();
   });
 }
 
-// ---------- Answer Checking ----------
+// ---------- Answer Checking & Scoring ----------
 
 function checkAnswer(input, puzzle) {
   if (!input || !puzzle || !Array.isArray(puzzle.answers)) return false;
@@ -173,7 +205,7 @@ function computeScore(day) {
   return score;
 }
 
-// ---------- Streaks ----------
+// ---------- Streaks & Achievements ----------
 
 function updateStreak(state, today) {
   const yesterday = new Date(parseISODate(today));
@@ -198,12 +230,22 @@ function renderStreak(state) {
   const streakEl = document.getElementById("streakValue");
   const bestEl = document.getElementById("bestStreakValue");
   const scoreEl = document.getElementById("todayScoreText");
+  const medalEl = document.getElementById("streakMedal");
 
   const todayState = state.days[today] || { score: 0 };
 
   if (streakEl) streakEl.textContent = state.streak.current || 0;
   if (bestEl) bestEl.textContent = state.streak.best || 0;
   if (scoreEl) scoreEl.textContent = `${todayState.score}/30`;
+
+  // Achievements
+  let medal = "";
+  if (state.streak.current >= 30) medal = "💎 Diamond";
+  else if (state.streak.current >= 14) medal = "🥇 Gold";
+  else if (state.streak.current >= 7) medal = "🥈 Silver";
+  else if (state.streak.current >= 3) medal = "🥉 Bronze";
+
+  if (medalEl) medalEl.textContent = medal;
 }
 
 // ---------- Local Leaderboard ----------
@@ -245,14 +287,16 @@ function renderGlobalLeaderboard(rows) {
   rows.forEach((r, i) => {
     let medal = "";
     if (i === 0) medal = "🥇 ";
-    if (i === 1) medal = "🥈 ";
-    if (i === 2) medal = "🥉 ";
+    else if (i === 1) medal = "🥈 ";
+    else if (i === 2) medal = "🥉 ";
+
     html += `
       <li>
-        ${medal}<strong>${r.name}</strong>
+        ${medal}<strong>${r.name || "Player"}</strong>
         — <span>${r.score}</span>
         <em>${r.date}</em>
-      </li>`;
+      </li>
+    `;
   });
   html += "</ol>";
 
@@ -266,12 +310,14 @@ async function loadGlobalLeaderboard() {
   try {
     const res = await fetch("/api/brain-leaderboard");
     const data = await res.json();
+
     if (data.ok) {
-      renderGlobalLeaderboard(data.rows);
-    } else {
+      renderGlobalLeaderboard(data.rows || []);
+    } else if (box) {
       box.textContent = "Could not load leaderboard.";
     }
-  } catch {
+  } catch (err) {
+    console.error("Failed to load global leaderboard:", err);
     if (box) box.textContent = "Could not load leaderboard.";
   }
 }
@@ -295,7 +341,7 @@ async function handleSubmit() {
       mediumCorrect: false,
       hardCorrect: false,
       score: 0,
-      submitted: false, // prevent multiple posts
+      submitted: false,
     };
   }
 
@@ -334,7 +380,7 @@ async function handleSubmit() {
 
   try {
     const payload = {
-      name: "Player",
+      name: getPlayerName(),
       score: day.score,
       day: today,
       device_hash: getDeviceHash(),
@@ -363,7 +409,27 @@ async function handleSubmit() {
 
 function handleShowHint() {
   const hintEl = document.getElementById("hintText");
-  if (hintEl) hintEl.textContent = hintEl.dataset.hint || "";
+  if (hintEl) {
+    hintEl.textContent = hintEl.dataset.hint || "";
+  }
+}
+
+// ---------- Share Score ----------
+
+function handleShare() {
+  const scoreText =
+    document.getElementById("todayScoreText")?.textContent || "0/30";
+  const name = getPlayerName();
+
+  if (navigator.share) {
+    navigator.share({
+      title: "Daily Brain – My Score",
+      text: `${name} scored ${scoreText} today on Daily Brain!`,
+      url: "https://everydaytools.uk/brain",
+    }).catch(() => {});
+  } else {
+    alert("Sharing is not supported on this device.");
+  }
 }
 
 // ---------- Countdown ----------
@@ -371,9 +437,34 @@ function handleShowHint() {
 function startCountdown() {
   const el = document.getElementById("countdownText");
   if (!el) return;
-  const tick = () => (el.textContent = fmtCountdown(msToNextUtcMidnight()));
+
+  const tick = () => {
+    const ms = msToNextUtcMidnight();
+    el.textContent = fmtCountdown(ms);
+  };
+
   tick();
   setInterval(tick, 1000);
+}
+
+// ---------- Dark Mode ----------
+
+function initDarkMode() {
+  const btn = document.getElementById("darkModeToggle");
+  if (!btn) return;
+
+  // Restore saved mode
+  if (localStorage.getItem("et_dark_mode") === "true") {
+    document.body.classList.add("dark");
+  }
+
+  btn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem(
+      "et_dark_mode",
+      document.body.classList.contains("dark")
+    );
+  });
 }
 
 // ---------- Init ----------
@@ -386,12 +477,16 @@ function initBrain() {
   loadGlobalLeaderboard();
   loadPuzzles();
   initDifficultyTabs();
+  initDarkMode();
 
   const submitBtn = document.getElementById("submitAnswerBtn");
   if (submitBtn) submitBtn.addEventListener("click", handleSubmit);
 
   const hintBtn = document.getElementById("hintBtn");
   if (hintBtn) hintBtn.addEventListener("click", handleShowHint);
+
+  const shareBtn = document.getElementById("shareBtn");
+  if (shareBtn) shareBtn.addEventListener("click", handleShare);
 }
 
 if (document.readyState === "loading") {
