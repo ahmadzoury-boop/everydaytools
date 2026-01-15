@@ -6,12 +6,7 @@
 <title>Daily Brain — EverydayTools</title>
 
 <style>
-/* =========================
-   GLOBAL RESET
-========================= */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -20,28 +15,18 @@ body {
   color: #e6e6e6;
 }
 
-/* =========================
-   PAGE WRAPPER
-========================= */
 .brain-page {
   padding: 16px;
   max-width: 420px;
   margin: 0 auto;
 }
 
-/* =========================
-   HEADER TEXT
-========================= */
 .brain-intro {
   font-size: 14px;
-  opacity: 0.8;
+  opacity: .8;
   margin-bottom: 14px;
-  line-height: 1.4;
 }
 
-/* =========================
-   FILTER BUTTONS
-========================= */
 .brain-filters {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -56,22 +41,17 @@ body {
   background: #1f8f3a;
   color: #fff;
   font-weight: 600;
-  cursor: pointer;
 }
 
 .brain-filters button.active {
   background: #26b44a;
 }
 
-/* =========================
-   STATUS BAR
-========================= */
 .brain-status {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   font-size: 13px;
-  opacity: 0.85;
   margin-bottom: 14px;
 }
 
@@ -81,25 +61,20 @@ body {
   border-radius: 999px;
 }
 
-/* =========================
-   CARD
-========================= */
 .brain-card {
   background: #10161d;
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
 .brain-difficulty {
   font-weight: 700;
-  letter-spacing: 0.5px;
   margin-bottom: 4px;
 }
 
 .brain-category {
   font-size: 13px;
-  opacity: 0.7;
+  opacity: .7;
   margin-bottom: 10px;
 }
 
@@ -110,10 +85,7 @@ body {
   min-height: 48px;
 }
 
-/* =========================
-   INPUT & BUTTONS
-========================= */
-.brain-card input {
+input {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
@@ -123,33 +95,19 @@ body {
   margin-bottom: 10px;
 }
 
-.brain-card button {
+button {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
   border: none;
   font-weight: 600;
-  cursor: pointer;
 }
 
-.btn-submit {
-  background: #26b44a;
-  color: #fff;
-  margin-bottom: 8px;
-}
+.btn-submit { background: #26b44a; color: #fff; }
+.btn-hint { background: #1f8f3a; color: #fff; margin-top: 6px; }
 
-.btn-hint {
-  background: #1f8f3a;
-  color: #fff;
-}
-
-/* =========================
-   MOBILE SAFETY
-========================= */
 @media (max-width: 480px) {
-  body {
-    overflow-x: hidden;
-  }
+  body { overflow-x: hidden; }
 }
 </style>
 </head>
@@ -158,7 +116,7 @@ body {
 <div class="brain-page">
 
   <div class="brain-intro">
-    Every day resets at midnight (UTC). Complete challenges, build streaks, and track your progress.
+    Every day resets at midnight (UTC). Complete Easy + Medium to build streaks.
   </div>
 
   <!-- FILTERS -->
@@ -171,51 +129,45 @@ body {
 
   <!-- STATUS -->
   <div class="brain-status">
-    <div class="brain-pill">Resets in <span id="resetTimer">--:--:--</span></div>
+    <div class="brain-pill">Resets in <span id="timer">--:--:--</span></div>
     <div class="brain-pill">🔥 Streak <span id="streak">0</span></div>
     <div class="brain-pill">Best <span id="best">0</span></div>
   </div>
 
   <!-- CARD -->
   <div class="brain-card">
-    <div class="brain-difficulty" id="difficulty">EASY</div>
-    <div class="brain-category" id="category">Music</div>
+    <div class="brain-difficulty" id="difficulty"></div>
+    <div class="brain-category" id="category"></div>
     <div class="brain-question" id="question"></div>
 
-    <input type="text" placeholder="Your answer" />
-    <button class="btn-submit">Submit</button>
-    <button class="btn-hint">💡 Show hint</button>
+    <input id="answer" placeholder="Your answer" />
+    <button class="btn-submit" id="submitBtn">Submit</button>
+    <button class="btn-hint" id="hintBtn">💡 Show hint</button>
   </div>
 
 </div>
 
 <script>
 /* =========================
-   DATA (SAMPLE)
+   CONFIG
 ========================= */
-const QUESTIONS = {
-  easy: {
-    difficulty: "EASY",
-    category: "Music",
-    question: "Which instrument has 88 keys?"
-  }
-};
+const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
+const STORE_KEY = "et_brain_v1";
 
 /* =========================
-   RENDER
+   STATE
 ========================= */
-function renderQuestion() {
-  const q = QUESTIONS.easy;
-
-  document.getElementById("difficulty").textContent = q.difficulty || "";
-  document.getElementById("category").textContent = q.category || "";
-  document.getElementById("question").textContent = q.question || "";
-}
+let data = [];
+let currentFilter = "all";
+let currentQuestion = null;
+let solved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 
 /* =========================
-   RESET TIMER
+   HELPERS
 ========================= */
-function updateResetTimer() {
+const todayKey = () => new Date().toISOString().slice(0,10);
+
+function nextResetTimer() {
   const now = new Date();
   const next = Date.UTC(
     now.getUTCFullYear(),
@@ -223,18 +175,102 @@ function updateResetTimer() {
     now.getUTCDate() + 1
   );
   const diff = next - Date.now();
+  const h = String(Math.floor(diff / 3600000)).padStart(2,"0");
+  const m = String(Math.floor(diff % 3600000 / 60000)).padStart(2,"0");
+  const s = String(Math.floor(diff % 60000 / 1000)).padStart(2,"0");
+  document.getElementById("timer").textContent = `${h}:${m}:${s}`;
+}
+setInterval(nextResetTimer, 1000);
+nextResetTimer();
 
-  const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
-  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+/* =========================
+   LOAD DATA
+========================= */
+fetch(DATA_URL)
+  .then(r => r.json())
+  .then(json => {
+    data = json;
+    pickQuestion();
+  });
 
-  document.getElementById("resetTimer").textContent = `${h}:${m}:${s}`;
+/* =========================
+   PICK QUESTION
+========================= */
+function pickQuestion() {
+  const today = todayKey();
+  const todays = data.filter(q => q.date === today);
+
+  let pool = todays;
+  if (currentFilter !== "all") {
+    pool = todays.filter(q => q.level === currentFilter);
+  }
+
+  currentQuestion = pool[0] || null;
+  render();
 }
 
-setInterval(updateResetTimer, 1000);
-updateResetTimer();
-renderQuestion();
-</script>
+/* =========================
+   RENDER
+========================= */
+function render() {
+  if (!currentQuestion) {
+    document.getElementById("question").textContent = "No challenge today.";
+    return;
+  }
 
+  document.getElementById("difficulty").textContent =
+    currentQuestion.level.toUpperCase();
+
+  document.getElementById("category").textContent =
+    currentQuestion.category;
+
+  document.getElementById("question").textContent =
+    currentQuestion.question;
+}
+
+/* =========================
+   FILTERS
+========================= */
+document.querySelectorAll(".brain-filters button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".brain-filters button")
+      .forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    pickQuestion();
+  };
+});
+
+/* =========================
+   SUBMIT
+========================= */
+document.getElementById("submitBtn").onclick = () => {
+  if (!currentQuestion) return;
+
+  solved[todayKey()] ??= {};
+  solved[todayKey()][currentQuestion.level] = true;
+  localStorage.setItem(STORE_KEY, JSON.stringify(solved));
+  alert("Saved ✔");
+};
+
+/* =========================
+   STREAK LOGIC (Easy + Medium)
+========================= */
+function updateStreak() {
+  let streak = 0, best = 0;
+  const days = Object.keys(solved).sort().reverse();
+
+  for (const d of days) {
+    if (solved[d]?.easy && solved[d]?.medium) {
+      streak++;
+      best = Math.max(best, streak);
+    } else break;
+  }
+
+  document.getElementById("streak").textContent = streak;
+  document.getElementById("best").textContent = best;
+}
+updateStreak();
+</script>
 </body>
 </html>
