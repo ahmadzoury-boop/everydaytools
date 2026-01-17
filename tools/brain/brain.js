@@ -1,18 +1,21 @@
 // ================================
 // Daily Brain — EverydayTools.uk
-// Final Production brain.js
-// Supports array-based puzzles (q / a / hint / explanation)
+// Quiz mode: 5 questions per level
+// With unlock logic (Easy → Medium → Hard)
 // ================================
 
 // ---- Config ----
 const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
-const STORE_KEY = "et_brain_v1";
 const THEME_KEY = "et_brain_theme_v1";
+const PROGRESS_KEY = "et_brain_progress_v1";
 
 // ---- State ----
 let setsData = null;
 let currentDiff = "easy";
-let currentTodayKey = null;
+let currentList = [];
+let currentIndex = 0;
+let score = 0;
+let progress = {}; // { "2026-01-17": { easy: true, medium: true, hard: true } }
 
 // ---- Helpers ----
 const todayKey = () => new Date().toISOString().slice(0, 10);
@@ -33,21 +36,7 @@ const fmtHMS = (ms) => {
   return `${hh}:${mm}:${ss}`;
 };
 
-const normalize = (str) =>
-  String(str).trim().toLowerCase();
-
-// ---- Local storage ----
-function loadLocal() {
-  try {
-    return JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function saveLocal(data) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(data));
-}
+const normalize = (str) => String(str).trim().toLowerCase();
 
 // ---- DOM refs ----
 const elResetTime = document.getElementById("resetTime");
@@ -66,7 +55,20 @@ const themeBlue = document.getElementById("themeBlue");
 const themeOrange = document.getElementById("themeOrange");
 const themeGold = document.getElementById("themeGold");
 
-// ---- Theme handling ----
+// ---- Storage for theme & progress ----
+function loadProgress() {
+  try {
+    return JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveProgress() {
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+}
+
+// ---- Theme ----
 function applyTheme(name) {
   let accent = "#4ea1ff";
   if (name === "orange") accent = "#ff8c32";
@@ -89,99 +91,165 @@ function initTheme() {
   applyTheme(localStorage.getItem(THEME_KEY) || "blue");
 }
 
-// ---- Data helpers ----
-function getTodaySet() {
-  if (!setsData) return null;
-  currentTodayKey = todayKey();
-  return setsData[currentTodayKey] || null;
+// ---- Unlock / lock helpers ----
+function todayProgress() {
+  const key = todayKey();
+  if (!progress[key]) progress[key] = {};
+  return progress[key];
 }
 
-// ---- Question logic ----
-function showQuestion() {
-  const daySet = getTodaySet();
-  elMessage.textContent = "";
-  elHintText.style.display = "none";
-  elHintText.textContent = "";
+function canPlayDifficulty(diff) {
+  const p = todayProgress();
+  if (diff === "easy") return true;
+  if (diff === "medium") return !!p.easy;
+  if (diff === "hard") return !!p.medium;
+  return false;
+}
+
+function styleDifficultyButton(btn, unlocked) {
+  btn.disabled = !unlocked;
+  btn.style.opacity = unlocked ? "1" : "0.4";
+  btn.style.cursor = unlocked ? "pointer" : "not-allowed";
+}
+
+function applyLocks() {
+  const p = todayProgress();
+  // Easy always unlocked
+  styleDifficultyButton(btnEasy, true);
+  styleDifficultyButton(btnMedium, !!p.easy);
+  styleDifficultyButton(btnHard, !!p.medium);
+}
+
+function markCompleted(diff) {
+  const p = todayProgress();
+  if (diff === "easy") p.easy = true;
+  if (diff === "medium") p.medium = true;
+  if (diff === "hard") p.hard = true;
+  saveProgress();
+  applyLocks();
+}
+
+// ---- Load daily questions ----
+function loadTodayQuestions(diff) {
+  const day = todayKey();
+  const daySet = setsData?.[day];
+  if (!daySet || !Array.isArray(daySet[diff])) return [];
+
+  // First 5 questions of that level for the day
+  return daySet[diff].slice(0, 5);
+}
+
+// ---- Render question ----
+function renderQuestion() {
+  const item = currentList[currentIndex];
+  if (!item) return;
+
+  elQuestion.textContent = `(${currentIndex + 1}/${currentList.length}) ${
+    item.q || ""
+  }`;
+
   elAnswer.value = "";
-
-  if (!daySet || !daySet[currentDiff]) {
-    elQuestion.textContent = "No puzzle available for today.";
-    return;
-  }
-
-  const list = daySet[currentDiff];
-
-  if (!Array.isArray(list) || list.length === 0) {
-    elQuestion.textContent = "No puzzle available for today.";
-    return;
-  }
-
-  // Deterministic daily index (same question all day)
-  const index =
-    Math.abs(
-      [...currentTodayKey].reduce((a, c) => a + c.charCodeAt(0), 0)
-    ) % list.length;
-
-  const item = list[index];
-
-  elQuestion.textContent = item.q || "Puzzle missing text.";
+  elMessage.textContent = "";
+  elMessage.style.color = "#ffffff";
 
   if (item.hint) {
     elHintBtn.style.display = "inline-flex";
     elHintText.textContent = item.hint;
+    elHintText.style.display = "none";
   } else {
     elHintBtn.style.display = "none";
+    elHintText.textContent = "";
+    elHintText.style.display = "none";
   }
 
-  // Store answer + explanation for later use
   elSubmit.dataset.answer = item.a || "";
-  elSubmit.dataset.explanation = item.explanation || "";
 }
 
-// ---- Difficulty ----
+// ---- Difficulty switch ----
 function setDifficulty(diff) {
+  if (!canPlayDifficulty(diff)) {
+    if (diff === "medium") {
+      elMessage.textContent = "Finish Easy to unlock Medium.";
+    } else if (diff === "hard") {
+      elMessage.textContent = "Finish Medium to unlock Hard.";
+    } else {
+      elMessage.textContent = "";
+    }
+    elMessage.style.color = "#ffcc00";
+    return;
+  }
+
   currentDiff = diff;
+  currentList = loadTodayQuestions(diff);
+  currentIndex = 0;
+  score = 0;
 
   [btnEasy, btnMedium, btnHard].forEach((b) =>
     b.classList.remove("active")
   );
-
   if (diff === "easy") btnEasy.classList.add("active");
   if (diff === "medium") btnMedium.classList.add("active");
   if (diff === "hard") btnHard.classList.add("active");
 
-  showQuestion();
+  if (currentList.length === 0) {
+    elQuestion.textContent = "No puzzles for today.";
+    elHintBtn.style.display = "none";
+    elHintText.style.display = "none";
+    return;
+  }
+
+  renderQuestion();
 }
 
-// ---- Answer check ----
+// ---- Check answer ----
 function checkAnswer() {
-  const expected = elSubmit.dataset.answer;
-  if (!expected) return;
+  if (!currentList.length) return;
 
+  const expected = elSubmit.dataset.answer;
   const user = normalize(elAnswer.value);
+
   if (!user) {
     elMessage.textContent = "Type your answer first.";
     elMessage.style.color = "#ffcc00";
     return;
   }
 
-  const ok = normalize(expected) === user;
-
-  if (ok) {
-    elMessage.textContent = "Correct! 🎉";
+  if (normalize(expected) === user) {
+    score++;
+    elMessage.textContent = "Correct!";
     elMessage.style.color = "#4caf50";
-
-    const store = loadLocal();
-    if (!store[currentTodayKey]) store[currentTodayKey] = {};
-    store[currentTodayKey][currentDiff] = true;
-    saveLocal(store);
   } else {
-    elMessage.textContent = "Not quite, try again.";
+    elMessage.textContent = `Wrong. Correct answer: ${expected}`;
     elMessage.style.color = "#ff6b6b";
   }
+
+  currentIndex++;
+
+  if (currentIndex >= currentList.length) {
+    // Finished this level
+    markCompleted(currentDiff);
+    elQuestion.textContent = `Finished ${currentDiff.toUpperCase()}! Score: ${score}/${currentList.length}`;
+
+    elHintBtn.style.display = "none";
+    elHintText.style.display = "none";
+
+    // Optional: auto-suggest next level
+    const p = todayProgress();
+    if (currentDiff === "easy" && p.easy && !p.medium) {
+      elMessage.textContent += " — Medium is now unlocked!";
+      elMessage.style.color = "#4caf50";
+    } else if (currentDiff === "medium" && p.medium && !p.hard) {
+      elMessage.textContent += " — Hard is now unlocked!";
+      elMessage.style.color = "#4caf50";
+    }
+
+    return;
+  }
+
+  setTimeout(renderQuestion, 700);
 }
 
-// ---- Hint toggle ----
+// ---- Hint ----
 function toggleHint() {
   if (!elHintText.textContent) return;
   elHintText.style.display =
@@ -207,35 +275,34 @@ async function initBrain() {
   initTheme();
   startCountdown();
 
+  progress = loadProgress();
+  applyLocks();
+
   try {
     const res = await fetch(DATA_URL, { cache: "no-store" });
-    if (!res.ok) throw new Error(res.status);
     setsData = await res.json();
   } catch (e) {
     console.error(e);
-    elQuestion.textContent =
-      "Error loading today's puzzles. Please try again later.";
+    elQuestion.textContent = "Failed to load puzzles.";
     return;
   }
 
+  // Start at Easy (always unlocked)
   setDifficulty("easy");
 }
 
 // ---- Events ----
-btnEasy.addEventListener("click", () => setDifficulty("easy"));
-btnMedium.addEventListener("click", () => setDifficulty("medium"));
-btnHard.addEventListener("click", () => setDifficulty("hard"));
+btnEasy.onclick = () => setDifficulty("easy");
+btnMedium.onclick = () => setDifficulty("medium");
+btnHard.onclick = () => setDifficulty("hard");
 
-elSubmit.addEventListener("click", checkAnswer);
-elAnswer.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") checkAnswer();
-});
+elSubmit.onclick = checkAnswer;
+elAnswer.onkeydown = (e) => e.key === "Enter" && checkAnswer();
+elHintBtn.onclick = toggleHint;
 
-elHintBtn.addEventListener("click", toggleHint);
-
-themeBlue.addEventListener("click", () => applyTheme("blue"));
-themeOrange.addEventListener("click", () => applyTheme("orange"));
-themeGold.addEventListener("click", () => applyTheme("gold"));
+themeBlue.onclick = () => applyTheme("blue");
+themeOrange.onclick = () => applyTheme("orange");
+themeGold.onclick = () => applyTheme("gold");
 
 // ---- Go ----
 initBrain();
