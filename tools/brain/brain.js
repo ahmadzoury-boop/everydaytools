@@ -222,3 +222,4 @@ initBrain();
 document.addEventListener("DOMContentLoaded", () => {
   initBrain();
 });
+document.addEventListener("DOMContentLoaded", initBrain);
