@@ -107,6 +107,9 @@ function showQuestion() {
   }
 
   const item = daySet[currentDiff];
+  elQuestion.textContent = JSON.stringify(item, null, 2);
+return;
+
   elQuestion.textContent =
   item.question ||
   item.text ||
