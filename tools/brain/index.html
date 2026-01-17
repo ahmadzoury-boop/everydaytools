@@ -3,108 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <title>Daily Brain – EverydayTools.uk</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Daily Brain – one short brain challenge per day." />
 
-  <!-- Theme -->
-  <meta name="color-scheme" content="dark light" />
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="/tools/brain/brain.css" />
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --fg: #ffffff;
+      --card: #1a1a1a;
+      --accent: #4ea1ff;
+    }
 
-  <!-- Script -->
-  <script defer src="/tools/brain/brain.js"></script>
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8f8f8;
+        --fg: #111;
+        --card: #fff;
+        --accent: #0066cc;
+      }
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .sub {
+      opacity: 0.6;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 18px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+    }
+
+    .row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(3, 1fr);
+      margin-bottom: 10px;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      padding: 6px 0;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .timer {
+      font-size: 15px;
+      margin-top: 4px;
+      opacity: 0.6;
+    }
+
+    .q-card {
+      background: var(--card);
+      padding: 18px;
+      border-radius: 14px;
+      margin-top: 14px;
+    }
+
+    .answer-box {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background: #fff;
+      color: #000;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--accent);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Radial color picker */
+    .color-picker {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .color-wheel {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      margin: auto;
+      background: conic-gradient(
+        red,
+        yellow,
+        lime,
+        cyan,
+        blue,
+        magenta,
+        red
+      );
+      border: 4px solid var(--card);
+    }
+  </style>
 </head>
-
 <body>
 
-<main class="brain-page">
+  <h1>Daily Brain</h1>
+  <div class="sub">EverydayTools.uk</div>
 
-  <!-- ================= HEADER ================= -->
-  <header class="brain-header">
-    <h1>🧠 Daily Brain</h1>
-    <small id="resetTimer">Resets in --:--:-- (UTC)</small>
-  </header>
-
-  <!-- ================= LEVEL TABS ================= -->
-  <nav class="brain-tabs">
-    <button class="brain-tab-btn active" data-level="easy">Easy</button>
-    <button class="brain-tab-btn locked" data-level="medium">Medium</button>
-    <button class="brain-tab-btn locked" data-level="hard">Hard</button>
-  </nav>
-
-  <!-- ================= MAIN CARD ================= -->
-  <section class="brain-card">
-
-    <div class="brain-card-header">
-      <h2>Daily Brain</h2>
-      <div>Level: <strong id="currentLevelLabel">EASY</strong></div>
+  <!-- Filters -->
+  <div class="card">
+    <div class="row">
+      <button class="filter-btn" data-filter="easy">Easy</button>
+      <button class="filter-btn" data-filter="medium">Medium</button>
+      <button class="filter-btn" data-filter="hard">Hard</button>
     </div>
+    <div class="timer">Resets in <span id="resetTime">00:00:00</span> (UTC)</div>
+  </div>
 
-    <p class="brain-help-text">
-      Answer each question one by one. Press <b>Enter</b> or click <b>Submit</b>.
-    </p>
+  <!-- Question -->
+  <div id="questionArea" class="q-card">
+    <div id="questionText">Loading...</div>
 
-    <!-- QUESTIONS CONTAINER (REQUIRED) -->
-    <div id="questions"></div>
+    <input id="answerInput" type="text" class="answer-box" placeholder="Your answer">
+    <button id="submitBtn" class="submit-btn">Submit</button>
 
-    <!-- SUBMIT ROW -->
-    <div class="brain-submit-row">
-      <button id="submitBtn" class="brain-button-primary">
-        Submit
-      </button>
+    <div id="hintBtn" class="hint">💡 Show hint</div>
+    <div id="hintText" style="display:none; opacity:0.8; margin-top:8px;"></div>
+  </div>
 
-      <div id="level-summary" class="brain-help-text">
-        Question 1 of …
-      </div>
-    </div>
-  </section>
+  <!-- Radial Color Picker -->
+  <div class="card color-picker">
+    <div class="color-wheel"></div>
+    <div style="margin-top:8px; opacity:0.7;">Visual Theme Selector</div>
+  </div>
 
-  <!-- ================= TODAY RESULT ================= -->
-  <section class="brain-section">
-    <h3>Today's Result</h3>
-    <p>
-      Score:
-      <strong>
-        <span id="todayScore">0</span>
-      </strong>
-    </p>
-  </section>
-
-  <!-- ================= BEST DAYS ================= -->
-  <section class="brain-section">
-    <h3>🏆 Your Best Days</h3>
-    <div id="bestDays">Loading…</div>
-  </section>
-
-  <!-- ================= GLOBAL LEADERBOARD ================= -->
-  <section class="brain-section">
-    <h3>🌍 Global Leaderboard</h3>
-    <div id="globalLeaderboard">Loading…</div>
-  </section>
-
-  <!-- ================= SUBSCRIPTION ================= -->
-  <section class="brain-section">
-    <h3>💌 Get the Daily Brain by Email</h3>
-    <p>Receive one short brain challenge per day.</p>
-
-    <div class="brain-subscribe-row">
-      <input
-        id="sub-email"
-        type="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-      />
-      <button id="sub-btn" class="brain-button-primary">
-        Subscribe
-      </button>
-    </div>
-
-    <div id="sub-msg" class="brain-help-text"></div>
-  </section>
-
-</main>
+  <!-- Scripts -->
+  <script src="./brain.js"></script>
 
 </body>
 </html>
