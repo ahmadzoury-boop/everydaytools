@@ -1,6 +1,6 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// FINAL FULL VERSION 2026
+// FINAL COMPLETE VERSION (2026)
 // ================================
 
 // --------------------------------
@@ -32,7 +32,8 @@ let index = 0;
 let correct = 0;
 let finished = false;
 let currentInput = null;
-let attempts = 0;   // tracking wrong tries
+let attempts = 0;
+
 const MAX_ATTEMPTS = 3;
 
 // --------------------------------
@@ -46,7 +47,7 @@ let qWrap,
   themeToggle;
 
 // --------------------------------
-// INIT DOM
+// INIT WHEN DOM READY
 // --------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   qWrap = document.getElementById("questions");
@@ -59,11 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
   applyTheme(loadTheme());
   setupThemeToggle();
   setupEvents();
+
   loadData();
+  loadBestDays();
+  loadLeaderboard();
 });
 
 // --------------------------------
-// LOAD JSON
+// LOAD JSON DATA
 // --------------------------------
 function loadData() {
   fetch(DATA_URL)
@@ -120,7 +124,9 @@ function showQuestion() {
 
       <p id="attempt-msg" class="brain-help-text" style="color:#f87171;margin-top:6px;"></p>
 
-      <button id="skipBtn" class="brain-button-secondary" style="margin-top:10px;display:none;">Skip Question</button>
+      <button id="skipBtn" class="brain-button-secondary" style="margin-top:10px;display:none;">
+        Skip Question
+      </button>
     </div>
   `;
 
@@ -147,7 +153,7 @@ function showQuestion() {
 }
 
 // --------------------------------
-// SUBMIT LOGIC (WITH ATTEMPTS)
+// SUBMIT LOGIC (WITH ATTEMPTS & SKIP)
 // --------------------------------
 function submitAnswer() {
   if (finished || !currentInput) return;
@@ -156,10 +162,10 @@ function submitAnswer() {
   const user = norm(currentInput.value);
   const solution = norm(questions[index].a);
 
-  // Correct
   if (user === solution) {
     correct++;
     index++;
+
     if (index < questions.length) {
       showQuestion();
     } else {
@@ -169,15 +175,15 @@ function submitAnswer() {
     return;
   }
 
-  // Wrong answer
   attempts++;
 
   if (attempts < MAX_ATTEMPTS) {
-    attemptMsg.textContent = `Wrong answer. Attempts left: ${MAX_ATTEMPTS - attempts}`;
+    attemptMsg.textContent = `Wrong answer. Attempts left: ${
+      MAX_ATTEMPTS - attempts
+    }`;
     return;
   }
 
-  // Out of attempts — show skip option
   attemptMsg.textContent = `No attempts left. You can skip this question.`;
   document.getElementById("skipBtn").style.display = "block";
 }
@@ -197,8 +203,21 @@ function finishLevel() {
 
   todayScoreEl.textContent = `${correct}/${questions.length}`;
 
-  // Unlock next level
   unlockNextLevel(currentLevel);
+
+  // Submit score to server
+  fetch("/api/brain-score", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      date: todayKey(),
+      level: currentLevel,
+      score: `${correct}/${questions.length}`,
+    }),
+  }).finally(() => {
+    loadBestDays();
+    loadLeaderboard();
+  });
 }
 
 // --------------------------------
@@ -262,7 +281,6 @@ function applyTheme(mode) {
   document.documentElement.style.colorScheme = mode;
   if (mode === "light") document.body.classList.add("light-mode");
   else document.body.classList.remove("light-mode");
-
   localStorage.setItem("brainTheme", mode);
 }
 
@@ -279,6 +297,54 @@ function setupThemeToggle() {
     const next = loadTheme() === "dark" ? "light" : "dark";
     applyTheme(next);
   });
+}
+
+// --------------------------------
+// BEST DAYS
+// --------------------------------
+function loadBestDays() {
+  const box = document.getElementById("bestDays");
+  if (!box) return;
+
+  fetch("/api/brain-score")
+    .then((r) => r.json())
+    .then((data) => {
+      if (!data?.length) {
+        box.textContent = "No history yet.";
+        return;
+      }
+
+      box.innerHTML = data
+        .map((d) => `${d.date} — ${d.score}`)
+        .join("<br>");
+    })
+    .catch(() => {
+      box.textContent = "Failed to load history.";
+    });
+}
+
+// --------------------------------
+// GLOBAL LEADERBOARD
+// --------------------------------
+function loadLeaderboard() {
+  const box = document.getElementById("globalLeaderboard");
+  if (!box) return;
+
+  fetch("/api/brain-leaderboard")
+    .then((r) => r.json())
+    .then((data) => {
+      if (!data?.length) {
+        box.textContent = "No scores yet.";
+        return;
+      }
+
+      box.innerHTML = data
+        .map((row, i) => `${i + 1}. ${row.name}: ${row.score}`)
+        .join("<br>");
+    })
+    .catch(() => {
+      box.textContent = "Failed to load leaderboard.";
+    });
 }
 
 // --------------------------------
