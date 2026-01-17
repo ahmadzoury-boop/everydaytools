@@ -200,6 +200,8 @@ async function loadGlobalLeaderboard() {
 
 // ====== Init ======
 async function initBrain() {
+  console.log("🚀 initBrain started");
+
   await loadSets();
   startResetCountdown();
   renderBestDays();
