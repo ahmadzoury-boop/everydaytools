@@ -5,123 +5,227 @@
   <title>Daily Brain – EverydayTools.uk</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --bg: #0d0d0d;
+      --bg: #050509;
       --fg: #ffffff;
-      --card: #1a1a1a;
-      --accent: #4ea1ff; /* default blue */
+      --card: #15151f;
+      --accent: #4ea1ff;
+      --muted: #888ba0;
+      --border-subtle: #262637;
     }
 
     @media (prefers-color-scheme: light) {
       :root {
-        --bg: #f8f8f8;
-        --fg: #111111;
+        --bg: #f5f6fb;
+        --fg: #111218;
         --card: #ffffff;
         --accent: #0066cc;
+        --muted: #6b6b7a;
+        --border-subtle: #e1e3f0;
       }
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      font-family: "Inter", sans-serif;
-      background: var(--bg);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #161628 0, #050509 60%);
       color: var(--fg);
       padding: 16px;
     }
 
+    .brain-page {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
     h1 {
-      font-size: 28px;
-      margin-bottom: 4px;
+      font-size: 26px;
+      margin: 0 0 4px;
       font-weight: 700;
     }
 
-    .sub {
-      opacity: 0.6;
-      margin-bottom: 24px;
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 18px;
     }
 
     .card {
-      background: var(--card);
-      padding: 18px;
-      border-radius: 14px;
-      margin-bottom: 20px;
+      background: rgba(11, 11, 25, 0.92);
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(12px);
     }
 
-    /* Difficulty row */
-    .difficulty-row {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: repeat(3, 1fr);
+    @media (prefers-color-scheme: light) {
+      .card {
+        background: var(--card);
+      }
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
       margin-bottom: 10px;
     }
 
-    .difficulty-btn {
-      border: 1px solid var(--accent);
-      background: transparent;
-      color: var(--accent);
-      padding: 8px 0;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
+    .diff-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .difficulty-btn.active {
+    .diff-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--fg);
+      font-size: 13px;
+      padding: 6px 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .diff-btn span.badge {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      color: var(--muted);
+    }
+
+    .diff-btn.active {
+      border-color: var(--accent);
       background: var(--accent);
       color: #ffffff;
     }
 
-    .timer {
-      font-size: 14px;
-      margin-top: 4px;
-      opacity: 0.7;
+    .diff-btn[disabled] {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .timer-line {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .streak-line {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .streak-main strong {
+      color: #ffd36b;
+    }
+
+    .streak-note {
+      font-size: 12px;
+      opacity: 0.9;
     }
 
     /* Question card */
-    .q-card {
-      background: var(--card);
-      padding: 18px;
-      border-radius: 14px;
-      margin-top: 4px;
+    .pill-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .pill-label span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    #levelLabel {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      color: var(--muted);
     }
 
     #questionText {
       font-size: 16px;
       line-height: 1.5;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      min-height: 46px;
     }
 
-    .answer-box {
+    .answer-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    #answerInput {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 10px;
+      padding: 10px 11px;
       border-radius: 10px;
-      border: 1px solid #444;
+      border: 1px solid var(--border-subtle);
       background: #ffffff;
-      color: #000000;
-      box-sizing: border-box;
+      color: #111;
+      font-size: 15px;
+      outline: none;
     }
 
-    .submit-btn {
-      width: 100%;
-      margin-top: 10px;
-      padding: 12px;
+    #answerInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    #submitBtn {
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: none;
       background: var(--accent);
       color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
       font-weight: 600;
+      font-size: 15px;
       cursor: pointer;
     }
 
-    .hint {
-      margin-top: 10px;
+    #submitBtn:active {
+      transform: translateY(1px);
+    }
+
+    .hint-row {
+      margin-top: 8px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    #hintBtn {
       color: var(--accent);
       font-weight: 600;
       cursor: pointer;
@@ -132,37 +236,138 @@
 
     #hintText {
       display: none;
-      opacity: 0.85;
-      margin-top: 8px;
-      font-size: 14px;
+      font-size: 13px;
+      color: var(--muted);
     }
 
     #message {
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 500;
     }
 
-    /* Theme buttons (blue / orange / gold) */
-    .theme-card-title {
+    .section-title {
       font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* Today result + best days + leaderboard */
+    .result-row {
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
       margin-bottom: 8px;
-      opacity: 0.8;
+    }
+
+    .result-row span.label {
+      color: var(--muted);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 720px) {
+      .two-col {
+        grid-template-columns: 1.1fr 1.1fr;
+      }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    @media (prefers-color-scheme: light) {
+      th, td {
+        border-bottom-color: #eceff7;
+      }
+    }
+
+    th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    td.score {
+      text-align: right;
+      font-weight: 500;
+    }
+
+    .empty-text {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .name-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    #globalNameInput,
+    #subEmailInput {
+      flex: 1 1 160px;
+      padding: 8px 10px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      outline: none;
+      background: #ffffff;
+      color: #111;
+    }
+
+    #globalNameInput:focus,
+    #subEmailInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .btn-outline,
+    .btn-outline-small {
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      background: transparent;
+      font-size: 13px;
+      padding: 8px 14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-outline-small {
+      padding: 6px 12px;
+      font-size: 12px;
     }
 
     .theme-row {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .theme-btn {
-      flex: 0 0 auto;
-      padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid transparent;
-      background: #333;
-      color: #fff;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--fg);
       font-size: 12px;
+      padding: 5px 10px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -170,86 +375,198 @@
     }
 
     .theme-dot {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
     }
+
+    .theme-blue .theme-dot { background: #4ea1ff; }
+    .theme-orange .theme-dot { background: #ff8c32; }
+    .theme-gold .theme-dot { background: #f4c542; }
 
     .theme-btn.active {
       border-color: var(--accent);
     }
 
-    .theme-blue .theme-dot {
-      background: #4ea1ff;
+    #subStatus {
+      margin-top: 6px;
+      font-size: 13px;
     }
 
-    .theme-orange .theme-dot {
-      background: #ff8c32;
+    .footer-links {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .theme-gold .theme-dot {
-      background: #f4c542;
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>Daily Brain</h1>
-  <div class="sub">EverydayTools.uk</div>
+  <main class="brain-page">
+    <header>
+      <h1>Daily Brain</h1>
+      <div class="subtitle">One short challenge a day on EverydayTools.uk</div>
+    </header>
 
-  <!-- Difficulty + timer -->
-  <div class="card">
-    <div class="difficulty-row">
-      <button id="btnEasy" class="difficulty-btn active" data-diff="easy">Easy</button>
-      <button id="btnMedium" class="difficulty-btn" data-diff="medium">Medium</button>
-      <button id="btnHard" class="difficulty-btn" data-diff="hard">Hard</button>
-    </div>
-    <div class="timer">
-      Resets in <span id="resetTime">00:00:00</span> (UTC)
-    </div>
-  </div>
+    <!-- Difficulty + timer + streak -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="section-title">Difficulty</div>
+          <div class="diff-row">
+            <button id="btnEasy" class="diff-btn active">
+              Easy
+              <span class="badge">Start here</span>
+            </button>
+            <button id="btnMedium" class="diff-btn">
+              Medium
+              <span class="badge">Unlock after Easy</span>
+            </button>
+            <button id="btnHard" class="diff-btn">
+              Hard
+              <span class="badge">Unlock after Medium</span>
+            </button>
+          </div>
+        </div>
+        <div class="timer-line">
+          Resets in <span id="resetTime">00:00:00</span> (UTC)
+        </div>
+      </div>
+      <div class="streak-line">
+        <div class="streak-main">
+          <span id="streakText">Streak 🔥 0 · Best 0</span>
+        </div>
+        <div class="streak-note">
+          🔥 Your streak increases when you complete <strong>Easy + Medium</strong> on the same day.
+        </div>
+      </div>
+    </section>
 
-  <!-- Question card -->
-  <div class="q-card">
-    <div id="questionText">Loading...</div>
+    <!-- Question -->
+    <section class="card">
+      <div class="pill-label">
+        <span class="dot"></span>
+        <span id="levelLabel">EASY</span>
+      </div>
+      <div id="questionText">Loading today’s puzzles…</div>
 
-    <input
-      id="answerInput"
-      type="text"
-      class="answer-box"
-      placeholder="Your answer"
-      autocomplete="off"
-    />
+      <div class="answer-row">
+        <input
+          id="answerInput"
+          type="text"
+          placeholder="Your answer"
+          autocomplete="off"
+        />
+        <button id="submitBtn">Submit</button>
+      </div>
 
-    <button id="submitBtn" class="submit-btn">Submit</button>
+      <div class="hint-row">
+        <div id="hintBtn">
+          <span>💡</span><span>Show hint</span>
+        </div>
+        <div id="hintText"></div>
+      </div>
 
-    <div id="hintBtn" class="hint">
-      <span>💡</span><span>Show hint</span>
-    </div>
-    <div id="hintText"></div>
+      <div id="message"></div>
+    </section>
 
-    <div id="message"></div>
-  </div>
+    <!-- Results + leaderboard -->
+    <section class="card">
+      <div class="section-title">Today's Result</div>
+      <div class="result-row">
+        <span><span class="label">Score today:</span> <strong id="todayScore">0/15</strong></span>
+        <span><span class="label">Global name:</span></span>
+      </div>
+      <div class="name-row">
+        <input id="globalNameInput" type="text" placeholder="Player name for the global board" />
+        <button id="submitScoreBtn" class="btn-outline-small">Submit score</button>
+      </div>
 
-  <!-- Theme selector: blue / orange / gold -->
-  <div class="card">
-    <div class="theme-card-title">Theme</div>
-    <div class="theme-row">
-      <button id="themeBlue" class="theme-btn theme-blue active">
-        <span class="theme-dot"></span>
-        Blue
-      </button>
-      <button id="themeOrange" class="theme-btn theme-orange">
-        <span class="theme-dot"></span>
-        Orange
-      </button>
-      <button id="themeGold" class="theme-btn theme-gold">
-        <span class="theme-dot"></span>
-        Golden
-      </button>
-    </div>
-  </div>
+      <div class="two-col" style="margin-top: 14px;">
+        <div>
+          <div class="section-title">🏆 Your Best Days</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="score">Score</th>
+              </tr>
+            </thead>
+            <tbody id="bestDaysBody">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+          <div id="bestDaysEmpty" class="empty-text">No history yet.</div>
+        </div>
+        <div>
+          <div class="section-title">🌍 Global Leaderboard</div>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th class="score">Score</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+          <div id="leaderboardEmpty" class="empty-text">No global scores yet.</div>
+        </div>
+      </div>
+    </section>
 
-  <!-- Logic -->
+    <!-- Theme + subscription -->
+    <section class="card">
+      <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:flex-start;">
+        <div style="flex:1 1 220px;">
+          <div class="section-title">Theme</div>
+          <div class="theme-row">
+            <button id="themeBlue" class="theme-btn theme-blue active">
+              <span class="theme-dot"></span> Blue
+            </button>
+            <button id="themeOrange" class="theme-btn theme-orange">
+              <span class="theme-dot"></span> Orange
+            </button>
+            <button id="themeGold" class="theme-btn theme-gold">
+              <span class="theme-dot"></span> Golden
+            </button>
+          </div>
+        </div>
+        <div style="flex:1 1 260px;">
+          <div class="section-title">Get the Daily Brain by email 🧠</div>
+          <div style="font-size:13px; color:var(--muted); margin-bottom:8px;">
+            Receive one short brain challenge per day. No spam. No ads. Unsubscribe anytime.
+          </div>
+          <div class="name-row">
+            <input id="subEmailInput" type="email" placeholder="you@example.com" />
+            <button id="subBtn" class="btn-outline-small">Subscribe</button>
+            <button id="unsubBtn" class="btn-outline-small">Unsubscribe</button>
+          </div>
+          <div id="subStatus"></div>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/contact">Contact</a>
+      </div>
+    </section>
+  </main>
+
   <script src="./brain.js"></script>
 </body>
 </html>
