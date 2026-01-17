@@ -13,14 +13,14 @@
       --bg: #0d0d0d;
       --fg: #ffffff;
       --card: #1a1a1a;
-      --accent: #4ea1ff;
+      --accent: #4ea1ff; /* default blue */
     }
 
     @media (prefers-color-scheme: light) {
       :root {
         --bg: #f8f8f8;
-        --fg: #111;
-        --card: #fff;
+        --fg: #111111;
+        --card: #ffffff;
         --accent: #0066cc;
       }
     }
@@ -51,39 +51,48 @@
       margin-bottom: 20px;
     }
 
-    .row {
+    /* Difficulty row */
+    .difficulty-row {
       display: grid;
       gap: 8px;
       grid-template-columns: repeat(3, 1fr);
       margin-bottom: 10px;
     }
 
-    .filter-btn {
+    .difficulty-btn {
       border: 1px solid var(--accent);
       background: transparent;
       color: var(--accent);
-      padding: 6px 0;
-      border-radius: 8px;
+      padding: 8px 0;
+      border-radius: 999px;
       font-weight: 600;
       font-size: 14px;
+      cursor: pointer;
     }
 
-    .filter-btn.active {
+    .difficulty-btn.active {
       background: var(--accent);
-      color: white;
+      color: #ffffff;
     }
 
     .timer {
-      font-size: 15px;
+      font-size: 14px;
       margin-top: 4px;
-      opacity: 0.6;
+      opacity: 0.7;
     }
 
+    /* Question card */
     .q-card {
       background: var(--card);
       padding: 18px;
       border-radius: 14px;
-      margin-top: 14px;
+      margin-top: 4px;
+    }
+
+    #questionText {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 8px;
     }
 
     .answer-box {
@@ -93,8 +102,9 @@
       margin-top: 10px;
       border-radius: 10px;
       border: 1px solid #444;
-      background: #fff;
-      color: #000;
+      background: #ffffff;
+      color: #000000;
+      box-sizing: border-box;
     }
 
     .submit-btn {
@@ -102,11 +112,12 @@
       margin-top: 10px;
       padding: 12px;
       background: var(--accent);
-      color: #fff;
+      color: #ffffff;
       border: none;
       border-radius: 10px;
       font-size: 16px;
       font-weight: 600;
+      cursor: pointer;
     }
 
     .hint {
@@ -114,66 +125,131 @@
       color: var(--accent);
       font-weight: 600;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    /* Radial color picker */
-    .color-picker {
-      margin-top: 20px;
-      text-align: center;
+    #hintText {
+      display: none;
+      opacity: 0.85;
+      margin-top: 8px;
+      font-size: 14px;
     }
 
-    .color-wheel {
-      width: 180px;
-      height: 180px;
+    #message {
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Theme buttons (blue / orange / gold) */
+    .theme-card-title {
+      font-size: 14px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+
+    .theme-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .theme-btn {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: #333;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .theme-dot {
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      margin: auto;
-      background: conic-gradient(
-        red,
-        yellow,
-        lime,
-        cyan,
-        blue,
-        magenta,
-        red
-      );
-      border: 4px solid var(--card);
+    }
+
+    .theme-btn.active {
+      border-color: var(--accent);
+    }
+
+    .theme-blue .theme-dot {
+      background: #4ea1ff;
+    }
+
+    .theme-orange .theme-dot {
+      background: #ff8c32;
+    }
+
+    .theme-gold .theme-dot {
+      background: #f4c542;
     }
   </style>
 </head>
 <body>
-
   <h1>Daily Brain</h1>
   <div class="sub">EverydayTools.uk</div>
 
-  <!-- Filters -->
+  <!-- Difficulty + timer -->
   <div class="card">
-    <div class="row">
-      <button class="filter-btn" data-filter="easy">Easy</button>
-      <button class="filter-btn" data-filter="medium">Medium</button>
-      <button class="filter-btn" data-filter="hard">Hard</button>
+    <div class="difficulty-row">
+      <button id="btnEasy" class="difficulty-btn active" data-diff="easy">Easy</button>
+      <button id="btnMedium" class="difficulty-btn" data-diff="medium">Medium</button>
+      <button id="btnHard" class="difficulty-btn" data-diff="hard">Hard</button>
     </div>
-    <div class="timer">Resets in <span id="resetTime">00:00:00</span> (UTC)</div>
+    <div class="timer">
+      Resets in <span id="resetTime">00:00:00</span> (UTC)
+    </div>
   </div>
 
-  <!-- Question -->
-  <div id="questionArea" class="q-card">
+  <!-- Question card -->
+  <div class="q-card">
     <div id="questionText">Loading...</div>
 
-    <input id="answerInput" type="text" class="answer-box" placeholder="Your answer">
+    <input
+      id="answerInput"
+      type="text"
+      class="answer-box"
+      placeholder="Your answer"
+      autocomplete="off"
+    />
+
     <button id="submitBtn" class="submit-btn">Submit</button>
 
-    <div id="hintBtn" class="hint">💡 Show hint</div>
-    <div id="hintText" style="display:none; opacity:0.8; margin-top:8px;"></div>
+    <div id="hintBtn" class="hint">
+      <span>💡</span><span>Show hint</span>
+    </div>
+    <div id="hintText"></div>
+
+    <div id="message"></div>
   </div>
 
-  <!-- Radial Color Picker -->
-  <div class="card color-picker">
-    <div class="color-wheel"></div>
-    <div style="margin-top:8px; opacity:0.7;">Visual Theme Selector</div>
+  <!-- Theme selector: blue / orange / gold -->
+  <div class="card">
+    <div class="theme-card-title">Theme</div>
+    <div class="theme-row">
+      <button id="themeBlue" class="theme-btn theme-blue active">
+        <span class="theme-dot"></span>
+        Blue
+      </button>
+      <button id="themeOrange" class="theme-btn theme-orange">
+        <span class="theme-dot"></span>
+        Orange
+      </button>
+      <button id="themeGold" class="theme-btn theme-gold">
+        <span class="theme-dot"></span>
+        Golden
+      </button>
+    </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Logic -->
   <script src="./brain.js"></script>
-
 </body>
 </html>

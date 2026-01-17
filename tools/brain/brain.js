@@ -1,382 +1,226 @@
 // ================================
-// EverydayTools.uk — Daily Brain
-// FINAL COMPLETE VERSION (2026)
+// Daily Brain — EverydayTools.uk
+// Clean v1 (local only)
 // ================================
 
-// --------------------------------
-// CONFIG
-// --------------------------------
+// ---- Config ----
 const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
+const STORE_KEY = "et_brain_v1";
+const THEME_KEY = "et_brain_theme_v1";
 
-// --------------------------------
-// HELPERS
-// --------------------------------
-function todayKey() {
-  // LOCAL date (not UTC!) to match JSON keys exactly
+// ---- State ----
+let setsData = null;
+let currentDiff = "easy";
+let currentTodayKey = null;
+
+// ---- Helpers ----
+const todayKey = () => new Date().toISOString().slice(0, 10);
+
+const msToNextUtcMidnight = () => {
   const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${dd}`;
+  return (
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) -
+    Date.now()
+  );
+};
+
+const fmtHMS = (ms) => {
+  const s = Math.floor(ms / 1000);
+  const hh = String(Math.floor(s / 3600)).padStart(2, "0");
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  return `${hh}:${mm}:${ss}`;
+};
+
+function loadLocal() {
+  try {
+    return JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+  } catch {
+    return {};
+  }
 }
 
-const norm = (s) => String(s ?? "").trim().toLowerCase();
-
-// --------------------------------
-// STATE
-// --------------------------------
-let brainDB = null;
-let currentLevel = "easy";
-let questions = [];
-let index = 0;
-let correct = 0;
-let finished = false;
-let currentInput = null;
-let attempts = 0;
-
-const MAX_ATTEMPTS = 3;
-
-// --------------------------------
-// DOM ELEMENTS
-// --------------------------------
-let qWrap,
-  submitBtn,
-  levelBtns,
-  todayScoreEl,
-  levelSummaryEl,
-  themeToggle;
-
-// --------------------------------
-// INIT WHEN DOM READY
-// --------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  qWrap = document.getElementById("questions");
-  submitBtn = document.getElementById("submitBtn");
-  levelBtns = document.querySelectorAll("[data-level]");
-  todayScoreEl = document.getElementById("todayScore");
-  levelSummaryEl = document.getElementById("level-summary");
-  themeToggle = document.getElementById("theme-toggle");
-
-  applyTheme(loadTheme());
-  setupThemeToggle();
-  setupEvents();
-
-  loadData();
-  loadBestDays();
-  loadLeaderboard();
-});
-
-// --------------------------------
-// LOAD JSON DATA
-// --------------------------------
-function loadData() {
-  fetch(DATA_URL)
-    .then((r) => r.json())
-    .then((data) => {
-      brainDB = data;
-      initLevel("easy");
-    })
-    .catch(() => {
-      qWrap.innerHTML =
-        "<p class='brain-help-text'>Today’s challenge is preparing…</p>";
-    });
+function saveLocal(data) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
 }
 
-// --------------------------------
-// INIT LEVEL
-// --------------------------------
-function initLevel(level) {
-  currentLevel = level;
-  index = 0;
-  correct = 0;
-  finished = false;
-  attempts = 0;
+// ---- DOM refs ----
+const elResetTime = document.getElementById("resetTime");
+const elQuestion = document.getElementById("questionText");
+const elAnswer = document.getElementById("answerInput");
+const elSubmit = document.getElementById("submitBtn");
+const elHintBtn = document.getElementById("hintBtn");
+const elHintText = document.getElementById("hintText");
+const elMessage = document.getElementById("message");
 
-  const today = todayKey();
-  questions = brainDB?.[today]?.[level] || [];
+const btnEasy = document.getElementById("btnEasy");
+const btnMedium = document.getElementById("btnMedium");
+const btnHard = document.getElementById("btnHard");
 
-  if (!questions.length) {
-    qWrap.innerHTML =
-      "<p class='brain-help-text'>No questions available today.</p>";
-    updateSummary();
+const themeBlue = document.getElementById("themeBlue");
+const themeOrange = document.getElementById("themeOrange");
+const themeGold = document.getElementById("themeGold");
+
+// ---- Theme handling ----
+function applyTheme(name) {
+  let accent;
+  if (name === "orange") accent = "#ff8c32";
+  else if (name === "gold") accent = "#f4c542";
+  else accent = "#4ea1ff"; // blue default
+
+  document.documentElement.style.setProperty("--accent", accent);
+
+  // active state
+  [themeBlue, themeOrange, themeGold].forEach((btn) =>
+    btn.classList.remove("active")
+  );
+  if (name === "orange") themeOrange.classList.add("active");
+  else if (name === "gold") themeGold.classList.add("active");
+  else themeBlue.classList.add("active");
+
+  localStorage.setItem(THEME_KEY, name);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || "blue";
+  applyTheme(saved);
+}
+
+// ---- Question loading ----
+function getTodaySet() {
+  if (!setsData) return null;
+  const key = todayKey();
+  currentTodayKey = key;
+  return setsData[key] || null;
+}
+
+function showQuestion() {
+  const daySet = getTodaySet();
+  elMessage.textContent = "";
+  elHintText.style.display = "none";
+  elHintText.textContent = "";
+  elAnswer.value = "";
+
+  if (!daySet || !daySet[currentDiff]) {
+    elQuestion.textContent = "No puzzle available for today.";
     return;
   }
+
+  const item = daySet[currentDiff];
+  elQuestion.textContent = item.question || "Puzzle missing text.";
+  if (item.hint) {
+    elHintBtn.style.display = "inline-flex";
+    elHintText.textContent = item.hint;
+  } else {
+    elHintBtn.style.display = "none";
+    elHintText.textContent = "";
+  }
+}
+
+// ---- Difficulty switching ----
+function setDifficulty(diff) {
+  currentDiff = diff;
+  [btnEasy, btnMedium, btnHard].forEach((btn) =>
+    btn.classList.remove("active")
+  );
+  if (diff === "easy") btnEasy.classList.add("active");
+  else if (diff === "medium") btnMedium.classList.add("active");
+  else if (diff === "hard") btnHard.classList.add("active");
 
   showQuestion();
-  updateSummary();
 }
 
-// --------------------------------
-// RENDER QUESTION
-// --------------------------------
-function showQuestion() {
-  const q = questions[index];
-  attempts = 0;
-
-  qWrap.innerHTML = `
-    <div class="brain-question-card">
-      <div class="q-text">${index + 1}. ${q.q}</div>
-
-      <input id="answerInput" autocomplete="off" placeholder="Your answer…" />
-
-      <div class="brain-hint">💡 Show hint</div>
-      <div class="brain-hint-box hidden">${q.hint || ""}</div>
-
-      <p id="attempt-msg" class="brain-help-text" style="color:#f87171;margin-top:6px;"></p>
-
-      <button id="skipBtn" class="brain-button-secondary" style="margin-top:10px;display:none;">
-        Skip Question
-      </button>
-    </div>
-  `;
-
-  currentInput = document.getElementById("answerInput");
-  if (currentInput) currentInput.focus();
-
-  const hintBtn = qWrap.querySelector(".brain-hint");
-  const hintBox = qWrap.querySelector(".brain-hint-box");
-  const skipBtn = document.getElementById("skipBtn");
-
-  if (hintBtn)
-    hintBtn.addEventListener("click", () => hintBox.classList.toggle("hidden"));
-
-  if (skipBtn)
-    skipBtn.addEventListener("click", () => {
-      index++;
-      if (index < questions.length) {
-        showQuestion();
-        updateSummary();
-      } else {
-        finishLevel();
-      }
-    });
+// ---- Answer checking ----
+function normalize(str) {
+  return String(str).trim().toLowerCase();
 }
 
-// --------------------------------
-// SUBMIT LOGIC (WITH ATTEMPTS & SKIP)
-// --------------------------------
-function submitAnswer() {
-  if (finished || !currentInput) return;
+function checkAnswer() {
+  const daySet = getTodaySet();
+  if (!daySet || !daySet[currentDiff]) return;
 
-  const attemptMsg = document.getElementById("attempt-msg");
-  const user = norm(currentInput.value);
-  const solution = norm(questions[index].a);
-
-  if (user === solution) {
-    correct++;
-    index++;
-
-    if (index < questions.length) {
-      showQuestion();
-    } else {
-      finishLevel();
-    }
-    updateSummary();
+  const item = daySet[currentDiff];
+  const user = normalize(elAnswer.value);
+  if (!user) {
+    elMessage.textContent = "Type your answer first.";
+    elMessage.style.color = "#ffcc00";
     return;
   }
 
-  attempts++;
+  const expected = Array.isArray(item.answer) ? item.answer : [item.answer];
+  const ok = expected.some((ans) => normalize(ans) === user);
 
-  if (attempts < MAX_ATTEMPTS) {
-    attemptMsg.textContent = `Wrong answer. Attempts left: ${
-      MAX_ATTEMPTS - attempts
-    }`;
-    return;
-  }
+  if (ok) {
+    elMessage.textContent = "Correct! 🎉";
+    elMessage.style.color = "#4caf50";
 
-  attemptMsg.textContent = `No attempts left. You can skip this question.`;
-  document.getElementById("skipBtn").style.display = "block";
-}
-
-// --------------------------------
-// FINISH LEVEL
-// --------------------------------
-function finishLevel() {
-  finished = true;
-
-  qWrap.innerHTML = `
-    <p class="brain-help-text">
-      You finished this level 🎉<br>
-      <strong>Score: ${correct}/${questions.length}</strong>
-    </p>
-  `;
-
-  todayScoreEl.textContent = `${correct}/${questions.length}`;
-
-  unlockNextLevel(currentLevel);
-
-  // Submit score to server
-  fetch("/api/brain-score", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      date: todayKey(),
-      level: currentLevel,
-      score: `${correct}/${questions.length}`,
-    }),
-  }).finally(() => {
-    loadBestDays();
-    loadLeaderboard();
-  });
-}
-
-// --------------------------------
-// UNLOCK NEXT LEVEL
-// --------------------------------
-function unlockNextLevel(level) {
-  const order = ["easy", "medium", "hard"];
-  const idx = order.indexOf(level);
-  if (idx === -1 || idx === order.length - 1) return;
-
-  const next = order[idx + 1];
-  const btn = document.querySelector(`[data-level="${next}"]`);
-  if (btn) btn.classList.remove("locked");
-}
-
-// --------------------------------
-// SUMMARY
-// --------------------------------
-function updateSummary() {
-  if (!levelSummaryEl) return;
-
-  if (finished) {
-    levelSummaryEl.innerHTML = `Finished · Score ${correct}/${questions.length}`;
+    // save simple local "completed" flag
+    const store = loadLocal();
+    if (!store[currentTodayKey]) store[currentTodayKey] = {};
+    store[currentTodayKey][currentDiff] = { status: "correct" };
+    saveLocal(store);
   } else {
-    levelSummaryEl.innerHTML = `Question ${index + 1} of ${questions.length}`;
+    elMessage.textContent = "Not quite, try again.";
+    elMessage.style.color = "#ff6b6b";
   }
 }
 
-// --------------------------------
-// EVENTS
-// --------------------------------
-function setupEvents() {
-  if (submitBtn) submitBtn.addEventListener("click", submitAnswer);
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && currentInput === document.activeElement) {
-      submitAnswer();
-    }
-  });
-
-  levelBtns.forEach((btn) =>
-    btn.addEventListener("click", () => {
-      if (btn.classList.contains("locked")) return;
-
-      levelBtns.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      initLevel(btn.dataset.level);
-    })
-  );
+// ---- Hint toggle ----
+function toggleHint() {
+  if (!elHintText.textContent) return;
+  const visible = elHintText.style.display === "block";
+  elHintText.style.display = visible ? "none" : "block";
 }
 
-// --------------------------------
-// THEME
-// --------------------------------
-function loadTheme() {
-  return localStorage.getItem("brainTheme") || "dark";
-}
-
-function applyTheme(mode) {
-  document.documentElement.style.colorScheme = mode;
-  if (mode === "light") document.body.classList.add("light-mode");
-  else document.body.classList.remove("light-mode");
-  localStorage.setItem("brainTheme", mode);
-}
-
-function setupThemeToggle() {
-  if (!themeToggle) {
-    themeToggle = document.createElement("button");
-    themeToggle.id = "theme-toggle";
-    themeToggle.textContent = "🌓";
-    themeToggle.className = "theme-toggle-btn";
-    document.body.appendChild(themeToggle);
-  }
-
-  themeToggle.addEventListener("click", () => {
-    const next = loadTheme() === "dark" ? "light" : "dark";
-    applyTheme(next);
-  });
-}
-
-// --------------------------------
-// BEST DAYS
-// --------------------------------
-function loadBestDays() {
-  const box = document.getElementById("bestDays");
-  if (!box) return;
-
-  fetch("/api/brain-score")
-    .then((r) => r.json())
-    .then((data) => {
-      if (!data?.length) {
-        box.textContent = "No history yet.";
-        return;
-      }
-
-      box.innerHTML = data
-        .map((d) => `${d.date} — ${d.score}`)
-        .join("<br>");
-    })
-    .catch(() => {
-      box.textContent = "Failed to load history.";
-    });
-}
-
-// --------------------------------
-// GLOBAL LEADERBOARD
-// --------------------------------
-function loadLeaderboard() {
-  const box = document.getElementById("globalLeaderboard");
-  if (!box) return;
-
-  fetch("/api/brain-leaderboard")
-    .then((r) => r.json())
-    .then((data) => {
-      if (!data?.length) {
-        box.textContent = "No scores yet.";
-        return;
-      }
-
-      box.innerHTML = data
-        .map((row, i) => `${i + 1}. ${row.name}: ${row.score}`)
-        .join("<br>");
-    })
-    .catch(() => {
-      box.textContent = "Failed to load leaderboard.";
-    });
-}
-
-// --------------------------------
-// SUBSCRIPTION MODULE
-// --------------------------------
-(() => {
-  const btn = document.getElementById("sub-btn");
-  const input = document.getElementById("sub-email");
-  const msg = document.getElementById("sub-msg");
-
-  if (!btn || !input || !msg) return;
-
-  btn.addEventListener("click", async () => {
-    const email = input.value.trim();
-    if (!email) {
-      msg.textContent = "Please enter your email.";
+// ---- Timer ----
+function startCountdown() {
+  function tick() {
+    const ms = msToNextUtcMidnight();
+    if (ms <= 0) {
+      elResetTime.textContent = "00:00:00";
+      // new day: reload puzzles
+      location.reload();
       return;
     }
+    elResetTime.textContent = fmtHMS(ms);
+  }
+  tick();
+  setInterval(tick, 1000);
+}
 
-    msg.textContent = "Subscribing…";
+// ---- Init ----
+async function initBrain() {
+  initTheme();
+  startCountdown();
 
-    try {
-      const r = await fetch("/api/brain-subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+  try {
+    const res = await fetch(DATA_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    setsData = await res.json();
+  } catch (err) {
+    console.error("Failed to load sets:", err);
+    elQuestion.textContent = "Error loading today's puzzles. Please try again later.";
+    return;
+  }
 
-      const data = await r.json();
-      msg.textContent = data.message || "Subscribed!";
-    } catch {
-      msg.textContent = "Subscription failed. Try later.";
-    }
-  });
-})();
+  setDifficulty("easy");
+}
+
+// ---- Wire events ----
+btnEasy.addEventListener("click", () => setDifficulty("easy"));
+btnMedium.addEventListener("click", () => setDifficulty("medium"));
+btnHard.addEventListener("click", () => setDifficulty("hard"));
+
+elSubmit.addEventListener("click", checkAnswer);
+elAnswer.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") checkAnswer();
+});
+
+elHintBtn.addEventListener("click", toggleHint);
+
+themeBlue.addEventListener("click", () => applyTheme("blue"));
+themeOrange.addEventListener("click", () => applyTheme("orange"));
+themeGold.addEventListener("click", () => applyTheme("gold"));
+
+// kick off
+initBrain();
