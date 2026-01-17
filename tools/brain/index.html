@@ -2,285 +2,568 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Daily Brain – EverydayTools.uk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="Daily Brain – a short daily brain challenge on EverydayTools.uk."
+  />
 
-  <!-- SEO -->
-  <meta name="description" content="One daily brain challenge to boost focus, logic, memory, and speed. Track your streak, score, achievements, and compete globally." />
-
-  <!-- OpenGraph -->
-  <meta property="og:title" content="Daily Brain – EverydayTools.uk" />
-  <meta property="og:description" content="Boost your thinking with one challenge per day. Track your streak, score, and compete globally." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://everydaytools.uk/brain" />
-
-  <!-- Styles -->
+  <!-- Basic dark-friendly styling; your existing CSS can override -->
   <style>
+    :root {
+      color-scheme: dark;
+      --brain-bg: #05050a;
+      --brain-card: #101018;
+      --brain-border: #222436;
+      --brain-text: #f5f5ff;
+      --brain-muted: #a0a4c0;
+      --brain-primary: #3b82f6;
+      --brain-primary-soft: rgba(59, 130, 246, 0.16);
+      --brain-error: #f97373;
+      --brain-success: #4ade80;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       margin: 0;
-      padding: 0;
-      background: #fafafa;
-      color: #222;
-      line-height: 1.5;
-      transition: 0.3s;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 48%, #000 100%);
+      color: var(--brain-text);
     }
 
-    body.dark {
-      background: #121212;
-      color: #eee;
-    }
-
-    body.dark .card {
-      background: #1e1e1e;
-      color: #eee;
-    }
-
-    .container {
-      max-width: 760px;
+    .brain-page {
+      max-width: 960px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 24px 16px 40px;
     }
 
-    h1 {
+    .brain-header {
       text-align: center;
-      margin-bottom: 6px;
-      font-size: 28px;
-    }
-
-    .countdown {
-      text-align: center;
-      font-size: 14px;
-      color: #777;
       margin-bottom: 20px;
     }
 
-    #darkModeToggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #222;
-      color: white;
-      border: none;
-      padding: 8px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    /* Difficulty Tabs */
-    #difficultyTabs {
+    .brain-header h1 {
+      font-size: 2.1rem;
+      margin: 0 0 4px;
       display: flex;
-      gap: 6px;
-      margin-bottom: 20px;
+      align-items: center;
       justify-content: center;
+      gap: 0.5rem;
     }
 
-    #difficultyTabs button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      background: #ececec;
+    .brain-header small {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--brain-muted);
+    }
+
+    .brain-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .brain-tab-btn {
+      border-radius: 999px;
+      border: 1px solid var(--brain-border);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--brain-muted);
+      padding: 8px 4px;
+      font-size: 0.95rem;
       cursor: pointer;
-      transition: 0.2s;
-      font-size: 15px;
+      transition: background 0.18s ease, color 0.18s ease,
+        border-color 0.18s ease, transform 0.05s ease;
     }
 
-    #difficultyTabs button:hover {
-      background: #ddd;
+    .brain-tab-btn span.level-label {
+      font-weight: 600;
     }
 
-    body.dark #difficultyTabs button {
-      background: #222;
-      color: #ddd;
+    .brain-tab-btn span.lock-label {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      margin-left: 4px;
     }
 
-    body.dark #difficultyTabs button:hover {
-      background: #333;
+    .brain-tab-btn.active {
+      background: var(--brain-primary-soft);
+      color: var(--brain-text);
+      border-color: var(--brain-primary);
     }
 
-    /* Puzzle Card */
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      margin-bottom: 30px;
+    .brain-tab-btn.locked {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
 
-    .category {
-      font-size: 13px;
-      color: #555;
-      text-transform: uppercase;
+    .brain-card {
+      background: rgba(15, 23, 42, 0.94);
+      border-radius: 18px;
+      border: 1px solid var(--brain-border);
+      padding: 16px 16px 18px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.85);
+      margin-bottom: 20px;
     }
 
-    .level {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .prompt {
-      margin-top: 12px;
-      font-size: 18px;
-      font-weight: 500;
-    }
-
-    input#answerInput {
-      width: 100%;
-      padding: 10px;
-      margin-top: 12px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-
-    body.dark input#answerInput {
-      background: #1f1f1f;
-      color: #eee;
-      border: 1px solid #444;
-    }
-
-    button#submitAnswerBtn {
-      width: 100%;
-      background: #3a86ff;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 12px;
-      font-size: 17px;
-      cursor: pointer;
-    }
-
-    #hintBtn {
-      margin-top: 10px;
-      background: transparent;
-      border: none;
-      color: #3a86ff;
-      cursor: pointer;
-      font-size: 14px;
-      text-decoration: underline;
-    }
-
-    #hintText {
-      margin-top: 8px;
-      font-style: italic;
-      color: #555;
-      min-height: 20px;
-    }
-
-    /* Leaderboards */
-    h2 {
-      margin-top: 30px;
-      margin-bottom: 10px;
-      font-size: 22px;
-    }
-
-    .lb-list {
-      padding-left: 20px;
-      margin-top: 6px;
-    }
-
-    .lb-list li {
-      margin-bottom: 6px;
-      font-size: 16px;
+    .brain-card-header {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px;
     }
 
-    .lb-list li em {
-      font-size: 12px;
-      color: #666;
+    .brain-card-header h2 {
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--brain-muted);
+      margin: 0;
     }
 
-    table {
+    .brain-level-pill {
+      font-size: 0.78rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--brain-border);
+      color: var(--brain-muted);
+    }
+
+    .brain-level-pill span {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .brain-help-text {
+      font-size: 0.88rem;
+      color: var(--brain-muted);
+      margin-bottom: 10px;
+    }
+
+    .brain-question-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .brain-question {
+      border-radius: 12px;
+      border: 1px solid var(--brain-border);
+      padding: 10px 10px 8px;
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .brain-question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .brain-question-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .brain-question-index {
+      font-size: 0.8rem;
+      color: var(--brain-muted);
+      white-space: nowrap;
+    }
+
+    .brain-question-status {
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .brain-question-status.correct {
+      color: var(--brain-success);
+    }
+
+    .brain-question-status.wrong {
+      color: var(--brain-error);
+    }
+
+    .brain-question-text {
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .brain-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .brain-input-row input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--brain-border);
+      padding: 8px 10px;
+      background: #020617;
+      color: var(--brain-text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .brain-input-row input:focus {
+      border-color: var(--brain-primary);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+    }
+
+    .brain-hint {
+      font-size: 0.8rem;
+      color: var(--brain-muted);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .brain-hint-text {
+      font-size: 0.8rem;
+      color: var(--brain-muted);
+      margin-top: 2px;
+    }
+
+    .brain-explanation {
+      font-size: 0.8rem;
+      margin-top: 4px;
+      color: #e5e7eb;
+    }
+
+    .brain-explanation strong {
+      color: var(--brain-success);
+    }
+
+    .brain-submit-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brain-button-primary {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--brain-primary);
+      color: white;
+      min-width: 140px;
+      text-align: center;
+      transition: background 0.15s ease, transform 0.05s ease,
+        box-shadow 0.15s ease;
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.35);
+    }
+
+    .brain-button-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(37, 99, 235, 0.45);
+    }
+
+    .brain-button-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+    }
+
+    .brain-level-summary {
+      font-size: 0.85rem;
+      color: var(--brain-muted);
+    }
+
+    .brain-message {
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .brain-message.error {
+      color: var(--brain-error);
+    }
+
+    .brain-message.success {
+      color: var(--brain-success);
+    }
+
+    .brain-section {
+      margin-top: 18px;
+    }
+
+    .brain-section h3 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .brain-kv {
+      font-size: 0.9rem;
+      color: var(--brain-muted);
+    }
+
+    table.brain-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 6px;
+      font-size: 0.85rem;
     }
 
-    table th, table td {
-      padding: 8px;
-      border-bottom: 1px solid #eee;
+    table.brain-table th,
+    table.brain-table td {
       text-align: left;
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
     }
 
-    #shareBtn {
-      margin-top: 12px;
-      width: 100%;
-      border: none;
-      background: #34c759;
-      color: white;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
+    table.brain-table th {
+      font-weight: 600;
+      color: var(--brain-muted);
     }
 
-    /* Mobile */
-    @media (max-width: 480px) {
-      h1 { font-size: 22px; }
-      .card { padding: 16px; }
-      #difficultyTabs button { padding: 8px; font-size: 14px; }
-      input#answerInput { font-size: 15px; }
-      .lb-list li { font-size: 14px; }
+    table.brain-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .brain-subscribe-card {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      background: radial-gradient(circle at top left, #0f172a, #020617);
+      font-size: 0.9rem;
+    }
+
+    .brain-subscribe-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .brain-subscribe-row input[type="email"] {
+      flex: 1;
+      min-width: 0;
+      border-radius: 999px;
+      border: 1px solid var(--brain-border);
+      padding: 8px 10px;
+      background: #020617;
+      color: var(--brain-text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .brain-subscribe-row input[type="email"]:focus {
+      border-color: var(--brain-primary);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+    }
+
+    .brain-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      font-size: 0.78rem;
+      color: var(--brain-muted);
+      margin-top: 4px;
+    }
+
+    @media (min-width: 720px) {
+      .brain-page {
+        padding-top: 32px;
+      }
+
+      .brain-card {
+        padding: 18px 20px 20px;
+      }
     }
   </style>
+
+  <script defer src="./brain.js"></script>
 </head>
-
 <body>
+  <main class="brain-page">
+    <header class="brain-header">
+      <h1>🧠 Daily Brain</h1>
+      <small id="reset-timer">Resets in --:--:-- (UTC)</small>
+    </header>
 
-<button id="darkModeToggle">🌙</button>
+    <!-- Level tabs -->
+    <nav class="brain-tabs" id="brain-tabs">
+      <button
+        class="brain-tab-btn active"
+        data-level="easy"
+        id="tab-easy"
+        type="button"
+      >
+        <span class="level-label">Easy</span>
+      </button>
+      <button
+        class="brain-tab-btn locked"
+        data-level="medium"
+        id="tab-medium"
+        type="button"
+      >
+        <span class="level-label">Medium</span>
+        <span class="lock-label">Complete Easy</span>
+      </button>
+      <button
+        class="brain-tab-btn locked"
+        data-level="hard"
+        id="tab-hard"
+        type="button"
+      >
+        <span class="level-label">Hard</span>
+        <span class="lock-label">Complete Medium</span>
+      </button>
+    </nav>
 
-<div class="container">
+    <!-- Level card -->
+    <section class="brain-card" id="brain-level-card">
+      <div class="brain-card-header">
+        <h2>Daily Brain</h2>
+        <div class="brain-level-pill">
+          Level: <span id="level-label">Easy</span>
+        </div>
+      </div>
+      <p class="brain-help-text" id="level-help">
+        Answer all 5 questions. You can still move on even if you get some
+        wrong.
+      </p>
 
-  <h1>🧠 Daily Brain</h1>
-  <div class="countdown">
-    Resets in <span id="countdownText">00:00:00</span> (UTC)
-  </div>
+      <div id="brain-questions" class="brain-question-list">
+        <!-- Questions will be rendered by brain.js -->
+      </div>
 
-  <!-- Difficulty Tabs -->
-  <div id="difficultyTabs">
-    <button data-level="easy">Easy</button>
-    <button data-level="medium">Medium</button>
-    <button data-level="hard">Hard</button>
-  </div>
+      <div class="brain-submit-row">
+        <button class="brain-button-primary" id="submit-level-btn" type="button">
+          Submit Easy
+        </button>
+        <div class="brain-level-summary" id="level-summary">
+          You haven’t submitted Easy yet today.
+        </div>
+      </div>
 
-  <!-- Puzzle Card -->
-  <div class="card">
-    <div class="category" id="questionCategory">Category</div>
-    <div class="level" id="questionLevel">EASY</div>
-    <div class="prompt" id="questionText">Loading...</div>
+      <div class="brain-message" id="level-message"></div>
+    </section>
 
-    <input id="answerInput" placeholder="Your answer..." />
+    <!-- Today result -->
+    <section class="brain-section" id="today-section">
+      <h3>Today's Result</h3>
+      <p class="brain-kv">
+        Score:
+        <strong><span id="today-score">0</span> pts</strong>
+        &nbsp;·&nbsp;
+        Streak:
+        <strong><span id="today-streak">0</span> days</strong>
+      </p>
+      <p class="brain-kv">
+        Global name:
+        <input
+          type="text"
+          id="global-name-input"
+          placeholder="Player"
+          style="
+            background: #020617;
+            border-radius: 999px;
+            border: 1px solid var(--brain-border);
+            padding: 4px 8px;
+            color: var(--brain-text);
+            font-size: 0.85rem;
+            min-width: 120px;
+          "
+        />
+        <span class="brain-pill">This name appears on the global leaderboard.</span>
+      </p>
+    </section>
 
-    <button id="submitAnswerBtn">Submit</button>
-    <button id="hintBtn">💡 Show hint</button>
-    <div id="hintText"></div>
-  </div>
+    <!-- Best days (local or from API) -->
+    <section class="brain-section" id="best-days-section">
+      <h3>🏆 Your Best Days</h3>
+      <table class="brain-table" id="best-days-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="best-days-body">
+          <tr>
+            <td colspan="2">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
-  <!-- Today's Result -->
-  <h2>Today's Result</h2>
-  <p>Score: <strong id="todayScoreText">0/30</strong></p>
-  <p>Streak 🔥 <strong id="streakValue">0</strong></p>
-  <p>Best <strong id="bestStreakValue">0</strong></p>
-  <p>Achievement: <strong id="streakMedal"></strong></p>
+    <!-- Global leaderboard -->
+    <section class="brain-section" id="global-leaderboard-section">
+      <h3>🌍 Global Leaderboard</h3>
+      <table class="brain-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Day</th>
+          </tr>
+        </thead>
+        <tbody id="global-leaderboard-body">
+          <tr>
+            <td colspan="4">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
-  <button id="shareBtn">Share My Score</button>
+    <!-- Email subscription -->
+    <section class="brain-section" id="subscribe-section">
+      <h3>Get the Daily Brain by email 🧠</h3>
+      <div class="brain-subscribe-card">
+        <p>
+          Receive one short brain challenge per day. No spam. No ads. Unsubscribe
+          anytime.
+        </p>
+        <div id="subscribe-inner">
+          <div class="brain-subscribe-row" id="subscribe-form-row">
+            <input
+              type="email"
+              id="subscribe-email"
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+            <button
+              class="brain-button-primary"
+              type="button"
+              id="subscribe-btn"
+            >
+              Subscribe
+            </button>
+          </div>
+          <p class="brain-kv" id="subscribe-status"></p>
+        </div>
+      </div>
+    </section>
 
-  <!-- Local Leaderboard -->
-  <h2>🏆 Your Best Days</h2>
-  <div id="localLeaderboard">Loading...</div>
-
-  <!-- Global Leaderboard -->
-  <h2>🌍 Global Leaderboard</h2>
-  <div id="globalLeaderboard">Loading...</div>
-
-</div>
-
-<script src="brain.js"></script>
-
+    <footer class="brain-section" style="font-size: 0.8rem; color: var(--brain-muted);">
+      <p>
+        <a href="/privacy" style="color: inherit; text-decoration: underline;">Privacy</a>
+        &nbsp;·&nbsp;
+        <a href="/terms" style="color: inherit; text-decoration: underline;">Terms</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:support@everydaytools.uk" style="color: inherit; text-decoration: underline;">Contact</a>
+      </p>
+    </footer>
+  </main>
 </body>
 </html>

@@ -1,13 +1,18 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// brain.js — v2.0 Production
+// Multi-question levels (5 per level)
 // ================================
 
 const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
-const STORE_KEY = "et_brain_v1";
-const START_DATE = "2026-01-12";
+const STORE_KEY = "et_brain_v2";
+const FILTER_KEY = "et_brain_filter_v1"; // kept for compatibility if needed
+const SUBSCRIBE_KEY = "et_brain_subscribed";
 
-// ---------- Date & Time Helpers ----------
+const API_SCORE = "/api/brain-score";
+const API_LEADERBOARD = "/api/brain-leaderboard";
+const API_SUBSCRIBE = "/api/brain-subscribe";
+
+// ---------- Date & time helpers ----------
 
 const todayKey = () => new Date().toISOString().slice(0, 10);
 
@@ -19,478 +24,782 @@ const msToNextUtcMidnight = () => {
   );
 };
 
-const fmtCountdown = (ms) => {
-  if (ms <= 0) return "00:00:00";
-  const s = Math.floor(ms / 1000);
-  const hh = String(Math.floor(s / 3600)).padStart(2, "0");
-  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
-  const ss = String(s % 60).padStart(2, "0");
-  return `${hh}:${mm}:${ss}`;
+const fmtHMS = (ms) => {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+  const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+  const s = String(totalSeconds % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
 };
 
-function parseISODate(str) {
-  const [y, m, d] = str.split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, d));
-}
+// ---------- Normalization helpers ----------
 
-// ---------- Persistent Local State ----------
+const normalizeAnswer = (value) => {
+  if (value == null) return "";
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[.,!?'"’”“\-]/g, "");
+};
+
+const pick = (obj, key, fallback) =>
+  obj && Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : fallback;
+
+// ---------- DOM refs ----------
+
+const el = {
+  resetTimer: document.getElementById("reset-timer"),
+  tabs: document.getElementById("brain-tabs"),
+  tabEasy: document.getElementById("tab-easy"),
+  tabMedium: document.getElementById("tab-medium"),
+  tabHard: document.getElementById("tab-hard"),
+
+  levelCard: document.getElementById("brain-level-card"),
+  levelLabel: document.getElementById("level-label"),
+  levelHelp: document.getElementById("level-help"),
+  questions: document.getElementById("brain-questions"),
+  submitBtn: document.getElementById("submit-level-btn"),
+  levelSummary: document.getElementById("level-summary"),
+  levelMessage: document.getElementById("level-message"),
+
+  todayScore: document.getElementById("today-score"),
+  todayStreak: document.getElementById("today-streak"),
+  globalNameInput: document.getElementById("global-name-input"),
+
+  bestDaysBody: document.getElementById("best-days-body"),
+  leaderboardBody: document.getElementById("global-leaderboard-body"),
+
+  subscribeEmail: document.getElementById("subscribe-email"),
+  subscribeBtn: document.getElementById("subscribe-btn"),
+  subscribeStatus: document.getElementById("subscribe-status"),
+  subscribeSection: document.getElementById("subscribe-section"),
+};
+
+// ---------- State ----------
+
+const LEVELS = ["easy", "medium", "hard"];
+const LEVEL_CONFIG = {
+  easy: {
+    label: "Easy",
+    help: "Start here. Short warm-up questions to get your brain moving.",
+    pointsPerCorrect: 2,
+  },
+  medium: {
+    label: "Medium",
+    help: "A bit trickier. You’ll unlock this after submitting Easy.",
+    pointsPerCorrect: 3,
+  },
+  hard: {
+    label: "Hard",
+    help: "Challenging questions to finish the day.",
+    pointsPerCorrect: 5,
+  },
+};
+
+let dataByDate = {};
+let currentLevel = "easy";
+
+let state = {
+  date: todayKey(),
+  answers: {
+    easy: ["", "", "", "", ""],
+    medium: ["", "", "", "", ""],
+    hard: ["", "", "", "", ""],
+  },
+  correctness: {
+    easy: [null, null, null, null, null], // true / false / null
+    medium: [null, null, null, null, null],
+    hard: [null, null, null, null, null],
+  },
+  submitted: {
+    easy: false,
+    medium: false,
+    hard: false,
+  },
+  scores: {
+    easy: 0,
+    medium: 0,
+    hard: 0,
+  },
+  totalScore: 0,
+  bestDays: [], // local best days
+  streak: 0,
+  lastPlayedDate: null,
+  globalName: "Player",
+};
+
+// ---------- Local storage ----------
 
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (!raw) {
-      return {
-        days: {},
-        streak: { current: 0, best: 0, lastDay: null },
-      };
-    }
+    if (!raw) return;
+
     const parsed = JSON.parse(raw);
-    if (!parsed.days) parsed.days = {};
-    if (!parsed.streak) {
-      parsed.streak = { current: 0, best: 0, lastDay: null };
+    // Only keep state for today; drop previous-day answers
+    if (parsed.date === todayKey()) {
+      state = {
+        ...state,
+        ...parsed,
+        answers: { ...state.answers, ...parsed.answers },
+        correctness: { ...state.correctness, ...parsed.correctness },
+        submitted: { ...state.submitted, ...parsed.submitted },
+        scores: { ...state.scores, ...parsed.scores },
+      };
+    } else {
+      // Carry streak + bestDays + globalName forward
+      state.streak = parsed.streak || 0;
+      state.bestDays = parsed.bestDays || [];
+      state.globalName = parsed.globalName || "Player";
+      state.lastPlayedDate = parsed.date || null;
+      state.date = todayKey();
     }
-    return parsed;
-  } catch {
-    return {
-      days: {},
-      streak: { current: 0, best: 0, lastDay: null },
-    };
-  }
-}
-
-function saveState(state) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(state));
-}
-
-// ---------- Device Hash & Player Name ----------
-
-function getDeviceHash() {
-  const key = "et_device_hash";
-  let hash = localStorage.getItem(key);
-  if (!hash) {
-    hash = crypto.randomUUID();
-    localStorage.setItem(key, hash);
-  }
-  return hash;
-}
-
-function getPlayerName() {
-  let name = localStorage.getItem("et_player_name");
-  if (!name || name.trim() === "") {
-    name = prompt("Choose your nickname:") || "Player";
-    name = name.trim();
-    localStorage.setItem("et_player_name", name);
-  }
-  return name;
-}
-
-// ---------- Global Variables ----------
-
-let brainData = null;
-let todaySet = null;
-let currentLevel = "easy"; // "easy" | "medium" | "hard"
-
-// ---------- Load Puzzles Data ----------
-
-async function loadPuzzles() {
-  try {
-    const res = await fetch(DATA_URL);
-    if (!res.ok) throw new Error("Puzzle JSON load failed");
-    brainData = await res.json();
-    selectTodaySet();
-    renderCurrentPuzzle();
   } catch (err) {
-    console.error("Daily Brain error:", err);
+    console.error("Failed to load brain state", err);
   }
 }
 
-function selectTodaySet() {
-  if (!Array.isArray(brainData) || brainData.length === 0) return;
-
-  const today = parseISODate(todayKey());
-  const start = parseISODate(START_DATE);
-  const diffDays = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-
-  const idx = Math.max(0, Math.min(brainData.length - 1, diffDays));
-  todaySet = brainData[idx] || brainData[0];
-}
-
-function getPuzzleForLevel(level) {
-  if (!todaySet || !todaySet[level]) {
-    return {
-      category: "Daily Brain",
-      prompt: "No puzzle found for today.",
-      hint: "",
-      answers: [],
-    };
+function saveState() {
+  try {
+    const toStore = { ...state };
+    localStorage.setItem(STORE_KEY, JSON.stringify(toStore));
+  } catch (err) {
+    console.error("Failed to save brain state", err);
   }
-  return todaySet[level];
 }
 
-// ---------- UI Rendering (Puzzle) ----------
+// ---------- Streak + best days helpers ----------
 
-function renderCurrentPuzzle() {
-  const puzzle = getPuzzleForLevel(currentLevel);
-  const catEl = document.getElementById("questionCategory");
-  const lvlEl = document.getElementById("questionLevel");
-  const txtEl = document.getElementById("questionText");
-  const hintEl = document.getElementById("hintText");
-  const answerInput = document.getElementById("answerInput");
-
-  if (!puzzle) return;
-
-  if (catEl) catEl.textContent = puzzle.category || "";
-  if (lvlEl) lvlEl.textContent = currentLevel.toUpperCase();
-  if (txtEl) txtEl.textContent = puzzle.prompt || "";
-  if (hintEl) {
-    hintEl.textContent = "";
-    hintEl.dataset.hint = puzzle.hint || "";
+function updateStreakAfterSubmission() {
+  const today = todayKey();
+  if (!state.lastPlayedDate) {
+    state.streak = 1;
+  } else {
+    const last = new Date(state.lastPlayedDate);
+    const todayDate = new Date(today);
+    const diffDays = Math.round(
+      (todayDate - last) / (1000 * 60 * 60 * 24)
+    );
+    if (diffDays === 1) {
+      state.streak = (state.streak || 0) + 1;
+    } else if (diffDays > 1) {
+      state.streak = 1;
+    }
   }
-  if (answerInput) answerInput.value = "";
+  state.lastPlayedDate = today;
 }
 
-// ---------- Difficulty Locking ----------
-
-function getUnlockedLevels(dayState) {
-  return {
-    easy: true,
-    medium: dayState.easyCorrect === true,
-    hard: dayState.mediumCorrect === true,
-  };
+function updateBestDays() {
+  const today = todayKey();
+  const existingIndex = state.bestDays.findIndex((d) => d.date === today);
+  if (existingIndex >= 0) {
+    state.bestDays[existingIndex].score = state.totalScore;
+  } else {
+    state.bestDays.push({ date: today, score: state.totalScore });
+  }
+  state.bestDays.sort((a, b) => b.score - a.score);
+  state.bestDays = state.bestDays.slice(0, 10);
 }
 
-function initDifficultyTabs() {
-  const container = document.getElementById("difficultyTabs");
-  if (!container) return;
+// ---------- Rendering: questions ----------
 
-  container.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-level]");
-    if (!btn) return;
+function getTodaySet() {
+  const today = todayKey();
+  const fromKey = dataByDate[today];
+  if (fromKey) return fromKey;
 
-    const level = btn.dataset.level;
-    const state = loadState();
-    const today = todayKey();
-    const day = state.days[today] || {
-      easyCorrect: false,
-      mediumCorrect: false,
-      hardCorrect: false,
-    };
-    const unlock = getUnlockedLevels(day);
+  // Fallback: if data is array with date property
+  if (Array.isArray(dataByDate)) {
+    return dataByDate.find((d) => d.date === today) || null;
+  }
 
-    if (!unlock[level]) {
-      alert("You must solve the previous difficulty first!");
+  return null;
+}
+
+function getQuestionsForLevel(level) {
+  const todaySet = getTodaySet();
+  if (!todaySet) return [];
+
+  const arr = todaySet[level] || [];
+  // Ensure always 5 slots (even if fewer questions present)
+  const filled = [];
+  for (let i = 0; i < 5; i++) {
+    filled.push(
+      arr[i] || {
+        q: "No question configured.",
+        a: "",
+        hint: "",
+        explanation:
+          "This slot has no data yet. Update the JSON file for this day and level.",
+      }
+    );
+  }
+  return filled;
+}
+
+function renderQuestions(level) {
+  const container = el.questions;
+  container.innerHTML = "";
+
+  const questions = getQuestionsForLevel(level);
+  const answers = state.answers[level];
+  const correctness = state.correctness[level];
+  const submitted = state.submitted[level];
+
+  questions.forEach((qObj, idx) => {
+    const qText = pick(qObj, "q", "Question text missing.");
+    const hint = pick(qObj, "hint", "");
+    const explanation = pick(
+      qObj,
+      "explanation",
+      "This answer is correct because of the way the puzzle is set up."
+    );
+    const correctAnswer = pick(qObj, "a", "");
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "brain-question";
+    wrapper.dataset.index = String(idx);
+
+    const header = document.createElement("div");
+    header.className = "brain-question-header";
+
+    const title = document.createElement("div");
+    title.className = "brain-question-title";
+    title.textContent = `Question ${idx + 1}`;
+
+    const status = document.createElement("div");
+    status.className = "brain-question-status";
+
+    if (submitted && correctness[idx] !== null) {
+      if (correctness[idx]) {
+        status.textContent = "Correct";
+        status.classList.add("correct");
+      } else {
+        status.textContent = "Check explanation";
+        status.classList.add("wrong");
+      }
+    } else {
+      status.textContent = "";
+    }
+
+    header.appendChild(title);
+    header.appendChild(status);
+
+    const indexLabel = document.createElement("div");
+    indexLabel.className = "brain-question-index";
+    indexLabel.textContent = LEVEL_CONFIG[level].label;
+
+    header.appendChild(indexLabel);
+
+    const text = document.createElement("div");
+    text.className = "brain-question-text";
+    text.textContent = qText;
+
+    const inputRow = document.createElement("div");
+    inputRow.className = "brain-input-row";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Your answer…";
+    input.value = answers[idx] || "";
+    input.dataset.level = level;
+    input.dataset.index = String(idx);
+
+    input.addEventListener("input", (e) => {
+      const lv = e.target.dataset.level;
+      const index = Number(e.target.dataset.index);
+      state.answers[lv][index] = e.target.value;
+      // Once user edits after submission, reset correctness for that question
+      if (state.submitted[lv]) {
+        state.correctness[lv][index] = null;
+      }
+      saveState();
+    });
+
+    inputRow.appendChild(input);
+
+    const hintToggle = document.createElement("span");
+    hintToggle.className = "brain-hint";
+    hintToggle.textContent = hint ? "Show hint" : "";
+    let hintVisible = false;
+
+    const hintTextEl = document.createElement("div");
+    hintTextEl.className = "brain-hint-text";
+    hintTextEl.textContent = hint || "";
+    hintTextEl.style.display = "none";
+
+    if (hint) {
+      hintToggle.addEventListener("click", () => {
+        hintVisible = !hintVisible;
+        hintTextEl.style.display = hintVisible ? "block" : "none";
+        hintToggle.textContent = hintVisible ? "Hide hint" : "Show hint";
+      });
+    }
+
+    const explanationEl = document.createElement("div");
+    explanationEl.className = "brain-explanation";
+
+    if (submitted) {
+      const wasCorrect = correctness[idx];
+      const normalizedCorrect = normalizeAnswer(correctAnswer);
+      explanationEl.innerHTML = `
+        <strong>Answer:</strong> ${correctAnswer || "—"}<br />
+        <span>${explanation}</span>
+      `;
+      // No need to show the explanation label if we truly have nothing
+      if (!correctAnswer && !explanation) {
+        explanationEl.textContent = "";
+      }
+    } else {
+      explanationEl.textContent = "";
+    }
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(text);
+    wrapper.appendChild(inputRow);
+    if (hint) {
+      wrapper.appendChild(hintToggle);
+      wrapper.appendChild(hintTextEl);
+    }
+    wrapper.appendChild(explanationEl);
+
+    container.appendChild(wrapper);
+  });
+}
+
+// ---------- Rendering: level UI ----------
+
+function updateLevelUI(level) {
+  currentLevel = level;
+  const cfg = LEVEL_CONFIG[level];
+
+  el.levelLabel.textContent = cfg.label;
+  el.levelHelp.textContent = cfg.help;
+
+  const submitted = state.submitted[level];
+  const score = state.scores[level];
+
+  if (!submitted) {
+    el.levelSummary.textContent = `You haven’t submitted ${cfg.label} yet today.`;
+    el.submitBtn.textContent = `Submit ${cfg.label}`;
+  } else {
+    const correctness = state.correctness[level];
+    const correctCount = correctness.filter((x) => x === true).length;
+    el.levelSummary.textContent = `You answered ${correctCount}/5 correctly in ${cfg.label} today. (+${score} pts)`;
+    el.submitBtn.textContent = `Resubmit ${cfg.label}`;
+  }
+
+  el.levelMessage.textContent = "";
+  el.levelMessage.className = "brain-message";
+
+  renderQuestions(level);
+  updateLevelLocks();
+}
+
+// ---------- Level locking ----------
+
+function updateLevelLocks() {
+  const { submitted } = state;
+
+  // Easy: always unlocked
+  el.tabEasy.classList.remove("locked");
+
+  // Medium
+  if (submitted.easy) {
+    el.tabMedium.classList.remove("locked");
+  } else {
+    el.tabMedium.classList.add("locked");
+  }
+
+  // Hard
+  if (submitted.medium) {
+    el.tabHard.classList.remove("locked");
+  } else {
+    el.tabHard.classList.add("locked");
+  }
+
+  // Active tab styling
+  [el.tabEasy, el.tabMedium, el.tabHard].forEach((btn) =>
+    btn.classList.remove("active")
+  );
+  if (currentLevel === "easy") el.tabEasy.classList.add("active");
+  if (currentLevel === "medium") el.tabMedium.classList.add("active");
+  if (currentLevel === "hard") el.tabHard.classList.add("active");
+}
+
+// ---------- Score calculation ----------
+
+function calculateLevelScore(level) {
+  const questions = getQuestionsForLevel(level);
+  const answers = state.answers[level];
+  const correctness = state.correctness[level];
+
+  let score = 0;
+  const pts = LEVEL_CONFIG[level].pointsPerCorrect;
+
+  questions.forEach((qObj, idx) => {
+    const expected = normalizeAnswer(pick(qObj, "a", ""));
+    const given = normalizeAnswer(answers[idx] || "");
+
+    const isCorrect = expected && given && expected === given;
+    correctness[idx] = isCorrect;
+    if (isCorrect) score += pts;
+  });
+
+  state.correctness[level] = correctness;
+  state.scores[level] = score;
+}
+
+function calculateTotalScore() {
+  const { scores } = state;
+  state.totalScore = scores.easy + scores.medium + scores.hard;
+}
+
+// ---------- Submit level ----------
+
+async function handleSubmitLevel() {
+  const level = currentLevel;
+  const cfg = LEVEL_CONFIG[level];
+
+  // Make sure there is data for today
+  const todaySet = getTodaySet();
+  if (!todaySet || !getQuestionsForLevel(level).length) {
+    el.levelMessage.textContent =
+      "No puzzle found for today. Please check the data file on the server.";
+    el.levelMessage.className = "brain-message error";
+    return;
+  }
+
+  // At least require some attempt (one non-empty answer)
+  const anyAnswer = state.answers[level].some((a) => (a || "").trim() !== "");
+  if (!anyAnswer) {
+    el.levelMessage.textContent = "Try at least one question before submitting.";
+    el.levelMessage.className = "brain-message error";
+    return;
+  }
+
+  calculateLevelScore(level);
+  calculateTotalScore();
+
+  // Mark level as submitted, which unlocks the next level (even if some are wrong)
+  state.submitted[level] = true;
+
+  // Streak + best days update when user first submits anything today
+  updateStreakAfterSubmission();
+  updateBestDays();
+
+  saveState();
+  updateLevelUI(level);
+  updateTodaySection();
+  renderBestDays();
+
+  // Finally, send score to API (best effort)
+  await sendScoreToServer().catch((err) =>
+    console.error("Failed to send score", err)
+  );
+
+  el.levelMessage.textContent = `Submitted ${cfg.label}. You can review explanations and then move to the next level.`;
+  el.levelMessage.className = "brain-message success";
+}
+
+// ---------- Today section ----------
+
+function updateTodaySection() {
+  el.todayScore.textContent = state.totalScore;
+  el.todayStreak.textContent = state.streak || 0;
+  el.globalNameInput.value = state.globalName || "Player";
+}
+
+// ---------- Best days rendering ----------
+
+function renderBestDays() {
+  const body = el.bestDaysBody;
+  body.innerHTML = "";
+
+  if (!state.bestDays.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 2;
+    td.textContent = "Play a few days to see your best scores here.";
+    tr.appendChild(td);
+    body.appendChild(tr);
+    return;
+  }
+
+  state.bestDays.forEach((d) => {
+    const tr = document.createElement("tr");
+    const tdDate = document.createElement("td");
+    const tdScore = document.createElement("td");
+
+    tdDate.textContent = d.date;
+    tdScore.textContent = `${d.score} pts`;
+
+    tr.appendChild(tdDate);
+    tr.appendChild(tdScore);
+
+    body.appendChild(tr);
+  });
+}
+
+// ---------- Global leaderboard ----------
+
+async function loadLeaderboard() {
+  try {
+    const res = await fetch(API_LEADERBOARD, { method: "GET" });
+    if (!res.ok) throw new Error("Leaderboard HTTP " + res.status);
+    const json = await res.json();
+
+    const list = Array.isArray(json) ? json : json.rows || [];
+    const tbody = el.leaderboardBody;
+    tbody.innerHTML = "";
+
+    if (!list.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 4;
+      td.textContent = "No global scores yet.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
       return;
     }
 
-    currentLevel = level;
-    renderCurrentPuzzle();
-  });
-}
+    list.slice(0, 20).forEach((row, idx) => {
+      const tr = document.createElement("tr");
 
-// ---------- Answer Checking & Scoring ----------
+      const tdRank = document.createElement("td");
+      const tdName = document.createElement("td");
+      const tdScore = document.createElement("td");
+      const tdDay = document.createElement("td");
 
-function checkAnswer(input, puzzle) {
-  if (!input || !puzzle || !Array.isArray(puzzle.answers)) return false;
-  const normalized = input.trim().toLowerCase();
-  return puzzle.answers.some(
-    (a) => normalized === String(a).trim().toLowerCase()
-  );
-}
+      tdRank.textContent = idx + 1;
+      tdName.textContent = row.global_name || row.name || "Player";
+      tdScore.textContent = `${row.score} pts`;
+      tdDay.textContent = row.day || row.date || "";
 
-function computeScore(day) {
-  let score = 0;
-  if (day.easyCorrect) score += 5;
-  if (day.mediumCorrect) score += 10;
-  if (day.hardCorrect) score += 15;
-  return score;
-}
+      tr.appendChild(tdRank);
+      tr.appendChild(tdName);
+      tr.appendChild(tdScore);
+      tr.appendChild(tdDay);
 
-// ---------- Streaks & Achievements ----------
-
-function updateStreak(state, today) {
-  const yesterday = new Date(parseISODate(today));
-  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-  const yKey = yesterday.toISOString().slice(0, 10);
-
-  if (state.days[yKey]?.score > 0) {
-    state.streak.current += 1;
-  } else {
-    state.streak.current = 1;
-  }
-
-  if (state.streak.current > state.streak.best) {
-    state.streak.best = state.streak.current;
-  }
-
-  state.streak.lastDay = today;
-}
-
-function renderStreak(state) {
-  const today = todayKey();
-  const streakEl = document.getElementById("streakValue");
-  const bestEl = document.getElementById("bestStreakValue");
-  const scoreEl = document.getElementById("todayScoreText");
-  const medalEl = document.getElementById("streakMedal");
-
-  const todayState = state.days[today] || { score: 0 };
-
-  if (streakEl) streakEl.textContent = state.streak.current || 0;
-  if (bestEl) bestEl.textContent = state.streak.best || 0;
-  if (scoreEl) scoreEl.textContent = `${todayState.score}/30`;
-
-  // Achievements
-  let medal = "";
-  if (state.streak.current >= 30) medal = "💎 Diamond";
-  else if (state.streak.current >= 14) medal = "🥇 Gold";
-  else if (state.streak.current >= 7) medal = "🥈 Silver";
-  else if (state.streak.current >= 3) medal = "🥉 Bronze";
-
-  if (medalEl) medalEl.textContent = medal;
-}
-
-// ---------- Local Leaderboard ----------
-
-function renderLocalLeaderboard(state) {
-  const box = document.getElementById("localLeaderboard");
-  if (!box) return;
-
-  const entries = Object.entries(state.days)
-    .filter(([, v]) => v.score > 0)
-    .sort((a, b) => b[1].score - a[1].score);
-
-  if (entries.length === 0) {
-    box.innerHTML = "<p>No previous days yet.</p>";
-    return;
-  }
-
-  let html =
-    "<table><thead><tr><th>Date</th><th>Score</th></tr></thead><tbody>";
-  for (const [day, info] of entries) {
-    html += `<tr><td>${day}</td><td>${info.score}</td></tr>`;
-  }
-  html += "</tbody></table>";
-  box.innerHTML = html;
-}
-
-// ---------- Global Leaderboard ----------
-
-function renderGlobalLeaderboard(rows) {
-  const box = document.getElementById("globalLeaderboard");
-  if (!box) return;
-
-  if (!rows || rows.length === 0) {
-    box.innerHTML = "<p>No global scores yet.</p>";
-    return;
-  }
-
-  let html = "<ol class='lb-list'>";
-  rows.forEach((r, i) => {
-    let medal = "";
-    if (i === 0) medal = "🥇 ";
-    else if (i === 1) medal = "🥈 ";
-    else if (i === 2) medal = "🥉 ";
-
-    html += `
-      <li>
-        ${medal}<strong>${r.name || "Player"}</strong>
-        — <span>${r.score}</span>
-        <em>${r.date}</em>
-      </li>
-    `;
-  });
-  html += "</ol>";
-
-  box.innerHTML = html;
-}
-
-async function loadGlobalLeaderboard() {
-  const box = document.getElementById("globalLeaderboard");
-  if (box) box.innerHTML = "<p>Loading...</p>";
-
-  try {
-    const res = await fetch("/api/brain-leaderboard");
-    const data = await res.json();
-
-    if (data.ok) {
-      renderGlobalLeaderboard(data.rows || []);
-    } else if (box) {
-      box.textContent = "Could not load leaderboard.";
-    }
+      tbody.appendChild(tr);
+    });
   } catch (err) {
-    console.error("Failed to load global leaderboard:", err);
-    if (box) box.textContent = "Could not load leaderboard.";
+    console.error("Leaderboard error", err);
+    const tbody = el.leaderboardBody;
+    tbody.innerHTML = "";
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 4;
+    td.textContent = "Leaderboard is temporarily unavailable.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
   }
 }
 
-// ---------- Submit Logic ----------
-
-async function handleSubmit() {
-  const input = document.getElementById("answerInput");
-  if (!input) return;
-
-  const answer = input.value;
-  const puzzle = getPuzzleForLevel(currentLevel);
-  const correct = checkAnswer(answer, puzzle);
-
-  const state = loadState();
-  const today = todayKey();
-
-  if (!state.days[today]) {
-    state.days[today] = {
-      easyCorrect: false,
-      mediumCorrect: false,
-      hardCorrect: false,
-      score: 0,
-      submitted: false,
-    };
-  }
-
-  const day = state.days[today];
-
-  // Prevent answering same level multiple times
-  if (day[currentLevel + "Correct"] !== false) {
-    console.log("Already answered this level today.");
-    return;
-  }
-
-  day[currentLevel + "Correct"] = !!correct;
-  day.score = computeScore(day);
-
-  // Only apply streak first time score > 0
-  if (!day._streak && day.score > 0) {
-    updateStreak(state, today);
-    day._streak = true;
-  }
-
-  saveState(state);
-  renderStreak(state);
-  renderLocalLeaderboard(state);
-
-  // Don't submit 0 scores
-  if (day.score <= 0) {
-    console.log("Score is 0, not submitting.");
-    return;
-  }
-
-  // Prevent multiple submissions to server
-  if (day.submitted) {
-    console.log("Already submitted today's score.");
-    return;
-  }
-
+async function sendScoreToServer() {
   try {
     const payload = {
-      name: getPlayerName(),
-      score: day.score,
-      day: today,
-      device_hash: getDeviceHash(),
+      score: state.totalScore,
+      date: todayKey(),
+      utc: new Date().toISOString(),
+      globalName: state.globalName || "Player",
     };
 
-    const res = await fetch("/api/brain-score", {
+    const res = await fetch(API_SCORE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    const data = await res.json();
-    if (data.ok) {
-      day.submitted = true;
-      saveState(state);
-      loadGlobalLeaderboard();
-    } else {
-      console.warn("Server rejected score:", data);
+    if (!res.ok) {
+      console.warn("Score API returned HTTP " + res.status);
     }
   } catch (err) {
-    console.error("Failed to send score:", err);
+    console.error("Failed to send score", err);
+  }
+
+  // Refresh leaderboard in the background
+  loadLeaderboard().catch((err) =>
+    console.error("Leaderboard refresh failed", err)
+  );
+}
+
+// ---------- Subscription ----------
+
+function initSubscriptionUI() {
+  if (!el.subscribeSection) return;
+
+  const already = localStorage.getItem(SUBSCRIBE_KEY);
+  if (already === "subscribed") {
+    el.subscribeStatus.textContent = "✅ Subscribed";
+    if (el.subscribeBtn) el.subscribeBtn.textContent = "Unsubscribe";
   }
 }
 
-// ---------- Hint ----------
+async function handleSubscribeClick() {
+  if (!el.subscribeBtn) return;
 
-function handleShowHint() {
-  const hintEl = document.getElementById("hintText");
-  if (hintEl) {
-    hintEl.textContent = hintEl.dataset.hint || "";
+  const already = localStorage.getItem(SUBSCRIBE_KEY);
+  if (already === "subscribed") {
+    // Local-only unsubscribe
+    localStorage.removeItem(SUBSCRIBE_KEY);
+    el.subscribeStatus.textContent = "You have been unsubscribed locally.";
+    el.subscribeBtn.textContent = "Subscribe";
+    return;
+  }
+
+  const email = (el.subscribeEmail.value || "").trim();
+  if (!email || !email.includes("@")) {
+    el.subscribeStatus.textContent = "Please enter a valid email address.";
+    return;
+  }
+
+  el.subscribeBtn.disabled = true;
+  el.subscribeStatus.textContent = "Subscribing…";
+
+  try {
+    const res = await fetch(API_SUBSCRIBE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, source: "daily-brain" }),
+    });
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
+    const json = await res.json();
+    if (json && json.ok) {
+      el.subscribeStatus.textContent = "✅ Subscribed";
+      el.subscribeBtn.textContent = "Unsubscribe";
+      localStorage.setItem(SUBSCRIBE_KEY, "subscribed");
+    } else {
+      el.subscribeStatus.textContent =
+        "Subscription saved, but confirmation email may be delayed.";
+    }
+  } catch (err) {
+    console.error("Subscribe error", err);
+    el.subscribeStatus.textContent =
+      "Could not reach the server. Please try again later.";
+  } finally {
+    el.subscribeBtn.disabled = false;
   }
 }
 
-// ---------- Share Score ----------
+// ---------- Reset timer ----------
 
-function handleShare() {
-  const scoreText =
-    document.getElementById("todayScoreText")?.textContent || "0/30";
-  const name = getPlayerName();
-
-  if (navigator.share) {
-    navigator.share({
-      title: "Daily Brain – My Score",
-      text: `${name} scored ${scoreText} today on Daily Brain!`,
-      url: "https://everydaytools.uk/brain",
-    }).catch(() => {});
-  } else {
-    alert("Sharing is not supported on this device.");
-  }
-}
-
-// ---------- Countdown ----------
-
-function startCountdown() {
-  const el = document.getElementById("countdownText");
-  if (!el) return;
-
+function startResetTimer() {
   const tick = () => {
     const ms = msToNextUtcMidnight();
-    el.textContent = fmtCountdown(ms);
+    el.resetTimer.textContent = `Resets in ${fmtHMS(ms)} (UTC)`;
+    if (ms <= 0) {
+      // At next midnight reload the page to fetch the new day
+      window.location.reload();
+    }
   };
-
   tick();
   setInterval(tick, 1000);
 }
 
-// ---------- Dark Mode ----------
+// ---------- Global name ----------
 
-function initDarkMode() {
-  const btn = document.getElementById("darkModeToggle");
-  if (!btn) return;
-
-  // Restore saved mode
-  if (localStorage.getItem("et_dark_mode") === "true") {
-    document.body.classList.add("dark");
-  }
-
-  btn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "et_dark_mode",
-      document.body.classList.contains("dark")
-    );
+function initGlobalName() {
+  el.globalNameInput.addEventListener("input", (e) => {
+    const val = (e.target.value || "").trim();
+    state.globalName = val || "Player";
+    saveState();
   });
+}
+
+// ---------- Tabs events ----------
+
+function initTabs() {
+  el.tabs.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-level]");
+    if (!btn) return;
+    const level = btn.getAttribute("data-level");
+    if (!level) return;
+
+    // Respect locks
+    if (level === "medium" && !state.submitted.easy) {
+      el.levelMessage.textContent =
+        "Finish and submit Easy once to unlock Medium.";
+      el.levelMessage.className = "brain-message error";
+      return;
+    }
+    if (level === "hard" && !state.submitted.medium) {
+      el.levelMessage.textContent =
+        "Finish and submit Medium once to unlock Hard.";
+      el.levelMessage.className = "brain-message error";
+      return;
+    }
+
+    updateLevelUI(level);
+  });
+}
+
+// ---------- Data loading ----------
+
+async function loadData() {
+  try {
+    const res = await fetch(DATA_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("Data HTTP " + res.status);
+    const json = await res.json();
+
+    if (Array.isArray(json)) {
+      // Array with {date, easy, medium, hard}
+      const map = {};
+      json.forEach((entry) => {
+        if (entry && entry.date) map[entry.date] = entry;
+      });
+      dataByDate = map;
+    } else if (json && typeof json === "object") {
+      // Already keyed by date
+      dataByDate = json;
+    } else {
+      throw new Error("Unexpected data structure");
+    }
+
+    const todaySet = getTodaySet();
+    if (!todaySet) {
+      el.levelMessage.textContent =
+        "No puzzle configured for today in the data file.";
+      el.levelMessage.className = "brain-message error";
+    }
+
+    // Render initial level
+    updateLevelUI(currentLevel);
+  } catch (err) {
+    console.error("Failed to load puzzles", err);
+    el.levelMessage.textContent =
+      "Could not load today's puzzles. Please check the data file on the server.";
+    el.levelMessage.className = "brain-message error";
+  }
 }
 
 // ---------- Init ----------
 
-function initBrain() {
-  const state = loadState();
-  renderStreak(state);
-  renderLocalLeaderboard(state);
-  startCountdown();
-  loadGlobalLeaderboard();
-  loadPuzzles();
-  initDifficultyTabs();
-  initDarkMode();
+function init() {
+  loadState();
+  startResetTimer();
+  initTabs();
+  initGlobalName();
+  initSubscriptionUI();
 
-  const submitBtn = document.getElementById("submitAnswerBtn");
-  if (submitBtn) submitBtn.addEventListener("click", handleSubmit);
+  if (el.submitBtn) {
+    el.submitBtn.addEventListener("click", handleSubmitLevel);
+  }
+  if (el.subscribeBtn) {
+    el.subscribeBtn.addEventListener("click", handleSubscribeClick);
+  }
 
-  const hintBtn = document.getElementById("hintBtn");
-  if (hintBtn) hintBtn.addEventListener("click", handleShowHint);
+  updateLevelLocks();
+  updateTodaySection();
+  renderBestDays();
+  loadLeaderboard().catch((err) =>
+    console.error("Initial leaderboard load failed", err)
+  );
 
-  const shareBtn = document.getElementById("shareBtn");
-  if (shareBtn) shareBtn.addEventListener("click", handleShare);
+  loadData().catch((err) => console.error(err));
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initBrain);
-} else {
-  initBrain();
-}
+document.addEventListener("DOMContentLoaded", init);
