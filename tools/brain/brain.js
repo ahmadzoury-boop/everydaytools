@@ -219,3 +219,6 @@ async function initBrain() {
 }
 
 initBrain();
+document.addEventListener("DOMContentLoaded", () => {
+  initBrain();
+});
