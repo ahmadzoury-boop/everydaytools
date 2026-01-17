@@ -64,6 +64,9 @@ function loadData() {
 // LEVEL INIT
 // ================================
 function initLevel(level) {
+  // ✅ FIX: SHOW submit again when switching levels
+  if (submitBtn) submitBtn.style.display = "inline-block";
+
   currentLevel = level;
   index = 0;
   correct = 0;
@@ -148,6 +151,9 @@ function finishLevel() {
   if (todayScoreEl) {
     todayScoreEl.textContent = `${correct}/${questions.length}`;
   }
+
+  // ✅ FIX: HIDE submit button after finishing
+  if (submitBtn) submitBtn.style.display = "none";
 }
 
 // ================================
@@ -230,7 +236,7 @@ function setupThemeToggle() {
 }
 
 // ================================
-// SUBSCRIPTION (ISOLATED, SAFE)
+// SUBSCRIPTION (ISOLATED)
 // ================================
 (() => {
   const btn = document.getElementById("sub-btn");
