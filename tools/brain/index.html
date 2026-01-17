@@ -17,8 +17,6 @@
       --brain-muted: #a0a4c0;
       --brain-primary: #3b82f6;
       --brain-primary-soft: rgba(59,130,246,.18);
-      --brain-success: #4ade80;
-      --brain-error: #f87171;
     }
 
     body {
@@ -74,11 +72,6 @@
       color: var(--brain-text);
     }
 
-    .brain-tab-btn.locked {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
     .brain-card {
       background: rgba(15,23,42,.95);
       border-radius: 18px;
@@ -100,7 +93,7 @@
       margin-bottom: 12px;
     }
 
-    .brain-question-card {
+    .question-card {
       border: 1px solid var(--brain-border);
       border-radius: 12px;
       padding: 10px;
@@ -108,7 +101,7 @@
       background: #020617;
     }
 
-    .brain-question-card input {
+    .question-card input {
       width: 100%;
       border-radius: 999px;
       border: 1px solid var(--brain-border);
@@ -117,20 +110,15 @@
       color: var(--brain-text);
     }
 
-    .brain-hint {
-      margin-top: 4px;
-      font-size: .8rem;
-      color: var(--brain-muted);
-      cursor: pointer;
-    }
-
-    .brain-hint-box {
+    .hint {
       font-size: .8rem;
       color: var(--brain-muted);
       margin-top: 4px;
     }
 
-    .hidden { display:none; }
+    .hidden {
+      display: none;
+    }
 
     .brain-submit-row {
       display: flex;
@@ -153,32 +141,16 @@
     .brain-section {
       margin-top: 22px;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .85rem;
-    }
-
-    th, td {
-      padding: 6px 8px;
-      border-bottom: 1px solid rgba(148,163,184,.25);
-    }
-
-    th {
-      color: var(--brain-muted);
-      text-align: left;
-    }
   </style>
 
+  <!-- IMPORTANT: correct JS path -->
   <script defer src="/tools/brain/brain.js"></script>
-
-
 </head>
 
 <body>
 <main class="brain-page">
 
+  <!-- Header -->
   <header class="brain-header">
     <h1>🧠 Daily Brain</h1>
     <small id="resetTimer">Resets in --:--:-- (UTC)</small>
@@ -186,29 +158,29 @@
 
   <!-- Tabs -->
   <nav class="brain-tabs">
-    <button class="brain-tab-btn active">Easy</button>
-    <button class="brain-tab-btn locked">Medium</button>
-    <button class="brain-tab-btn locked">Hard</button>
+    <button class="brain-tab-btn active" data-level="easy">Easy</button>
+    <button class="brain-tab-btn" data-level="medium">Medium</button>
+    <button class="brain-tab-btn" data-level="hard">Hard</button>
   </nav>
 
-  <!-- Main card -->
+  <!-- Main Card -->
   <section class="brain-card">
     <div class="brain-card-header">
       <h2>Daily Brain</h2>
-      <div>Level: <strong>EASY</strong></div>
+      <div>Level: <strong id="levelLabel">EASY</strong></div>
     </div>
 
     <p class="brain-help-text">
       Answer all questions. You can still move on even if you get some wrong.
     </p>
 
-    <!-- REQUIRED BY brain.js -->
-    <div id="questionsBox"></div>
+    <!-- REQUIRED: questions container -->
+    <div id="questions"></div>
 
     <div class="brain-submit-row">
-      <button id="submitBtn" class="brain-button-primary">Submit Easy</button>
-      <div id="level-summary" class="brain-help-text">
-        You haven’t submitted Easy yet today.
+      <button id="submitBtn" class="brain-button-primary">Submit</button>
+      <div class="brain-help-text">
+        You haven’t submitted this level yet today.
       </div>
     </div>
   </section>
@@ -217,8 +189,8 @@
   <section class="brain-section">
     <h3>Today's Result</h3>
     <p>
-      Score: <strong><span id="today-score">0</span></strong> ·
-      <span id="streakBox">🔥 Streak: 0</span>
+      Score: <strong><span id="todayScore">0</span></strong>
+      · <span id="streakBox">🔥 Streak: 0</span>
     </p>
     <p>
       Global name:
@@ -227,13 +199,13 @@
     </p>
   </section>
 
-  <!-- Best days -->
+  <!-- Best Days -->
   <section class="brain-section">
     <h3>🏆 Your Best Days</h3>
     <div id="bestDays">Loading…</div>
   </section>
 
-  <!-- Global leaderboard -->
+  <!-- Global Leaderboard -->
   <section class="brain-section">
     <h3>🌍 Global Leaderboard</h3>
     <div id="globalLeaderboard">Loading…</div>
