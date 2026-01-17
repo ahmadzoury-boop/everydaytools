@@ -107,7 +107,13 @@ function showQuestion() {
   }
 
   const item = daySet[currentDiff];
-  elQuestion.textContent = item.question || "Puzzle missing text.";
+  elQuestion.textContent =
+  item.question ||
+  item.text ||
+  item.prompt ||
+  item.puzzle ||
+  "Puzzle missing text.";
+
   if (item.hint) {
     elHintBtn.style.display = "inline-flex";
     elHintText.textContent = item.hint;
