@@ -1,26 +1,28 @@
-// ==========================================
-// EverydayTools.uk — Daily Brain (Full Version)
-// Global leaderboard + local best days + streak
-// ==========================================
+// ================================
+// Daily Brain — EverydayTools.uk
+// Final JS matched to current HTML
+// ================================
 
-// ------- Config -------
-const DATA_URL = "./data/sets-2026-01-12_to_2026-02-10.json";
+// ---- Config ----
+const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
 const STORE_KEY = "et_brain_v1";
-const FILTER_KEY = "et_brain_filter_v1";
-const SUBSCRIBE_KEY = "et_brain_subscribed";
 
-// If your JSON starts at this date:
-const START_DATE = "2026-01-12";
+// ---- State ----
+let setsData = null;
+let localStore = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
 
-// ------- Date Helpers -------
+// ---- Helpers ----
 const todayKey = () => new Date().toISOString().slice(0, 10);
 
 const msToNextUtcMidnight = () => {
   const d = new Date();
-  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) - Date.now();
+  return (
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) -
+    Date.now()
+  );
 };
 
-const fmtHMS = ms => {
+const fmtHMS = (ms) => {
   const s = Math.floor(ms / 1000);
   const hh = String(Math.floor(s / 3600)).padStart(2, "0");
   const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
@@ -28,198 +30,257 @@ const fmtHMS = ms => {
   return `${hh}:${mm}:${ss}`;
 };
 
-// ------- Global State -------
-let setsData = null;
-let localStore = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-
-// ====== Load sets JSON ======
-async function loadSets() {
-  const res = await fetch(DATA_URL);
-  setsData = await res.json();
-}
-
-// ====== Timer (resets) ======
-function startResetCountdown() {
-  const el = document.querySelector("#resetTimer");
-  if (!el) return;
-
-  function tick() {
-    el.textContent = fmtHMS(msToNextUtcMidnight());
-  }
-  tick();
-  setInterval(tick, 1000);
-}
-
-// ====== Render Q/A ======
-function renderSet(level) {
-  const date = todayKey();
-  const obj = setsData[date];
-  if (!obj) return;
-
-  const qs = obj[level];
-  const box = document.querySelector("#questionsBox");
-  if (!box) return;
-
-  box.innerHTML = "";
-  qs.forEach((q, i) => {
-    const div = document.createElement("div");
-    div.className = "brain-question-card";
-    div.innerHTML = `
-      <div class="brain-q">${q.q}</div>
-      <input id="ans_${i}" class="brain-ans" placeholder="Your answer" />
-      <button class="brain-hint">💡 Show hint</button>
-      <div class="brain-hint-box hidden">${q.hint}</div>
-    `;
-    div.querySelector(".brain-hint").onclick = () =>
-      div.querySelector(".brain-hint-box").classList.toggle("hidden");
-    box.appendChild(div);
-  });
-}
-
-// ====== Submit ======
-async function submitAnswers(level) {
-  const date = todayKey();
-  const qs = setsData[date][level];
-
-  let score = 0;
-  qs.forEach((q, i) => {
-    const v = (document.querySelector(`#ans_${i}`).value || "").trim().toLowerCase();
-    if (v === q.a.toLowerCase()) score++;
-  });
-
-  // Save local best days + streak
-  if (!localStore.best) localStore.best = {};
-  localStore.best[date] = score;
-
-  updateStreak(score);
-  saveLocalStore();
-
-  // Submit to global leaderboard
-  const nameEl = document.querySelector("#playerName");
-  const playerName = (nameEl?.value || "Player").trim().slice(0, 40);
-
-  await fetch("/api/brain-submit", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: playerName, score, date })
-  });
-
-  renderBestDays();
-  loadGlobalLeaderboard();
-
-  alert(`Score: ${score}/${qs.length}`);
-}
-
-// ====== Local streak logic ======
-function updateStreak(score) {
-  if (!localStore.streak) {
-    localStore.streak = 0;
-    localStore.lastDate = null;
-  }
-
-  const date = todayKey();
-  if (score > 0) {
-    // Scored today
-    if (localStore.lastDate === yesterdayKey()) {
-      localStore.streak++;
-    } else if (localStore.lastDate === date) {
-      // Same day — keep same streak
-    } else {
-      localStore.streak = 1;
-    }
-    localStore.lastDate = date;
-  }
-}
-
-function yesterdayKey() {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
-}
-
-// ====== Save store ======
 function saveLocalStore() {
   localStorage.setItem(STORE_KEY, JSON.stringify(localStore));
 }
 
-// ====== Render Best Days ======
-function renderBestDays() {
-  const box = document.querySelector("#bestDays");
-  if (!box) return;
-
-  box.innerHTML = "";
-  if (!localStore.best) return;
-
-  Object.keys(localStore.best)
-    .sort()
-    .forEach(d => {
-      const sc = localStore.best[d];
-      const li = document.createElement("div");
-      li.textContent = `${d} — ${sc}/30`;
-      box.appendChild(li);
-    });
-
-  const streak = localStore.streak || 0;
-  const st = document.querySelector("#streakBox");
-  if (st) st.textContent = `🔥 Streak: ${streak}`;
+// ---- Reset timer ----
+function startResetCountdown() {
+  const el = document.getElementById("resetTimer");
+  if (!el) return;
+  const tick = () => {
+    el.textContent = `Resets in ${fmtHMS(msToNextUtcMidnight())} (UTC)`;
+  };
+  tick();
+  setInterval(tick, 1000);
 }
 
-// ====== Global Leaderboard ======
-async function loadGlobalLeaderboard() {
-  const box = document.querySelector("#globalLeaderboard");
+// ---- Load sets JSON ----
+async function loadSets() {
+  const res = await fetch(DATA_URL);
+  if (!res.ok) throw new Error("Failed to load sets JSON");
+  setsData = await res.json();
+}
+
+// ---- Render questions (Easy only for now) ----
+function renderQuestions() {
+  const box = document.getElementById("questionsBox");
+  const submitBtn = document.getElementById("submitBtn");
+  const summaryEl = document.getElementById("level-summary");
   if (!box) return;
 
-  box.innerHTML = "Loading...";
+  if (!setsData) {
+    box.innerHTML = "<p>Loading today’s puzzle…</p>";
+    submitBtn && (submitBtn.disabled = true);
+    return;
+  }
+
+  const today = todayKey();
+  const dayBlock = setsData[today];
+
+  if (!dayBlock || !dayBlock.easy || !dayBlock.easy.length) {
+    box.innerHTML =
+      "<p>No Easy questions available for today yet. Please check back later.</p>";
+    if (submitBtn) submitBtn.disabled = true;
+    if (summaryEl) {
+      summaryEl.textContent =
+        "No Easy puzzle available for today. Come back tomorrow!";
+    }
+    return;
+  }
+
+  if (submitBtn) submitBtn.disabled = false;
+
+  box.innerHTML = "";
+  dayBlock.easy.forEach((q, idx) => {
+    const card = document.createElement("div");
+    card.className = "brain-question-card";
+    card.innerHTML = `
+      <div class="brain-question-text">${q.q}</div>
+      <input type="text" data-idx="${idx}" placeholder="Your answer" />
+      <div class="brain-hint" data-hint-btn="${idx}">💡 Show hint</div>
+      <div class="brain-hint-box hidden" data-hint-text="${idx}">
+        ${q.hint || "Think about it…"}
+      </div>
+    `;
+    box.appendChild(card);
+  });
+
+  // hint toggles
+  box.querySelectorAll("[data-hint-btn]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = btn.getAttribute("data-hint-btn");
+      const hintBox = box.querySelector(`[data-hint-text="${idx}"]`);
+      if (hintBox) hintBox.classList.toggle("hidden");
+    });
+  });
+
+  if (summaryEl) {
+    summaryEl.textContent = "You haven’t submitted Easy yet today.";
+  }
+}
+
+// ---- Streak + Best days ----
+function computeAndRenderBestDays() {
+  const bestDiv = document.getElementById("bestDays");
+  const streakBox = document.getElementById("streakBox");
+  const todayScoreEl = document.getElementById("today-score");
+  if (!bestDiv) return;
+
+  if (!localStore.best) localStore.best = {};
+  const entries = Object.entries(localStore.best).sort(([d1], [d2]) =>
+    d1.localeCompare(d2)
+  );
+
+  if (!entries.length) {
+    bestDiv.textContent = "No results yet. Play to start your streak!";
+  } else {
+    bestDiv.innerHTML = "";
+    entries.forEach(([date, score]) => {
+      const row = document.createElement("div");
+      row.textContent = `${date} — ${score}/5`;
+      bestDiv.appendChild(row);
+    });
+  }
+
+  // streak
+  if (!localStore.streak) localStore.streak = 0;
+  if (!localStore.lastDate) localStore.lastDate = null;
+  if (streakBox) {
+    streakBox.textContent = `🔥 Streak: ${localStore.streak}`;
+  }
+
+  // today's score (if any)
+  const today = todayKey();
+  if (todayScoreEl) {
+    todayScoreEl.textContent = localStore.best[today] || 0;
+  }
+}
+
+// ---- Update streak after a score ----
+function updateStreakForToday(score) {
+  const today = todayKey();
+  const y = new Date();
+  y.setDate(y.getDate() - 1);
+  const yesterday = y.toISOString().slice(0, 10);
+
+  if (!localStore.streak) localStore.streak = 0;
+  if (!localStore.lastDate) localStore.lastDate = null;
+
+  if (score > 0) {
+    if (localStore.lastDate === today) {
+      // same day: keep streak as-is
+    } else if (localStore.lastDate === yesterday) {
+      localStore.streak += 1;
+    } else {
+      localStore.streak = 1;
+    }
+    localStore.lastDate = today;
+  }
+}
+
+// ---- Submit Easy ----
+async function handleSubmitEasy() {
+  if (!setsData) return;
+
+  const today = todayKey();
+  const dayBlock = setsData[today];
+  if (!dayBlock || !dayBlock.easy) return;
+
+  const questions = dayBlock.easy;
+  const inputs = Array.from(
+    document.querySelectorAll("#questionsBox input[data-idx]")
+  );
+
+  let score = 0;
+  inputs.forEach((input) => {
+    const idx = Number(input.getAttribute("data-idx"));
+    const user = (input.value || "").trim().toLowerCase();
+    const correct = (questions[idx].a || "").trim().toLowerCase();
+    if (user && correct && user === correct) score++;
+  });
+
+  // save locally
+  if (!localStore.best) localStore.best = {};
+  localStore.best[today] = score;
+  updateStreakForToday(score);
+  saveLocalStore();
+  computeAndRenderBestDays();
+
+  // show in today's result
+  const todayScoreEl = document.getElementById("today-score");
+  const streakBox = document.getElementById("streakBox");
+  if (todayScoreEl) todayScoreEl.textContent = score;
+  if (streakBox) streakBox.textContent = `🔥 Streak: ${localStore.streak}`;
+
+  // submit to global leaderboard
+  const nameInput = document.getElementById("playerName");
+  const playerName = (nameInput?.value || "Player").trim().slice(0, 40);
+
+  try {
+    await fetch("/api/brain-submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: playerName || "Player", score, date: today }),
+    });
+  } catch (e) {
+    console.error("Submit error", e);
+  }
+
+  // reload global leaderboard
+  loadGlobalLeaderboard();
+
+  alert(`Your Easy score today: ${score}/${questions.length}`);
+}
+
+// ---- Global Leaderboard ----
+async function loadGlobalLeaderboard() {
+  const box = document.getElementById("globalLeaderboard");
+  if (!box) return;
+
+  box.textContent = "Loading…";
 
   try {
     const res = await fetch("/api/brain-leaderboard");
     const data = await res.json();
-
     if (!data.ok) {
-      box.innerHTML = "Error loading leaderboard";
+      box.textContent = "Error loading leaderboard.";
       return;
     }
 
     const rows = data.rows || [];
-    if (rows.length === 0) {
-      box.innerHTML = "No global scores yet.";
+    if (!rows.length) {
+      box.textContent = "No global scores yet.";
       return;
     }
 
     box.innerHTML = "";
-    rows.forEach((r, i) => {
+    rows.forEach((row, i) => {
       const div = document.createElement("div");
-      div.className = "brain-lb-row";
-      div.textContent = `${i + 1}. ${r.name} — ${r.score} (${r.date})`;
+      div.textContent = `${i + 1}. ${row.name} — ${row.score} (${row.date})`;
       box.appendChild(div);
     });
   } catch (e) {
-    box.innerHTML = "Error connecting to server.";
+    console.error(e);
+    box.textContent = "Error loading leaderboard.";
   }
 }
 
-// ====== Init ======
+// ---- Init ----
 async function initBrain() {
-  
-  console.log("🚀 initBrain started");
-  console.log("State:", localStore);
+  try {
+    startResetCountdown();
 
+    // load local state (best days + streak)
+    computeAndRenderBestDays();
 
-  await loadSets();
-  startResetCountdown();
-  renderBestDays();
-  loadGlobalLeaderboard();
+    // load question sets
+    await loadSets();
+    renderQuestions();
 
-  // Default: EASY
-  renderSet("easy");
+    // load leaderboard
+    loadGlobalLeaderboard();
 
-  document.querySelector("#submitBtn")?.addEventListener("click", () => {
-    submitAnswers("easy");
-  });
+    // wire submit
+    const btn = document.getElementById("submitBtn");
+    if (btn) {
+      btn.addEventListener("click", handleSubmitEasy);
+    }
+
+    console.log("Daily Brain initialized");
+  } catch (err) {
+    console.error("Init error", err);
+  }
 }
 
-initBrain();
-document.addEventListener("DOMContentLoaded", () => {
-  initBrain();
-});
 document.addEventListener("DOMContentLoaded", initBrain);
