@@ -1,6 +1,7 @@
 // ================================
 // Daily Brain — EverydayTools.uk
-// Clean v1 (local only)
+// Final Production brain.js
+// Supports array-based puzzles (q / a / hint / explanation)
 // ================================
 
 // ---- Config ----
@@ -32,6 +33,10 @@ const fmtHMS = (ms) => {
   return `${hh}:${mm}:${ss}`;
 };
 
+const normalize = (str) =>
+  String(str).trim().toLowerCase();
+
+// ---- Local storage ----
 function loadLocal() {
   try {
     return JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
@@ -63,17 +68,16 @@ const themeGold = document.getElementById("themeGold");
 
 // ---- Theme handling ----
 function applyTheme(name) {
-  let accent;
+  let accent = "#4ea1ff";
   if (name === "orange") accent = "#ff8c32";
-  else if (name === "gold") accent = "#f4c542";
-  else accent = "#4ea1ff"; // blue default
+  if (name === "gold") accent = "#f4c542";
 
   document.documentElement.style.setProperty("--accent", accent);
 
-  // active state
-  [themeBlue, themeOrange, themeGold].forEach((btn) =>
-    btn.classList.remove("active")
+  [themeBlue, themeOrange, themeGold].forEach((b) =>
+    b.classList.remove("active")
   );
+
   if (name === "orange") themeOrange.classList.add("active");
   else if (name === "gold") themeGold.classList.add("active");
   else themeBlue.classList.add("active");
@@ -82,18 +86,17 @@ function applyTheme(name) {
 }
 
 function initTheme() {
-  const saved = localStorage.getItem(THEME_KEY) || "blue";
-  applyTheme(saved);
+  applyTheme(localStorage.getItem(THEME_KEY) || "blue");
 }
 
-// ---- Question loading ----
+// ---- Data helpers ----
 function getTodaySet() {
   if (!setsData) return null;
-  const key = todayKey();
-  currentTodayKey = key;
-  return setsData[key] || null;
+  currentTodayKey = todayKey();
+  return setsData[currentTodayKey] || null;
 }
 
+// ---- Question logic ----
 function showQuestion() {
   const daySet = getTodaySet();
   elMessage.textContent = "";
@@ -106,49 +109,55 @@ function showQuestion() {
     return;
   }
 
-  const item = daySet[currentDiff];
-  elQuestion.textContent = JSON.stringify(item, null, 2);
-return;
+  const list = daySet[currentDiff];
 
-  elQuestion.textContent =
-  item.question ||
-  item.text ||
-  item.prompt ||
-  item.puzzle ||
-  "Puzzle missing text.";
+  if (!Array.isArray(list) || list.length === 0) {
+    elQuestion.textContent = "No puzzle available for today.";
+    return;
+  }
+
+  // Deterministic daily index (same question all day)
+  const index =
+    Math.abs(
+      [...currentTodayKey].reduce((a, c) => a + c.charCodeAt(0), 0)
+    ) % list.length;
+
+  const item = list[index];
+
+  elQuestion.textContent = item.q || "Puzzle missing text.";
 
   if (item.hint) {
     elHintBtn.style.display = "inline-flex";
     elHintText.textContent = item.hint;
   } else {
     elHintBtn.style.display = "none";
-    elHintText.textContent = "";
   }
+
+  // Store answer + explanation for later use
+  elSubmit.dataset.answer = item.a || "";
+  elSubmit.dataset.explanation = item.explanation || "";
 }
 
-// ---- Difficulty switching ----
+// ---- Difficulty ----
 function setDifficulty(diff) {
   currentDiff = diff;
-  [btnEasy, btnMedium, btnHard].forEach((btn) =>
-    btn.classList.remove("active")
+
+  [btnEasy, btnMedium, btnHard].forEach((b) =>
+    b.classList.remove("active")
   );
+
   if (diff === "easy") btnEasy.classList.add("active");
-  else if (diff === "medium") btnMedium.classList.add("active");
-  else if (diff === "hard") btnHard.classList.add("active");
+  if (diff === "medium") btnMedium.classList.add("active");
+  if (diff === "hard") btnHard.classList.add("active");
 
   showQuestion();
 }
 
-// ---- Answer checking ----
-function normalize(str) {
-  return String(str).trim().toLowerCase();
-}
-
+// ---- Answer check ----
 function checkAnswer() {
-  const daySet = getTodaySet();
-  if (!daySet || !daySet[currentDiff]) return;
+  const expected = elSubmit.dataset.answer;
+  if (!expected) return;
 
-  const item = daySet[currentDiff];
   const user = normalize(elAnswer.value);
   if (!user) {
     elMessage.textContent = "Type your answer first.";
@@ -156,17 +165,15 @@ function checkAnswer() {
     return;
   }
 
-  const expected = Array.isArray(item.answer) ? item.answer : [item.answer];
-  const ok = expected.some((ans) => normalize(ans) === user);
+  const ok = normalize(expected) === user;
 
   if (ok) {
     elMessage.textContent = "Correct! 🎉";
     elMessage.style.color = "#4caf50";
 
-    // save simple local "completed" flag
     const store = loadLocal();
     if (!store[currentTodayKey]) store[currentTodayKey] = {};
-    store[currentTodayKey][currentDiff] = { status: "correct" };
+    store[currentTodayKey][currentDiff] = true;
     saveLocal(store);
   } else {
     elMessage.textContent = "Not quite, try again.";
@@ -177,8 +184,8 @@ function checkAnswer() {
 // ---- Hint toggle ----
 function toggleHint() {
   if (!elHintText.textContent) return;
-  const visible = elHintText.style.display === "block";
-  elHintText.style.display = visible ? "none" : "block";
+  elHintText.style.display =
+    elHintText.style.display === "block" ? "none" : "block";
 }
 
 // ---- Timer ----
@@ -186,8 +193,6 @@ function startCountdown() {
   function tick() {
     const ms = msToNextUtcMidnight();
     if (ms <= 0) {
-      elResetTime.textContent = "00:00:00";
-      // new day: reload puzzles
       location.reload();
       return;
     }
@@ -204,18 +209,19 @@ async function initBrain() {
 
   try {
     const res = await fetch(DATA_URL, { cache: "no-store" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
+    if (!res.ok) throw new Error(res.status);
     setsData = await res.json();
-  } catch (err) {
-    console.error("Failed to load sets:", err);
-    elQuestion.textContent = "Error loading today's puzzles. Please try again later.";
+  } catch (e) {
+    console.error(e);
+    elQuestion.textContent =
+      "Error loading today's puzzles. Please try again later.";
     return;
   }
 
   setDifficulty("easy");
 }
 
-// ---- Wire events ----
+// ---- Events ----
 btnEasy.addEventListener("click", () => setDifficulty("easy"));
 btnMedium.addEventListener("click", () => setDifficulty("medium"));
 btnHard.addEventListener("click", () => setDifficulty("hard"));
@@ -231,5 +237,5 @@ themeBlue.addEventListener("click", () => applyTheme("blue"));
 themeOrange.addEventListener("click", () => applyTheme("orange"));
 themeGold.addEventListener("click", () => applyTheme("gold"));
 
-// kick off
+// ---- Go ----
 initBrain();
