@@ -200,7 +200,10 @@ async function loadGlobalLeaderboard() {
 
 // ====== Init ======
 async function initBrain() {
+  
   console.log("🚀 initBrain started");
+  console.log("State:", localStore);
+
 
   await loadSets();
   startResetCountdown();
