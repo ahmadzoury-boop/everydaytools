@@ -10,188 +10,188 @@
       {
         "q": "What is the next number in the pattern: 2, 4, 6, 8, …?",
         "a": "10",
-        "hint": "The difference between each pair is the same.",
+        "hint": "The pattern increases by 2 each step.",
         "explanation": "The pattern adds 2 each time: 2, 4, 6, 8, so the next is 10."
       },
       {
         "q": "What day comes immediately after Monday?",
         "a": "tuesday",
-        "hint": "Think of the names of the days of the week.",
-        "explanation": "The order is Monday, Tuesday, Wednesday…, so after Monday comes Tuesday."
+        "hint": "Think of the days of the week.",
+        "explanation": "The order is Monday, Tuesday, Wednesday…"
       },
       {
-        "q": "A shape has 3 straight sides and 3 corners. What is it called?",
+        "q": "A shape has 3 sides and 3 corners. What is it called?",
         "a": "triangle",
         "hint": "It is the simplest polygon.",
-        "explanation": "A triangle is a shape with 3 straight sides and 3 corners (vertices)."
+        "explanation": "A triangle has 3 straight sides and 3 vertices."
       },
       {
-        "q": "How many minutes are there in half an hour?",
+        "q": "How many minutes are in half an hour?",
         "a": "30",
         "hint": "A full hour has 60 minutes.",
-        "explanation": "Half of 60 minutes is 30 minutes, so half an hour is 30 minutes."
+        "explanation": "Half of 60 minutes is 30."
       }
     ],
     "medium": [
       {
-        "q": "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
+        "q": "I speak without a mouth and hear without ears. What am I?",
         "a": "echo",
-        "hint": "You often hear it in mountains or empty rooms.",
-        "explanation": "An echo is a reflected sound; it seems to reply, but it has no mouth or ears."
+        "hint": "You hear it in mountains.",
+        "explanation": "An echo is a reflected sound."
       },
       {
         "q": "What gets wetter the more it dries?",
         "a": "towel",
-        "hint": "You use it after a shower.",
-        "explanation": "A towel absorbs water from your body, so it gets wetter while it dries you."
+        "hint": "Used after shower.",
+        "explanation": "A towel absorbs water while drying you."
       },
       {
-        "q": "I am full of keys but I cannot open a single door. What am I?",
+        "q": "I have keys but no locks. What am I?",
         "a": "piano",
-        "hint": "It can play music.",
-        "explanation": "A piano has many keys you press to make sounds, but they do not open doors."
+        "hint": "It makes music.",
+        "explanation": "A piano has keys you press to play notes."
       },
       {
         "q": "What has hands but cannot clap?",
         "a": "clock",
-        "hint": "It hangs on a wall or sits on a table.",
-        "explanation": "A clock has hands that point to the time, but they are not real hands that can clap."
+        "hint": "Tells time.",
+        "explanation": "A clock has hands that point to numbers."
       },
       {
-        "q": "I have branches, but no fruit, trunk, or leaves. What am I?",
+        "q": "I have branches but no fruit or leaves. What am I?",
         "a": "bank",
-        "hint": "People visit me for money, not for shade.",
-        "explanation": "A bank has branches (different offices), but it is not a tree with fruit or leaves."
+        "hint": "Money place.",
+        "explanation": "A bank has branches (locations)."
       }
     ],
     "hard": [
       {
-        "q": "A shop sells notebooks for $4 each. If you have $50 and want to keep at least $2, how many notebooks can you buy?",
+        "q": "A shop sells notebooks for $4. You have $50 and must keep $2. How many can you buy?",
         "a": "12",
-        "hint": "First subtract the amount you must keep.",
-        "explanation": "You must keep $2, so you can spend $48. Each notebook costs $4, so 48 ÷ 4 = 12."
+        "hint": "You can spend $48.",
+        "explanation": "48 ÷ 4 = 12"
       },
       {
-        "q": "The sum of three consecutive whole numbers is 36. What is the middle number?",
+        "q": "The sum of 3 consecutive numbers is 36. What is the middle number?",
         "a": "12",
-        "hint": "For three consecutive numbers, the total is 3 × the middle.",
-        "explanation": "Let the numbers be n−1, n, n+1. Their sum is 3n. If 3n = 36, then n = 12."
+        "hint": "Sum = 3 × middle number.",
+        "explanation": "3n = 36 → n = 12."
       },
       {
-        "q": "A rectangle has a length of 12 cm and a width of 7 cm. What is its area?",
+        "q": "Area of rectangle: length 12 cm, width 7 cm?",
         "a": "84",
-        "hint": "Area of a rectangle is length × width.",
-        "explanation": "Multiply 12 by 7 to get 84 square centimetres of area."
+        "hint": "Multiply length × width.",
+        "explanation": "12 × 7 = 84 cm²."
       },
       {
-        "q": "You drive 120 km in 2 hours at a constant speed. What is your average speed in km/h?",
+        "q": "120 km in 2 hours. What is your speed?",
         "a": "60",
         "hint": "Speed = distance ÷ time.",
-        "explanation": "Speed is total distance divided by total time: 120 ÷ 2 = 60 km/h."
+        "explanation": "120 ÷ 2 = 60 km/h."
       },
       {
-        "q": "A number is 25% of 80. What is the number?",
+        "q": "What is 25% of 80?",
         "a": "20",
-        "hint": "Find one quarter of 80.",
-        "explanation": "25% means one quarter. One quarter of 80 is 80 ÷ 4 = 20."
+        "hint": "25% = one quarter.",
+        "explanation": "80 ÷ 4 = 20."
       }
     ]
   },
   "2026-01-13": {
     "easy": [
       {
-        "q": "What is 9 minus 4?",
+        "q": "What is 9 − 4?",
         "a": "5",
-        "hint": "Count backwards from 9.",
-        "explanation": "9 − 4 = 5."
+        "hint": "Count back from 9.",
+        "explanation": "9 minus 4 = 5."
       },
       {
         "q": "How many sides does a square have?",
         "a": "4",
-        "hint": "Think of the corners.",
-        "explanation": "A square has 4 equal sides and 4 corners."
+        "hint": "Think of corners.",
+        "explanation": "A square has 4 equal sides."
       },
       {
-        "q": "What colour do you get when you mix blue and yellow?",
+        "q": "Blue + yellow = ?",
         "a": "green",
-        "hint": "It is a common colour in nature.",
-        "explanation": "Mixing blue and yellow paint creates green."
+        "hint": "Common nature color.",
+        "explanation": "Blue and yellow make green."
       },
       {
         "q": "How many legs does a typical cat have?",
         "a": "4",
-        "hint": "Think of how many paws it stands on.",
-        "explanation": "A typical cat has four legs."
+        "hint": "It walks on them.",
+        "explanation": "A normal cat has 4 legs."
       },
       {
         "q": "Which number is bigger: 15 or 19?",
         "a": "19",
-        "hint": "Compare the tens and ones.",
-        "explanation": "19 is larger than 15 because it has more ones."
+        "hint": "Compare values.",
+        "explanation": "19 is greater than 15."
       }
     ],
     "medium": [
       {
-        "q": "What has many teeth but cannot bite?",
+        "q": "What has teeth but cannot bite?",
         "a": "comb",
-        "hint": "You use it on your hair.",
-        "explanation": "A comb has many teeth, but they are for brushing hair, not for biting."
+        "hint": "Used for hair.",
+        "explanation": "A comb has 'teeth'."
       },
       {
-        "q": "The more of me you take, the more you leave behind. What am I?",
+        "q": "The more you take, the more you leave behind. What am I?",
         "a": "footsteps",
-        "hint": "Think of walking in sand.",
-        "explanation": "Each step you take leaves a footprint behind, so more steps means more left behind."
+        "hint": "Walking.",
+        "explanation": "Steps leave prints behind."
       },
       {
-        "q": "I am always in front of you but can never be seen. What am I?",
+        "q": "I’m always ahead but never seen. What am I?",
         "a": "future",
-        "hint": "It has not happened yet.",
-        "explanation": "The future is ahead of you in time, but you cannot see it."
+        "hint": "Not happened yet.",
+        "explanation": "The future is ahead of time."
       },
       {
         "q": "What has one eye but cannot see?",
         "a": "needle",
-        "hint": "You use it for sewing.",
-        "explanation": "A needle has an 'eye' where you put the thread, but it cannot see."
+        "hint": "Used for sewing.",
+        "explanation": "Needles have an 'eye'."
       },
       {
-        "q": "I’m tall when I’m young, and I’m short when I’m old. What am I?",
+        "q": "Tall when young, short when old. What am I?",
         "a": "candle",
-        "hint": "You light it.",
-        "explanation": "A candle is long when new and gets shorter as it burns down."
+        "hint": "Melts.",
+        "explanation": "A candle shortens as it burns."
       }
     ],
     "hard": [
       {
-        "q": "A shirt costs $24 after a 25% discount. What was the original price?",
+        "q": "Shirt costs $24 after 25% off. Original price?",
         "a": "32",
-        "hint": "$24 is 75% of the original price.",
-        "explanation": "If 75% is $24, then 1% is $24 ÷ 75, and 100% is $24 ÷ 0.75 = $32."
+        "hint": "24 is 75%.",
+        "explanation": "24 ÷ 0.75 = 32."
       },
       {
-        "q": "The average of four numbers is 10. Their total sum is?",
+        "q": "Average of four numbers is 10. What is the total?",
         "a": "40",
-        "hint": "Average × number of items.",
-        "explanation": "If the mean is 10 and there are 4 numbers, the sum is 10 × 4 = 40."
+        "hint": "Average × count.",
+        "explanation": "10 × 4 = 40."
       },
       {
         "q": "If 5x = 45, what is x?",
         "a": "9",
-        "hint": "Divide both sides by 5.",
-        "explanation": "x = 45 ÷ 5 = 9."
+        "hint": "Divide by 5.",
+        "explanation": "45 ÷ 5 = 9."
       },
       {
-        "q": "A class has 12 boys and 18 girls. What fraction of the class are girls?",
+        "q": "There are 12 boys and 18 girls. Fraction girls?",
         "a": "3/5",
-        "hint": "Total students first, then simplify.",
-        "explanation": "There are 30 students. 18/30 simplifies to 3/5, so 3/5 are girls."
+        "hint": "Simplify 18/30.",
+        "explanation": "18/30 reduces to 3/5."
       },
       {
-        "q": "You save $15 each week. How many weeks to save $180?",
+        "q": "You save $15 weekly. Weeks to reach $180?",
         "a": "12",
-        "hint": "Think of repeated addition.",
-        "explanation": "180 ÷ 15 = 12, so you need 12 weeks."
+        "hint": "Divide.",
+        "explanation": "180 ÷ 15 = 12."
       }
     ]
   },
@@ -200,96 +200,96 @@
       {
         "q": "What is 7 + 5?",
         "a": "12",
-        "hint": "Add 7 and 5.",
-        "explanation": "7 plus 5 equals 12."
+        "hint": "Add numbers.",
+        "explanation": "7 + 5 = 12."
       },
       {
-        "q": "How many days are there in one week?",
+        "q": "How many days are in a week?",
         "a": "7",
-        "hint": "Think of the calendar.",
-        "explanation": "A week has 7 days."
+        "hint": "Calendar.",
+        "explanation": "There are 7 days."
       },
       {
-        "q": "Which number is even: 11 or 14?",
+        "q": "Which is even: 11 or 14?",
         "a": "14",
-        "hint": "Even numbers are divisible by 2.",
-        "explanation": "14 can be divided by 2 with no remainder, so it is even."
+        "hint": "Even = divisible by 2.",
+        "explanation": "14 is even."
       },
       {
-        "q": "What is the first month of the year?",
+        "q": "First month of the year?",
         "a": "january",
-        "hint": "It comes before February.",
-        "explanation": "The year starts with January."
+        "hint": "Before February.",
+        "explanation": "Year begins with January."
       },
       {
-        "q": "How many zeros are there in the number 100?",
+        "q": "How many zeros in 100?",
         "a": "2",
-        "hint": "Look at the digits.",
-        "explanation": "100 has one '1' followed by two zeros."
+        "hint": "Look at digits.",
+        "explanation": "100 has two zeros."
       }
     ],
     "medium": [
       {
         "q": "What goes up but never comes down?",
         "a": "age",
-        "hint": "It changes every birthday.",
-        "explanation": "Your age increases as time passes and never decreases."
+        "hint": "Birthday.",
+        "explanation": "Age increases."
       },
       {
-        "q": "I’m not alive, but I can grow. I don’t have lungs, but I need air. What am I?",
+        "q": "I’m not alive but I grow. I need air. What am I?",
         "a": "fire",
-        "hint": "You must be careful with me.",
-        "explanation": "Fire grows bigger when it has fuel and air, but it is not a living creature."
+        "hint": "Dangerous.",
+        "explanation": "Fire grows with oxygen."
       },
       {
         "q": "What can you catch but not throw?",
         "a": "cold",
-        "hint": "People say they 'catch' it in winter.",
-        "explanation": "You catch a cold as an illness, but you cannot physically throw it."
+        "hint": "Winter.",
+        "explanation": "You catch a cold."
       },
       {
-        "q": "I have cities but no houses, forests but no trees, and rivers but no water. What am I?",
+        "q": "Cities but no houses, forests but no trees?",
         "a": "map",
-        "hint": "It shows the world on paper.",
-        "explanation": "A map has symbols for cities, forests, and rivers, but they are not real."
+        "hint": "Paper.",
+        "explanation": "A map shows features."
       },
       {
-        "q": "What begins with T, ends with T, and has T in it?",
+        "q": "Starts with T, ends with T, has T inside?",
         "a": "teapot",
-        "hint": "You pour tea from it.",
-        "explanation": "The word 'teapot' starts with T, ends with T, and contains 'tea' inside it."
+        "hint": "Tea.",
+        "explanation": "'Teapot' fits all clues."
       }
     ],
     "hard": [
       {
-        "q": "A book costs $12 and a pen costs $3. You buy 2 books and 3 pens. How much do you spend in total?",
+        "q": "2 books $12 each + 3 pens $3 each. Total cost?",
         "a": "33",
-        "hint": "Find the book total and pen total separately.",
-        "explanation": "2 books cost 2×12 = 24. 3 pens cost 3×3 = 9. Together, 24 + 9 = 33."
+        "hint": "Calculate separately.",
+        "explanation": "Books 24 + pens 9 = 33."
       },
       {
-        "q": "The perimeter of a square is 40 cm. What is the length of one side?",
+        "q": "Square perimeter = 40 cm. Side length?",
         "a": "10",
-        "hint": "A square has 4 equal sides.",
-        "explanation": "Perimeter = 4 × side. 40 ÷ 4 = 10 cm per side."
+        "hint": "Perimeter ÷ 4.",
+        "explanation": "40 ÷ 4 = 10."
       },
       {
-        "q": "If 60% of a number is 42, what is the number?",
+        "q": "60% of a number is 42. The number?",
         "a": "70",
-        "hint": "60% is 0.6 in decimal.",
-        "explanation": "0.6 × N = 42, so N = 42 ÷ 0.6 = 70."
+        "hint": "42 ÷ 0.6.",
+        "explanation": "70 × 0.6 = 42."
       },
       {
-        "q": "A train travels 150 km in 3 hours. How far does it travel in 5 hours at the same speed?",
+        "q": "Train 150 km in 3 hours. In 5 hours?",
         "a": "250",
-        "hint": "Find the speed first.",
-        "explanation": "Speed is 150 ÷ 3 = 50 km/h. In 5 hours, it goes 50 × 5 = 250 km."
+        "hint": "Find speed first.",
+        "explanation": "Speed = 50. 50 × 5 = 250."
       },
       {
-        "q": "You have 3/4 of a pizza, and you eat 1/2 of what you have. How much of the whole pizza did you eat?",
+        "q": "You eat half of 3/4 pizza. Fraction eaten?",
         "a": "3/8",
-        "hint": "Multiply the two fractions.",
-        "explanation": "You eat 1/2 of 3/4. (1/2) × (3/4) = 3/8 of the whole pizza."
+        "hint": "Multiply fractions.",
+        "explanation": "(1/2 × 3/4) = 3/8."
       }
     ]
   },
@@ -298,96 +298,96 @@
       {
         "q": "What is 10 − 6?",
         "a": "4",
-        "hint": "Subtract 6 from 10.",
-        "explanation": "10 minus 6 equals 4."
+        "hint": "Subtract.",
+        "explanation": "10 − 6 = 4."
       },
       {
-        "q": "How many months are there in one year?",
+        "q": "How many months in a year?",
         "a": "12",
-        "hint": "Think of the calendar.",
-        "explanation": "There are 12 months in a year."
+        "hint": "Calendar.",
+        "explanation": "12 months."
       },
       {
-        "q": "Which is heavier: 1 kilogram of feathers or 1 kilogram of iron?",
+        "q": "Which is heavier: 1 kg feathers or 1 kg iron?",
         "a": "same",
-        "hint": "Compare their weights, not the materials.",
-        "explanation": "Both weigh 1 kilogram, so they are the same weight."
+        "hint": "Both weigh 1 kg.",
+        "explanation": "Weight is equal."
       },
       {
-        "q": "What is the smallest even number greater than 0?",
+        "q": "Smallest even number > 0?",
         "a": "2",
-        "hint": "Count: 0, 2, 4…",
-        "explanation": "The even numbers start 0, 2, 4…, so the smallest positive even number is 2."
+        "hint": "Even numbers start at 0, 2...",
+        "explanation": "The first positive even is 2."
       },
       {
-        "q": "How many sides does a triangle have?",
+        "q": "How many sides in a triangle?",
         "a": "3",
-        "hint": "Look at its corners.",
-        "explanation": "A triangle has 3 sides and 3 corners."
+        "hint": "Look at shape.",
+        "explanation": "Triangle has 3 sides."
       }
     ],
     "medium": [
       {
-        "q": "What can travel around the world while staying in the same corner?",
+        "q": "What travels the world while staying in a corner?",
         "a": "stamp",
-        "hint": "It sticks to letters.",
-        "explanation": "A postage stamp stays in the corner of an envelope while the letter travels."
+        "hint": "Letters.",
+        "explanation": "A stamp stays on an envelope."
       },
       {
-        "q": "I am always hungry and must be fed, but if you give me water I will die. What am I?",
+        "q": "Always hungry, must be fed, dies in water.",
         "a": "fire",
-        "hint": "It burns.",
-        "explanation": "Fire needs fuel to keep burning, but water puts it out."
+        "hint": "Burns.",
+        "explanation": "Fire needs fuel; water extinguishes it."
       },
       {
-        "q": "What building has the most stories?",
+        "q": "Building with most stories?",
         "a": "library",
-        "hint": "Think of storybooks.",
-        "explanation": "A library is full of books, which contain many stories."
+        "hint": "Books.",
+        "explanation": "Books contain stories."
       },
       {
-        "q": "I have a face and two hands, but no arms or legs. What am I?",
+        "q": "Has a face, hands, no arms or legs?",
         "a": "clock",
-        "hint": "You use me to tell time.",
-        "explanation": "A clock has a face and hands that point to the numbers."
+        "hint": "Time.",
+        "explanation": "A clock has hands that point."
       },
       {
-        "q": "What has a head and a tail but no body?",
+        "q": "Has head and tail but no body?",
         "a": "coin",
-        "hint": "You can flip it.",
-        "explanation": "A coin has a 'heads' side and a 'tails' side, but no body."
+        "hint": "Flip it.",
+        "explanation": "A coin has head/tail sides."
       }
     ],
     "hard": [
       {
-        "q": "If a car uses 8 litres of fuel to travel 120 km, how many km can it travel with 20 litres at the same rate?",
+        "q": "Car uses 8L for 120 km. Distance with 20L?",
         "a": "300",
-        "hint": "First find km per litre.",
-        "explanation": "120 km ÷ 8 L = 15 km/L. With 20 L it can go 15 × 20 = 300 km."
+        "hint": "Find km per litre.",
+        "explanation": "120 ÷ 8 = 15. 15 × 20 = 300."
       },
       {
-        "q": "The sum of two numbers is 50 and one of them is 18. What is the other number?",
+        "q": "Sum is 50. One number is 18. Other?",
         "a": "32",
-        "hint": "Subtract 18 from the total.",
-        "explanation": "50 − 18 = 32, so the other number is 32."
+        "hint": "Subtract.",
+        "explanation": "50 − 18 = 32."
       },
       {
-        "q": "A rectangle has an area of 54 cm² and a width of 6 cm. What is its length?",
+        "q": "Rectangle area 54, width 6. Length?",
         "a": "9",
-        "hint": "Area = length × width.",
-        "explanation": "54 ÷ 6 = 9, so the rectangle's length is 9 cm."
+        "hint": "Area ÷ width.",
+        "explanation": "54 ÷ 6 = 9."
       },
       {
-        "q": "You buy a game for $40 and later sell it for $30. What percent loss did you make?",
+        "q": "Buy game 40, sell 30. Percent loss?",
         "a": "25",
-        "hint": "Loss over original price, then ×100.",
-        "explanation": "You lost $10. 10 ÷ 40 = 0.25, which is a 25% loss."
+        "hint": "Loss ÷ original.",
+        "explanation": "10 ÷ 40 = 0.25."
       },
       {
-        "q": "Three friends share a taxi bill of $45 in the ratio 2:3:4. How much does the friend with the largest share pay?",
+        "q": "Taxi bill 45 split 2:3:4. Largest share?",
         "a": "20",
-        "hint": "First find the total number of parts.",
-        "explanation": "2+3+4=9 parts. Each part is 45 ÷ 9 = 5. The largest share is 4 parts: 4 × 5 = 20."
+        "hint": "Find part value.",
+        "explanation": "Total parts 9. Each 5. Largest = 4×5 = 20."
       }
     ]
   },
@@ -396,197 +396,2579 @@
       {
         "q": "What is 6 + 7?",
         "a": "13",
-        "hint": "Add 6 and 7.",
-        "explanation": "6 plus 7 equals 13."
+        "hint": "Add.",
+        "explanation": "6 + 7 = 13."
       },
       {
-        "q": "How many hours are there in half a day?",
+        "q": "How many hours in half a day?",
         "a": "12",
-        "hint": "A full day has 24 hours.",
-        "explanation": "Half of 24 is 12 hours."
+        "hint": "Half of 24.",
+        "explanation": "24 ÷ 2 = 12."
       },
       {
-        "q": "Which number is smaller: 21 or 18?",
+        "q": "Which is smaller: 21 or 18?",
         "a": "18",
-        "hint": "Compare their sizes.",
-        "explanation": "18 is less than 21."
+        "hint": "Compare.",
+        "explanation": "18 is smaller."
       },
       {
-        "q": "What is the capital letter version of the letter 'b'?",
+        "q": "Capital version of letter b?",
         "a": "b",
-        "hint": "Our answer checker ignores case.",
-        "explanation": "Typing 'b' or 'B' is treated the same in this puzzle system."
+        "hint": "System ignores case.",
+        "explanation": "Answer normalizes lowercase."
       },
       {
-        "q": "How many seasons are there in a typical year?",
+        "q": "How many seasons in a year?",
         "a": "4",
-        "hint": "Think of spring, summer…",
-        "explanation": "Most places speak about 4 seasons: spring, summer, autumn, winter."
+        "hint": "Spring, summer…",
+        "explanation": "4 seasons."
       }
     ],
     "medium": [
       {
-        "q": "I can be cracked, made, told, and played. What am I?",
+        "q": "Can be cracked, made, told, played.",
         "a": "joke",
-        "hint": "It is something that makes people laugh.",
-        "explanation": "You can crack a joke, make a joke, tell a joke, or play a joke on someone."
+        "hint": "Makes you laugh.",
+        "explanation": "You crack or tell a joke."
       },
       {
-        "q": "What has a neck but no head?",
+        "q": "Has a neck but no head?",
         "a": "bottle",
-        "hint": "You pour liquid from it.",
-        "explanation": "A bottle has a neck but no head."
+        "hint": "Liquid.",
+        "explanation": "Bottles have necks."
       },
       {
-        "q": "If you drop me I’ll crack, but if you smile at me I’ll smile back. What am I?",
+        "q": "Drop me I crack, smile I smile back.",
         "a": "mirror",
-        "hint": "It shows your reflection.",
-        "explanation": "A mirror can crack if dropped and reflects your smile back at you."
+        "hint": "Reflects.",
+        "explanation": "Mirror reflects your face."
       },
       {
-        "q": "What has words but never speaks?",
+        "q": "Words but never speaks?",
         "a": "book",
-        "hint": "You read it.",
-        "explanation": "A book is full of words, but it cannot speak by itself."
+        "hint": "Pages.",
+        "explanation": "Books contain words."
       },
       {
-        "q": "What gets broken without being held?",
+        "q": "Broken without being held?",
         "a": "promise",
-        "hint": "People make it to each other.",
-        "explanation": "You can break a promise even though you never hold it in your hands."
+        "hint": "Between people.",
+        "explanation": "Promises can be broken."
       }
     ],
     "hard": [
       {
-        "q": "A bag contains 5 red, 3 blue, and 2 green marbles. How many marbles are in the bag altogether?",
+        "q": "Bag: 5 red, 3 blue, 2 green. Total?",
         "a": "10",
-        "hint": "Add the three groups.",
-        "explanation": "5 + 3 + 2 = 10 marbles."
+        "hint": "Add all.",
+        "explanation": "5+3+2=10."
       },
       {
-        "q": "If 3(x + 2) = 21, what is x?",
+        "q": "3(x+2)=21. x?",
         "a": "5",
-        "hint": "Divide both sides by 3 first.",
-        "explanation": "3(x + 2) = 21 → x + 2 = 7 → x = 5."
+        "hint": "Divide by 3.",
+        "explanation": "x+2=7 → x=5."
       },
       {
-        "q": "A tank holds 80 litres of water. If it is 3/5 full, how many litres of water are in the tank?",
+        "q": "80L tank is 3/5 full. How many litres?",
         "a": "48",
-        "hint": "Multiply 80 by 3/5.",
-        "explanation": "(3/5) × 80 = 48 litres."
+        "hint": "Multiply.",
+        "explanation": "(3/5)×80=48."
       },
       {
-        "q": "The ratio of cats to dogs in a shelter is 2:3. If there are 18 dogs, how many cats are there?",
+        "q": "Cats:dogs = 2:3. Dogs = 18. Cats?",
         "a": "12",
-        "hint": "Keep the same ratio.",
-        "explanation": "2:3 means for every 3 dogs there are 2 cats. 18 dogs is 6 groups of 3, so 6×2 = 12 cats."
+        "hint": "Scale ratio.",
+        "explanation": "18 means 6 groups. 6×2=12 cats."
       },
       {
-        "q": "A shop increases the price of a toy from $20 to $26. What is the percentage increase?",
+        "q": "Toy price from 20 to 26. Percent increase?",
         "a": "30",
-        "hint": "Find the increase, then divide by the original price.",
-        "explanation": "The increase is $6. 6 ÷ 20 = 0.3, which is a 30% increase."
+        "hint": "Difference ÷ original.",
+        "explanation": "6÷20=0.3 → 30%."
       }
     ]
   },
+
   "2026-01-17": {
     "easy": [
       {
         "q": "What is 4 × 3?",
         "a": "12",
-        "hint": "Add 4 three times.",
-        "explanation": "4 + 4 + 4 = 12, so 4 × 3 = 12."
+        "hint": "Multiply.",
+        "explanation": "4×3=12."
       },
       {
-        "q": "How many minutes are there in one hour?",
+        "q": "Minutes in 1 hour?",
         "a": "60",
-        "hint": "Think of a clock.",
-        "explanation": "There are 60 minutes in one hour."
+        "hint": "Clock.",
+        "explanation": "1 hour = 60 minutes."
       },
       {
-        "q": "Which number is odd: 8 or 9?",
+        "q": "Which is odd: 8 or 9?",
         "a": "9",
-        "hint": "Odd numbers are not divisible by 2.",
-        "explanation": "9 cannot be divided by 2 with no remainder, so it is odd."
+        "hint": "Odd not divisible by 2.",
+        "explanation": "9 is odd."
       },
       {
-        "q": "What is the opposite of 'up'?",
+        "q": "Opposite of up?",
         "a": "down",
-        "hint": "Think of directions.",
-        "explanation": "The opposite of 'up' is 'down'."
+        "hint": "Direction.",
+        "explanation": "Up ↔ down."
       },
       {
-        "q": "How many letters are there in the English alphabet?",
+        "q": "How many letters in alphabet?",
         "a": "26",
-        "hint": "From A to Z.",
-        "explanation": "The English alphabet has 26 letters."
+        "hint": "A to Z.",
+        "explanation": "There are 26 letters."
       }
     ],
     "medium": [
       {
-        "q": "I’m light as a feather, yet the strongest person can’t hold me for more than a few minutes. What am I?",
+        "q": "Light as a feather but strongest can't hold me.",
         "a": "breath",
-        "hint": "You need me to live.",
-        "explanation": "You cannot hold your breath for a very long time, no matter how strong you are."
+        "hint": "You inhale me.",
+        "explanation": "You cannot hold your breath long."
       },
       {
-        "q": "What runs but never walks, has a mouth but never talks?",
+        "q": "Runs but never walks, has a mouth but doesn't talk.",
         "a": "river",
-        "hint": "It flows.",
-        "explanation": "A river runs (flows), has a mouth, but does not walk or talk."
+        "hint": "Flows.",
+        "explanation": "A river runs and has a mouth."
       },
       {
-        "q": "If you have me, you want to share me. If you share me, you don’t have me. What am I?",
+        "q": "Have me and want to share, share me and lose me.",
         "a": "secret",
-        "hint": "You should keep it to yourself.",
-        "explanation": "A secret stops being a secret once you share it."
+        "hint": "Private.",
+        "explanation": "A secret stops being a secret when shared."
       },
       {
-        "q": "What comes once in a minute, twice in a moment, but never in a thousand years?",
+        "q": "Once in minute, twice in moment, never in a thousand years.",
         "a": "m",
-        "hint": "Look at the spelling of the words.",
-        "explanation": "The letter 'm' appears once in 'minute', twice in 'moment', and not in 'a thousand years'."
+        "hint": "Look at spelling.",
+        "explanation": "The letter M."
       },
       {
-        "q": "What can fill a room but takes up no space?",
+        "q": "Can fill a room but take no space?",
         "a": "light",
-        "hint": "You switch it on.",
-        "explanation": "Light can brighten a whole room but doesn’t have physical size."
+        "hint": "Switch on.",
+        "explanation": "Light fills space without mass."
       }
     ],
     "hard": [
       {
-        "q": "You invest $200 at a simple interest rate of 5% per year. How much interest will you earn after 3 years?",
+        "q": "200$ at 5% simple interest for 3 years. Earned?",
         "a": "30",
-        "hint": "Simple interest = principal × rate × time.",
-        "explanation": "Interest = 200 × 0.05 × 3 = $30."
+        "hint": "I = PRT.",
+        "explanation": "200×0.05×3 = 30."
       },
       {
-        "q": "A number is multiplied by 7 and then 5 is added, giving 47. What is the number?",
+        "q": "7x + 5 = 47. x?",
         "a": "6",
-        "hint": "Undo the operations in reverse.",
-        "explanation": "Let the number be x. 7x + 5 = 47 → 7x = 42 → x = 6."
+        "hint": "Subtract 5.",
+        "explanation": "7x=42 → x=6."
       },
       {
-        "q": "A square has an area of 81 cm². What is the length of one side?",
+        "q": "Square area 81. Side?",
         "a": "9",
-        "hint": "The side is the square root of the area.",
-        "explanation": "√81 = 9, so each side of the square is 9 cm."
+        "hint": "Square root.",
+        "explanation": "√81 = 9."
       },
       {
-        "q": "In a sale, all prices are reduced by 20%. If a jacket now costs $72, what was its original price?",
+        "q": "Price after 20% off is 72. Original?",
         "a": "90",
-        "hint": "$72 is 80% of the original.",
-        "explanation": "If 80% is $72, then the original is 72 ÷ 0.8 = $90."
+        "hint": "72 is 80%.",
+        "explanation": "72 ÷ 0.8 = 90."
       },
       {
-        "q": "The average of five test scores is 16. Four of the scores are 12, 15, 18, and 19. What is the fifth score?",
+        "q": "Average of 5 is 16. Four known sum=64. Fifth?",
         "a": "16",
-        "hint": "First find the total of all five scores.",
-        "explanation": "Total is 5 × 16 = 80. The four known scores sum to 64, so the fifth is 80 − 64 = 16."
+        "hint": "Find total.",
+        "explanation": "Total = 80 → 80−64 = 16."
       }
     ]
   },
 
-  /* … بقية الأيام من 2026-01-18 إلى 2026-02-10 موجودة بنفس النمط أعلاه في الرسالة (لو احتجت أعيد إرسال الباقي فقط، أقدر أكتبه لك كأسطر منفصلة لتسهيل النسخ). */
+  "2026-01-18": {
+    "easy": [
+      {
+        "q": "What is 8 + 4?",
+        "a": "12",
+        "hint": "Add.",
+        "explanation": "8 + 4 = 12."
+      },
+      {
+        "q": "How many days in a weekend?",
+        "a": "2",
+        "hint": "Saturday & Sunday.",
+        "explanation": "Weekend has 2 days."
+      },
+      {
+        "q": "Which is larger: 14 or 9?",
+        "a": "14",
+        "hint": "Compare values.",
+        "explanation": "14 is bigger."
+      },
+      {
+        "q": "Opposite of hot?",
+        "a": "cold",
+        "hint": "Temperature.",
+        "explanation": "Hot ↔ cold."
+      },
+      {
+        "q": "How many sides does a pentagon have?",
+        "a": "5",
+        "hint": "Think of shape.",
+        "explanation": "A pentagon has 5 sides."
+      }
+    ],
+    "medium": [
+      {
+        "q": "What has a ring but no finger?",
+        "a": "phone",
+        "hint": "You answer it.",
+        "explanation": "Phones ring."
+      },
+      {
+        "q": "You see me once in a year, twice in a week, never in a day.",
+        "a": "e",
+        "hint": "Letter.",
+        "explanation": "Letter E appears accordingly."
+      },
+      {
+        "q": "What starts and ends with E but has one letter inside?",
+        "a": "envelope",
+        "hint": "Mail.",
+        "explanation": "Envelope contains a letter."
+      },
+      {
+        "q": "What can be broken but never held?",
+        "a": "promise",
+        "hint": "Trust.",
+        "explanation": "Promises break without being touched."
+      },
+      {
+        "q": "What gets sharper the more you use it?",
+        "a": "brain",
+        "hint": "Think.",
+        "explanation": "Using your brain improves it."
+      }
+    ],
+    "hard": [
+      {
+        "q": "Solve: 3x − 9 = 0",
+        "a": "3",
+        "hint": "Add 9 then divide.",
+        "explanation": "3x=9 → x=3."
+      },
+      {
+        "q": "A triangle’s sides: 3,4,5. Area?",
+        "a": "6",
+        "hint": "Right triangle.",
+        "explanation": "Area = (3×4)/2 = 6."
+      },
+      {
+        "q": "Find 15% of 200.",
+        "a": "30",
+        "hint": "0.15 × 200.",
+        "explanation": "200×0.15 = 30."
+      },
+      {
+        "q": "45 students, girl:boy = 2:3. Girls?",
+        "a": "18",
+        "hint": "Total parts 5.",
+        "explanation": "45÷5=9 → girls=2×9=18."
+      },
+      {
+        "q": "If speed is 80 km/h, time for 200 km?",
+        "a": "2.5",
+        "hint": "Time = distance ÷ speed.",
+        "explanation": "200 ÷ 80 = 2.5 hours."
+      }
+    ]
+  },
+
+  "2026-01-19": {
+    "easy": [
+      {
+        "q": "What is 15 − 7?",
+        "a": "8",
+        "hint": "Subtract.",
+        "explanation": "15 − 7 = 8."
+      },
+      {
+        "q": "Which is smaller: 5 or 2?",
+        "a": "2",
+        "hint": "Compare.",
+        "explanation": "2 is smaller."
+      },
+      {
+        "q": "How many wheels does a bicycle have?",
+        "a": "2",
+        "hint": "Think basic.",
+        "explanation": "A bicycle has 2 wheels."
+      },
+      {
+        "q": "What is the opposite of left?",
+        "a": "right",
+        "hint": "Direction.",
+        "explanation": "Left ↔ Right."
+      },
+      {
+        "q": "How many sides does a hexagon have?",
+        "a": "6",
+        "hint": "Hexa means six.",
+        "explanation": "Hexagon = 6 sides."
+      }
+    ],
+    "medium": [
+      {
+        "q": "What is full of holes but still holds water?",
+        "a": "sponge",
+        "hint": "Used for cleaning.",
+        "explanation": "A sponge absorbs water."
+      },
+      {
+        "q": "What loses its head every morning but gets it back at night?",
+        "a": "pillow",
+        "hint": "Sleeping.",
+        "explanation": "You take your head off the pillow in the morning."
+      },
+      {
+        "q": "A word that becomes shorter when you add two letters to it.",
+        "a": "short",
+        "hint": "Add 'er'.",
+        "explanation": "'Short' becomes 'shorter'."
+      },
+      {
+        "q": "What is always coming but never arrives?",
+        "a": "tomorrow",
+        "hint": "Future.",
+        "explanation": "Tomorrow never becomes today until next day."
+      },
+      {
+        "q": "The more you have of me, the less you see. What am I?",
+        "a": "darkness",
+        "hint": "Opposite of light.",
+        "explanation": "More darkness = less visibility."
+      }
+    ],
+    "hard": [
+      {
+        "q": "Solve: 4x + 6 = 26",
+        "a": "5",
+        "hint": "Subtract 6.",
+        "explanation": "4x=20 → x=5."
+      },
+      {
+        "q": "Perimeter of rectangle 14 by 9?",
+        "a": "46",
+        "hint": "2(l+w).",
+        "explanation": "2(14+9)=46."
+      },
+      {
+        "q": "A and B share 90 in ratio 1:2. B gets?",
+        "a": "60",
+        "hint": "3 parts total.",
+        "explanation": "90÷3=30; B=2×30=60."
+      },
+      {
+        "q": "What is 35% of 200?",
+        "a": "70",
+        "hint": "0.35 × 200.",
+        "explanation": "200×0.35 = 70."
+      },
+      {
+        "q": "Distance = 150 km, speed = 75 km/h. Travel time?",
+        "a": "2",
+        "hint": "d÷s.",
+        "explanation": "150 ÷ 75 = 2 hours."
+      }
+    ]
+  },
+
+  "2026-01-20": {
+    "easy": [
+      {
+        "q": "What is 11 + 5?",
+        "a": "16",
+        "hint": "Add.",
+        "explanation": "11 + 5 = 16."
+      },
+      {
+        "q": "How many months have 31 days?",
+        "a": "7",
+        "hint": "Use your knuckles method.",
+        "explanation": "Jan, Mar, May, Jul, Aug, Oct, Dec."
+      },
+      {
+        "q": "How many legs does a spider have?",
+        "a": "8",
+        "hint": "Insects vs spiders.",
+        "explanation": "Spiders have 8 legs."
+      },
+      {
+        "q": "Opposite of big?",
+        "a": "small",
+        "hint": "Size.",
+        "explanation": "Big ↔ small."
+      },
+      {
+        "q": "Sides in an octagon?",
+        "a": "8",
+        "hint": "Octa = eight.",
+        "explanation": "Octagon = 8 sides."
+      }
+    ],
+    "medium": [
+      {
+        "q": "What has a bed but never sleeps?",
+        "a": "river",
+        "hint": "It flows.",
+        "explanation": "Rivers have river beds."
+      },
+      {
+        "q": "What flies without wings?",
+        "a": "time",
+        "hint": "Moves fast.",
+        "explanation": "Time flies."
+      },
+      {
+        "q": "What has a head, a tail, brown, and no legs?",
+        "a": "penny",
+        "hint": "Money.",
+        "explanation": "A coin fits the clues."
+      },
+      {
+        "q": "Built to break walls but needs no tools.",
+        "a": "sound",
+        "hint": "Vibrations.",
+        "explanation": "Sound waves pass through walls."
+      },
+      {
+        "q": "What has a thumb and four fingers but is not alive?",
+        "a": "glove",
+        "hint": "Wear it.",
+        "explanation": "Gloves fit the description."
+      }
+    ],
+    "hard": [
+      {
+        "q": "Solve: 5x − 20 = 0",
+        "a": "4",
+        "hint": "Add 20.",
+        "explanation": "5x=20 → x=4."
+      },
+      {
+        "q": "Area of triangle base 10, height 8?",
+        "a": "40",
+        "hint": "½bh.",
+        "explanation": "(1/2)×10×8=40."
+      },
+      {
+        "q": "40% of 250?",
+        "a": "100",
+        "hint": "0.40 × 250.",
+        "explanation": "250×0.4 = 100."
+      },
+      {
+        "q": "A ratio 3:5 total 80. Larger share?",
+        "a": "50",
+        "hint": "Total parts 8.",
+        "explanation": "80÷8=10 → 5 parts=50."
+      },
+      {
+        "q": "Travel 360 km at 90 km/h. Hours?",
+        "a": "4",
+        "hint": "d÷s.",
+        "explanation": "360÷90=4."
+      }
+    ]
+  }
+,
+"2026-01-21": {
+  "easy": [
+    {
+      "q": "What is 9 + 6?",
+      "a": "15",
+      "hint": "Add.",
+      "explanation": "9 + 6 = 15."
+    },
+    {
+      "q": "How many days are in February (non-leap year)?",
+      "a": "28",
+      "hint": "Regular year.",
+      "explanation": "February has 28 days in a common year."
+    },
+    {
+      "q": "Which number is larger: 33 or 27?",
+      "a": "33",
+      "hint": "Compare.",
+      "explanation": "33 is greater."
+    },
+    {
+      "q": "What is the opposite of open?",
+      "a": "closed",
+      "hint": "Doors.",
+      "explanation": "Open ↔ closed."
+    },
+    {
+      "q": "How many continents are there?",
+      "a": "7",
+      "hint": "Earth.",
+      "explanation": "There are 7 continents."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has keys but opens no locks?",
+      "a": "keyboard",
+      "hint": "Computer.",
+      "explanation": "A keyboard has keys for typing."
+    },
+    {
+      "q": "The more of this there is, the less you see.",
+      "a": "darkness",
+      "hint": "Opposite of light.",
+      "explanation": "Darkness hides things from view."
+    },
+    {
+      "q": "What can run but never walks?",
+      "a": "water",
+      "hint": "Streams.",
+      "explanation": "Water can run (flow)."
+    },
+    {
+      "q": "What gets whiter the dirtier it gets?",
+      "a": "chalkboard",
+      "hint": "Classroom.",
+      "explanation": "A chalkboard gets whiter when covered in chalk."
+    },
+    {
+      "q": "What belongs to you but is used by others?",
+      "a": "name",
+      "hint": "Identity.",
+      "explanation": "People use your name to call you."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 18x = 90",
+      "a": "5",
+      "hint": "Divide both sides.",
+      "explanation": "90 ÷ 18 = 5."
+    },
+    {
+      "q": "Find 12% of 150.",
+      "a": "18",
+      "hint": "0.12 × 150.",
+      "explanation": "150 × 0.12 = 18."
+    },
+    {
+      "q": "A rectangle has length 14 and area 98. Width?",
+      "a": "7",
+      "hint": "Area ÷ length.",
+      "explanation": "98 ÷ 14 = 7."
+    },
+    {
+      "q": "A train travels 300 km in 4 hours. Speed?",
+      "a": "75",
+      "hint": "d ÷ t.",
+      "explanation": "300 ÷ 4 = 75 km/h."
+    },
+    {
+      "q": "Solve: 3/4 of a number is 21. Number?",
+      "a": "28",
+      "hint": "Divide by 0.75.",
+      "explanation": "21 ÷ 0.75 = 28."
+    }
+  ]
+},
+
+"2026-01-22": {
+  "easy": [
+    {
+      "q": "What is 20 − 9?",
+      "a": "11",
+      "hint": "Subtract.",
+      "explanation": "20 − 9 = 11."
+    },
+    {
+      "q": "How many meters in a kilometer?",
+      "a": "1000",
+      "hint": "Metric system.",
+      "explanation": "1 km = 1000 m."
+    },
+    {
+      "q": "Which is bigger: 7 or 12?",
+      "a": "12",
+      "hint": "Compare.",
+      "explanation": "12 is greater."
+    },
+    {
+      "q": "What is the opposite of loud?",
+      "a": "quiet",
+      "hint": "Sound.",
+      "explanation": "Loud ↔ quiet."
+    },
+    {
+      "q": "How many corners does a square have?",
+      "a": "4",
+      "hint": "Look at shape.",
+      "explanation": "4 corners."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a bottom at the top?",
+      "a": "leg",
+      "hint": "Body.",
+      "explanation": "Your leg has a bottom (foot) at the bottom, but 'bottom' also refers to buttocks at top."
+    },
+    {
+      "q": "What gets smaller every time you take a bath?",
+      "a": "soap",
+      "hint": "Washes.",
+      "explanation": "Soap dissolves when used."
+    },
+    {
+      "q": "What has hands but cannot hold anything?",
+      "a": "clock",
+      "hint": "Time.",
+      "explanation": "A clock has hands but they do not hold."
+    },
+    {
+      "q": "What has to be broken before you use it?",
+      "a": "egg",
+      "hint": "Cooking.",
+      "explanation": "You break eggs to cook them."
+    },
+    {
+      "q": "What comes down but never goes up?",
+      "a": "rain",
+      "hint": "Weather.",
+      "explanation": "Rain falls downward only."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 7x − 14 = 0",
+      "a": "2",
+      "hint": "Add 14.",
+      "explanation": "7x=14 → x=2."
+    },
+    {
+      "q": "Find 30% of 90.",
+      "a": "27",
+      "hint": "0.30 × 90.",
+      "explanation": "90×0.3 = 27."
+    },
+    {
+      "q": "Perimeter of a square with side 9?",
+      "a": "36",
+      "hint": "4×side.",
+      "explanation": "4×9 = 36."
+    },
+    {
+      "q": "Ratio 4:5 total 36. Larger share?",
+      "a": "20",
+      "hint": "Total parts 9.",
+      "explanation": "36÷9=4 → 5 parts = 20."
+    },
+    {
+      "q": "Speed 50 km/h. Distance in 3.5 hours?",
+      "a": "175",
+      "hint": "Multiply.",
+      "explanation": "50×3.5=175."
+    }
+  ]
+},
+
+"2026-01-23": {
+  "easy": [
+    {
+      "q": "What is 14 + 6?",
+      "a": "20",
+      "hint": "Add.",
+      "explanation": "14 + 6 = 20."
+    },
+    {
+      "q": "How many colors in a rainbow?",
+      "a": "7",
+      "hint": "ROYGBIV.",
+      "explanation": "7 colors."
+    },
+    {
+      "q": "Which is colder: ice or steam?",
+      "a": "ice",
+      "hint": "Temperature.",
+      "explanation": "Ice is colder."
+    },
+    {
+      "q": "Opposite of happy?",
+      "a": "sad",
+      "hint": "Emotion.",
+      "explanation": "Happy ↔ sad."
+    },
+    {
+      "q": "How many legs does a horse have?",
+      "a": "4",
+      "hint": "Animal.",
+      "explanation": "Horses have 4 legs."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has roots that nobody sees and is taller than trees?",
+      "a": "mountain",
+      "hint": "Landform.",
+      "explanation": "Mountains have deep 'roots'."
+    },
+    {
+      "q": "Take one out and scratch my head, I am black but once red.",
+      "a": "match",
+      "hint": "Fire.",
+      "explanation": "A matchstick head turns red when lit."
+    },
+    {
+      "q": "What has four legs in the morning, two at noon, and three in the evening?",
+      "a": "human",
+      "hint": "Life stages.",
+      "explanation": "Crawls, walks, uses cane."
+    },
+    {
+      "q": "What has keys and space but no room?",
+      "a": "keyboard",
+      "hint": "Typing.",
+      "explanation": "Keyboards have a space bar."
+    },
+    {
+      "q": "What is harder to catch the faster you run?",
+      "a": "breath",
+      "hint": "Exercise.",
+      "explanation": "Breathing becomes harder when you run."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 9x + 18 = 0",
+      "a": "-2",
+      "hint": "Subtract 18.",
+      "explanation": "9x = -18 → x=-2."
+    },
+    {
+      "q": "Find 22% of 200.",
+      "a": "44",
+      "hint": "0.22 × 200.",
+      "explanation": "200×0.22=44."
+    },
+    {
+      "q": "Triangle base 12, height 5. Area?",
+      "a": "30",
+      "hint": "½bh.",
+      "explanation": "0.5×12×5=30."
+    },
+    {
+      "q": "If 3/8 of a number is 30, the number?",
+      "a": "80",
+      "hint": "Divide by 3/8.",
+      "explanation": "30 ÷ (3/8) = 80."
+    },
+    {
+      "q": "Convert 2.5 hours to minutes.",
+      "a": "150",
+      "hint": "Multiply by 60.",
+      "explanation": "2.5×60=150."
+    }
+  ]
+},
+
+"2026-01-24": {
+  "easy": [
+    {
+      "q": "What is 5 × 5?",
+      "a": "25",
+      "hint": "Multiply.",
+      "explanation": "5×5=25."
+    },
+    {
+      "q": "How many days in a fortnight?",
+      "a": "14",
+      "hint": "2 weeks.",
+      "explanation": "Fortnight = 14 days."
+    },
+    {
+      "q": "Which is heavier: 10 kg or 5 kg?",
+      "a": "10",
+      "hint": "Compare.",
+      "explanation": "10 kg is heavier."
+    },
+    {
+      "q": "Opposite of early?",
+      "a": "late",
+      "hint": "Time.",
+      "explanation": "Early ↔ late."
+    },
+    {
+      "q": "How many vowels are in the English alphabet?",
+      "a": "5",
+      "hint": "A E I O U.",
+      "explanation": "5 vowels."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has lots of eyes but cannot see?",
+      "a": "potato",
+      "hint": "Vegetable.",
+      "explanation": "Potatoes have 'eyes'."
+    },
+    {
+      "q": "What can you catch only when it’s thrown?",
+      "a": "cold",
+      "hint": "Illness.",
+      "explanation": "You catch a cold."
+    },
+    {
+      "q": "What becomes wetter the more it dries?",
+      "a": "towel",
+      "hint": "Shower.",
+      "explanation": "Towel gets wet while drying."
+    },
+    {
+      "q": "What has 13 hearts but no organs?",
+      "a": "deck of cards",
+      "hint": "Games.",
+      "explanation": "Hearts suit = 13."
+    },
+    {
+      "q": "What has legs but cannot walk?",
+      "a": "table",
+      "hint": "Furniture.",
+      "explanation": "Tables have legs."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 2x + 14 = 22",
+      "a": "4",
+      "hint": "Subtract 14.",
+      "explanation": "2x=8 → x=4."
+    },
+    {
+      "q": "Area of square side 11?",
+      "a": "121",
+      "hint": "Side².",
+      "explanation": "11²=121."
+    },
+    {
+      "q": "Find 18% of 300.",
+      "a": "54",
+      "hint": "0.18 × 300.",
+      "explanation": "300×0.18=54."
+    },
+    {
+      "q": "Sum of angles in triangle?",
+      "a": "180",
+      "hint": "Basic rule.",
+      "explanation": "Total = 180°."
+    },
+    {
+      "q": "Speed: 72 km/h. Distance in 2.5 hours?",
+      "a": "180",
+      "hint": "Multiply.",
+      "explanation": "72×2.5=180."
+    }
+  ]
+},
+
+"2026-01-25": {
+  "easy": [
+    {
+      "q": "What is 18 − 9?",
+      "a": "9",
+      "hint": "Subtract.",
+      "explanation": "18 − 9 = 9."
+    },
+    {
+      "q": "How many months start with letter J?",
+      "a": "3",
+      "hint": "Think: Jan, Jun, Jul.",
+      "explanation": "3 months."
+    },
+    {
+      "q": "Which is colder: fridge or freezer?",
+      "a": "freezer",
+      "hint": "Temperature.",
+      "explanation": "Freezers are colder."
+    },
+    {
+      "q": "Opposite of old?",
+      "a": "young",
+      "hint": "Age.",
+      "explanation": "Old ↔ young."
+    },
+    {
+      "q": "How many colors in UK flag?",
+      "a": "3",
+      "hint": "Union Jack.",
+      "explanation": "Red, white, blue."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a neck but no head and wears a cap?",
+      "a": "bottle",
+      "hint": "Drinks.",
+      "explanation": "Bottles have necks and caps."
+    },
+    {
+      "q": "What kind of band never plays music?",
+      "a": "rubber band",
+      "hint": "Stretchy.",
+      "explanation": "Rubber bands don't create music."
+    },
+    {
+      "q": "What has one head, one foot, and four legs?",
+      "a": "bed",
+      "hint": "Furniture.",
+ 
+      "explanation": "A bed has a headboard, a footboard, and four legs."
+    },
+    {
+      "q": "What can you hold without touching it?",
+      "a": "breath",
+      "hint": "You do it every minute.",
+      "explanation": "You can hold your breath without using your hands."
+    },
+    {
+      "q": "What has an eye but cannot see?",
+      "a": "needle",
+      "hint": "Used in sewing.",
+      "explanation": "A needle has an eye for the thread."
+    },
+    {
+      "q": "What goes through cities and fields but never moves?",
+      "a": "road",
+      "hint": "Cars use it.",
+      "explanation": "A road stays in place while things move on it."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 6x − 18 = 0",
+      "a": "3",
+      "hint": "Add 18 first.",
+      "explanation": "6x = 18 → x = 3."
+    },
+    {
+      "q": "Find 45% of 200.",
+      "a": "90",
+      "hint": "0.45 × 200.",
+      "explanation": "200 × 0.45 = 90."
+    },
+    {
+      "q": "A rectangle has width 8 and area 96. Length?",
+      "a": "12",
+      "hint": "Area ÷ width.",
+      "explanation": "96 ÷ 8 = 12."
+    },
+    {
+      "q": "Convert 3 hours 20 minutes to minutes.",
+      "a": "200",
+      "hint": "3 hours = 180 minutes.",
+      "explanation": "180 + 20 = 200 minutes."
+    },
+    {
+      "q": "Ratio 5:7 total 96. Smaller share?",
+      "a": "40",
+      "hint": "Total parts = 12.",
+      "explanation": "96 ÷ 12 = 8 → 5 × 8 = 40."
+    }
+  ]
+},
+
+"2026-01-26": {
+  "easy": [
+    {
+      "q": "What is 7 × 6?",
+      "a": "42",
+      "hint": "Multiply.",
+      "explanation": "7 × 6 = 42."
+    },
+    {
+      "q": "How many sides does a cube have?",
+      "a": "6",
+      "hint": "Think of faces.",
+      "explanation": "A cube has 6 faces."
+    },
+    {
+      "q": "Which is faster: walking or running?",
+      "a": "running",
+      "hint": "Speed.",
+      "explanation": "Running is faster than walking."
+    },
+    {
+      "q": "Opposite of near?",
+      "a": "far",
+      "hint": "Distance.",
+      "explanation": "Near ↔ far."
+    },
+    {
+      "q": "How many letters in the word 'brain'?",
+      "a": "5",
+      "hint": "Count letters.",
+      "explanation": "B-R-A-I-N = 5 letters."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a face and two hands but no arms?",
+      "a": "clock",
+      "hint": "Tells time.",
+      "explanation": "A clock has hands and a face."
+    },
+    {
+      "q": "What can you keep after giving it to someone?",
+      "a": "word",
+      "hint": "Promise.",
+      "explanation": "You keep your word even after giving it."
+    },
+    {
+      "q": "What has many rings but no fingers?",
+      "a": "tree",
+      "hint": "Nature.",
+      "explanation": "Trees have rings inside their trunks."
+    },
+    {
+      "q": "What has one horn but no head?",
+      "a": "unicorn",
+      "hint": "Mythical.",
+      "explanation": "A unicorn is imaginary and fits the riddle."
+    },
+    {
+      "q": "What gets bigger the more you take away?",
+      "a": "hole",
+      "hint": "Digging.",
+      "explanation": "Removing material makes a hole larger."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 10x = 120",
+      "a": "12",
+      "hint": "Divide by 10.",
+      "explanation": "120 ÷ 10 = 12."
+    },
+    {
+      "q": "Find 25% of 360.",
+      "a": "90",
+      "hint": "Quarter.",
+      "explanation": "360 ÷ 4 = 90."
+    },
+    {
+      "q": "Area of rectangle 15 × 9?",
+      "a": "135",
+      "hint": "Multiply.",
+      "explanation": "15 × 9 = 135."
+    },
+    {
+      "q": "Speed 64 km/h. Distance in 2.5 hours?",
+      "a": "160",
+      "hint": "Multiply.",
+      "explanation": "64 × 2.5 = 160."
+    },
+    {
+      "q": "Solve: x/4 = 7",
+      "a": "28",
+      "hint": "Multiply both sides by 4.",
+      "explanation": "7 × 4 = 28."
+    }
+  ]
+},
+
+"2026-01-27": {
+  "easy": [
+    {
+      "q": "What is 100 ÷ 10?",
+      "a": "10",
+      "hint": "Division.",
+      "explanation": "100 ÷ 10 = 10."
+    },
+    {
+      "q": "How many wheels does a car usually have?",
+      "a": "4",
+      "hint": "Standard car.",
+      "explanation": "Most cars have 4 wheels."
+    },
+    {
+      "q": "Which is warmer: summer or winter?",
+      "a": "summer",
+      "hint": "Seasons.",
+      "explanation": "Summer is warmer."
+    },
+    {
+      "q": "Opposite of fast?",
+      "a": "slow",
+      "hint": "Speed.",
+      "explanation": "Fast ↔ slow."
+    },
+    {
+      "q": "How many letters in 'code'?",
+      "a": "4",
+      "hint": "Count.",
+      "explanation": "C-O-D-E = 4."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a tail and a head but no body?",
+      "a": "coin",
+      "hint": "Money.",
+      "explanation": "Coins have heads and tails."
+    },
+    {
+      "q": "What runs all around a backyard but never moves?",
+      "a": "fence",
+      "hint": "Boundary.",
+      "explanation": "A fence stays fixed."
+    },
+    {
+      "q": "What can fill your stomach but never eat?",
+      "a": "air",
+      "hint": "Invisible.",
+      "explanation": "Air can fill space but doesn’t eat."
+    },
+    {
+      "q": "What has ears but cannot hear?",
+      "a": "corn",
+      "hint": "Food.",
+      "explanation": "Corn has ears."
+    },
+    {
+      "q": "What breaks when you say it?",
+      "a": "silence",
+      "hint": "Sound.",
+      "explanation": "Speaking breaks silence."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 4x − 8 = 24",
+      "a": "8",
+      "hint": "Add 8 first.",
+      "explanation": "4x = 32 → x = 8."
+    },
+    {
+      "q": "Find 60% of 250.",
+      "a": "150",
+      "hint": "0.6 × 250.",
+      "explanation": "250 × 0.6 = 150."
+    },
+    {
+      "q": "Perimeter of square side 14?",
+      "a": "56",
+      "hint": "4 × side.",
+      "explanation": "4 × 14 = 56."
+    },
+    {
+      "q": "If speed is 90 km/h, time for 270 km?",
+      "a": "3",
+      "hint": "d ÷ s.",
+      "explanation": "270 ÷ 90 = 3 hours."
+    },
+    {
+      "q": "Solve: x + 18 = 45",
+      "a": "27",
+      "hint": "Subtract 18.",
+      "explanation": "45 − 18 = 27."
+    }
+  ]
+}
+,
+"2026-01-28": {
+  "easy": [
+    {
+      "q": "What is 30 − 12?",
+      "a": "18",
+      "hint": "Subtract.",
+      "explanation": "30 − 12 = 18."
+    },
+    {
+      "q": "How many minutes in 2 hours?",
+      "a": "120",
+      "hint": "60 each hour.",
+      "explanation": "2 × 60 = 120."
+    },
+    {
+      "q": "Which number is larger: 44 or 29?",
+      "a": "44",
+      "hint": "Compare.",
+      "explanation": "44 is larger."
+    },
+    {
+      "q": "Opposite of tall?",
+      "a": "short",
+      "hint": "Height.",
+      "explanation": "Tall ↔ short."
+    },
+    {
+      "q": "How many sides does a nonagon have?",
+      "a": "9",
+      "hint": "Nona = nine.",
+      "explanation": "A nonagon has 9 sides."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What gets bigger the more you take away?",
+      "a": "hole",
+      "hint": "Digging.",
+      "explanation": "A hole expands when more soil is taken away."
+    },
+    {
+      "q": "What has a thumb but no fingers?",
+      "a": "glove",
+      "hint": "Wear it.",
+      "explanation": "A glove has a thumb section."
+    },
+    {
+      "q": "What goes from Z to A?",
+      "a": "alphabet backwards",
+      "hint": "Order.",
+      "explanation": "Reverse alphabet goes from Z to A."
+    },
+    {
+      "q": "What can speak without a mouth?",
+      "a": "echo",
+      "hint": "Mountains.",
+      "explanation": "Echo responds to sounds."
+    },
+    {
+      "q": "What has a belly but no stomach?",
+      "a": "bottle",
+      "hint": "Liquids.",
+      "explanation": "Bottles have a 'belly' shape."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 8x − 16 = 32",
+      "a": "6",
+      "hint": "Add 16.",
+      "explanation": "8x = 48 → x = 6."
+    },
+    {
+      "q": "Find 15% of 340.",
+      "a": "51",
+      "hint": "0.15 × 340.",
+      "explanation": "340 × 0.15 = 51."
+    },
+    {
+      "q": "A square has area 196. Side length?",
+      "a": "14",
+      "hint": "Square root.",
+      "explanation": "√196 = 14."
+    },
+    {
+      "q": "Speed = 120 km/h. Distance in 1.5 hours?",
+      "a": "180",
+      "hint": "Multiply.",
+      "explanation": "120 × 1.5 = 180."
+    },
+    {
+      "q": "Solve: x/5 = 11",
+      "a": "55",
+      "hint": "Multiply.",
+      "explanation": "11 × 5 = 55."
+    }
+  ]
+},
+
+"2026-01-29": {
+  "easy": [
+    {
+      "q": "What is 21 + 14?",
+      "a": "35",
+      "hint": "Add.",
+      "explanation": "21 + 14 = 35."
+    },
+    {
+      "q": "How many hours in a day?",
+      "a": "24",
+      "hint": "Clock.",
+      "explanation": "24 hours."
+    },
+    {
+      "q": "Which is smaller: 9 or 17?",
+      "a": "9",
+      "hint": "Compare.",
+      "explanation": "9 is smaller."
+    },
+    {
+      "q": "Opposite of dry?",
+      "a": "wet",
+      "hint": "Water.",
+      "explanation": "Dry ↔ wet."
+    },
+    {
+      "q": "How many letters in 'day'?",
+      "a": "3",
+      "hint": "Count.",
+      "explanation": "D-A-Y = 3 letters."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a bark but never bites?",
+      "a": "tree",
+      "hint": "Nature.",
+      "explanation": "Trees have bark."
+    },
+    {
+      "q": "What has teeth but cannot chew?",
+      "a": "comb",
+      "hint": "Hair.",
+      "explanation": "A comb has teeth."
+    },
+    {
+      "q": "What has pages but is not a book?",
+      "a": "calendar",
+      "hint": "Dates.",
+      "explanation": "Calendars have pages."
+    },
+    {
+      "q": "What can be cracked but never opened?",
+      "a": "joke",
+      "hint": "Humor.",
+      "explanation": "You crack a joke."
+    },
+    {
+      "q": "What has feet but cannot walk?",
+      "a": "ruler",
+      "hint": "Measurement.",
+      "explanation": "Rulers sometimes have 'feet' as units."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 3x + 27 = 0",
+      "a": "-9",
+      "hint": "Subtract 27.",
+      "explanation": "3x = -27 → x=-9."
+    },
+    {
+      "q": "Find 12% of 250.",
+      "a": "30",
+      "hint": "0.12 × 250.",
+      "explanation": "250 × 0.12 = 30."
+    },
+    {
+      "q": "Perimeter of triangle with sides 11, 13, 14?",
+      "a": "38",
+      "hint": "Add sides.",
+      "explanation": "11+13+14=38."
+    },
+    {
+      "q": "Speed = 48 km/h. Distance in 4 hours?",
+      "a": "192",
+      "hint": "Multiply.",
+      "explanation": "48×4=192."
+    },
+    {
+      "q": "Solve: 4x = 88",
+      "a": "22",
+      "hint": "Divide by 4.",
+      "explanation": "88÷4 = 22."
+    }
+  ]
+},
+
+"2026-01-30": {
+  "easy": [
+    {
+      "q": "What is 50 − 23?",
+      "a": "27",
+      "hint": "Subtract.",
+      "explanation": "50 − 23 = 27."
+    },
+    {
+      "q": "How many grams in 1 kilogram?",
+      "a": "1000",
+      "hint": "Metric.",
+      "explanation": "1 kg = 1000 g."
+    },
+    {
+      "q": "Which is bigger: 4 or 2?",
+      "a": "4",
+      "hint": "Compare.",
+      "explanation": "4 > 2."
+    },
+    {
+      "q": "Opposite of bottom?",
+      "a": "top",
+      "hint": "Direction.",
+      "explanation": "Top ↔ bottom."
+    },
+    {
+      "q": "How many angles in a triangle?",
+      "a": "3",
+      "hint": "Shape.",
+      "explanation": "Triangle = 3 angles."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a ring but no finger?",
+      "a": "phone",
+      "hint": "Call.",
+      "explanation": "Phones ring."
+    },
+    {
+      "q": "What has a heart that doesn’t beat?",
+      "a": "artichoke",
+      "hint": "Food.",
+      "explanation": "An artichoke has a 'heart'."
+    },
+    {
+      "q": "What gets stronger the more you pull it?",
+      "a": "knot",
+      "hint": "Tied.",
+      "explanation": "A knot tightens with pulling."
+    },
+    {
+      "q": "What tastes better than it smells?",
+      "a": "tongue",
+      "hint": "Body.",
+      "explanation": "Your tongue tastes better than it smells."
+    },
+    {
+      "q": "What has no wings but can fly?",
+      "a": "time",
+      "hint": "Life.",
+      "explanation": "Time flies."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 9x − 27 = 0",
+      "a": "3",
+      "hint": "Add 27.",
+      "explanation": "9x=27 → x=3."
+    },
+    {
+      "q": "Find 33% of 300.",
+      "a": "99",
+      "hint": "0.33 × 300.",
+      "explanation": "300×0.33=99."
+    },
+    {
+      "q": "Area of triangle base 16 height 10?",
+      "a": "80",
+      "hint": "½bh.",
+      "explanation": "0.5×16×10=80."
+    },
+    {
+      "q": "Speed = 100 km/h. Time for 250 km?",
+      "a": "2.5",
+      "hint": "d ÷ s.",
+      "explanation": "250 ÷ 100 = 2.5."
+    },
+    {
+      "q": "Solve: x/3 = 12",
+      "a": "36",
+      "hint": "Multiply.",
+      "explanation": "12×3 = 36."
+    }
+  ]
+},
+
+"2026-01-31": {
+  "easy": [
+    {
+      "q": "What is 11 × 3?",
+      "a": "33",
+      "hint": "Multiply.",
+      "explanation": "11×3=33."
+    },
+    {
+      "q": "How many letters in 'home'?",
+      "a": "4",
+      "hint": "Count.",
+      "explanation": "H-O-M-E = 4."
+    },
+    {
+      "q": "Which is hotter: fire or ice?",
+      "a": "fire",
+      "hint": "Temperature.",
+      "explanation": "Fire is hotter."
+    },
+    {
+      "q": "Opposite of dark?",
+      "a": "light",
+      "hint": "Brightness.",
+      "explanation": "Dark ↔ light."
+    },
+    {
+      "q": "How many sides does a heptagon have?",
+      "a": "7",
+      "hint": "Hepta = seven.",
+      "explanation": "Heptagon = 7 sides."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a neck and no head?",
+      "a": "bottle",
+      "hint": "Drink.",
+      "explanation": "Bottles have necks."
+    },
+    {
+      "q": "What has a key but no lock?",
+      "a": "piano",
+      "hint": "Music.",
+      "explanation": "A piano has keys."
+    },
+    {
+      "q": "What has a hole but holds liquid?",
+      "a": "sponge",
+      "hint": "Soft.",
+      "explanation": "Sponges absorb water."
+    },
+    {
+      "q": "What has hands but no fingers?",
+      "a": "clock",
+      "hint": "Time.",
+      "explanation": "Clock hands point."
+    },
+    {
+      "q": "What can travel without moving?",
+      "a": "light",
+      "hint": "Speed.",
+      "explanation": "Light travels without physical movement."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 14x = 84",
+      "a": "6",
+      "hint": "Divide.",
+      "explanation": "84 ÷ 14 = 6."
+    },
+    {
+      "q": "Find 28% of 250.",
+      "a": "70",
+      "hint": "0.28 × 250.",
+      "explanation": "250×0.28=70."
+    },
+    {
+      "q": "Area of rectangle 22 × 9?",
+      "a": "198",
+      "hint": "Multiply.",
+      "explanation": "22×9=198."
+    },
+    {
+      "q": "Speed 75 km/h. Distance in 4 hours?",
+      "a": "300",
+      "hint": "Multiply.",
+      "explanation": "75×4=300."
+    },
+    {
+      "q": "Solve: x − 15 = 10",
+      "a": "25",
+      "hint": "Add 15.",
+      "explanation": "10+15=25."
+    }
+  ]
+},
+
+"2026-02-01": {
+  "easy": [
+    {
+      "q": "What is 13 + 9?",
+      "a": "22",
+      "hint": "Add.",
+      "explanation": "13 + 9 = 22."
+    },
+    {
+      "q": "How many sides does a star usually have?",
+      "a": "5",
+      "hint": "Draw it.",
+      "explanation": "Standard star = 5 points."
+    },
+    {
+      "q": "Which is bigger: 100 or 90?",
+      "a": "100",
+      "hint": "Compare.",
+      "explanation": "100 is bigger."
+    },
+    {
+      "q": "Opposite of above?",
+      "a": "below",
+      "hint": "Direction.",
+      "explanation": "Above ↔ below."
+    },
+    {
+      "q": "How many letters in 'blue'?",
+      "a": "4",
+      "hint": "Count.",
+      "explanation": "B-L-U-E = 4."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What gets sharper the more you use it?",
+      "a": "brain",
+      "hint": "Thinking.",
+      "explanation": "Using your brain improves it."
+    },
+    {
+      "q": "What can be opened but never closed?",
+      "a": "egg",
+      "hint": "Food.",
+      "explanation": "You cannot re-close an egg once broken."
+    },
+    {
+      "q": "What has ears but cannot hear?",
+      "a": "corn",
+      "hint": "Food.",
+      "explanation": "Corn has ears."
+    },
+    {
+      "q": "What has a ring but cannot wear it?",
+      "a": "bell",
+      "hint": "Sound.",
+      "explanation": "Bells ring."
+    },
+    {
+      "q": "What disappears when you say its name?",
+      "a": "silence",
+      "hint": "Speak.",
+      "explanation": "Talking breaks silence."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 11x − 22 = 0",
+      "a": "2",
+      "hint": "Add 22.",
+      "explanation": "11x = 22 → x=2."
+    },
+    {
+      "q": "Find 40% of 180.",
+      "a": "72",
+      "hint": "0.40 × 180.",
+      "explanation": "180×0.4=72."
+    },
+    {
+      "q": "Perimeter of square side 18?",
+      "a": "72",
+      "hint": "Multiply.",
+      "explanation": "4×18=72."
+    },
+    {
+      "q": "Speed 90 km/h. Distance in 1.5 hours?",
+      "a": "135",
+      "hint": "Multiply.",
+      "explanation": "90×1.5=135."
+    },
+    {
+      "q": "Solve: x/6 = 9",
+      "a": "54",
+      "hint": "Multiply.",
+      "explanation": "9×6=54."
+    }
+  ]
+},
+
+"2026-02-02": {
+  "easy": [
+    {
+      "q": "What is 20 ÷ 4?",
+      "a": "5",
+      "hint": "Division.",
+      "explanation": "20 ÷ 4 = 5."
+    },
+    {
+      "q": "How many wheels on a tricycle?",
+      "a": "3",
+      "hint": "Tri = three.",
+      "explanation": "A tricycle has 3 wheels."
+    },
+    {
+      "q": "Which is colder: snow or rain?",
+      "a": "snow",
+      "hint": "Temperature.",
+      "explanation": "Snow is colder."
+    },
+    {
+      "q": "Opposite of front?",
+      "a": "back",
+      "hint": "Direction.",
+      "explanation": "Front ↔ back."
+    },
+    {
+      "q": "How many sides does a square have?",
+      "a": "4",
+      "hint": "Basics.",
+      "explanation": "Square = 4 sides."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has many keys but cannot open anything?",
+      "a": "keyboard",
+      "hint": "Typing.",
+      "explanation": "Keyboard keys don't open locks."
+    },
+    {
+      "q": "What gets wetter the more it dries?",
+      "a": "towel",
+      "hint": "Shower.",
+      "explanation": "Towel absorbs water."
+    },
+    {
+      "q": "What can run but never walks?",
+      "a": "water",
+      "hint": "River.",
+      "explanation": "Water flows."
+    },
+    {
+      "q": "What has 13 hearts but no body?",
+      "a": "deck of cards",
+      "hint": "Games.",
+      "explanation": "Hearts suit = 13."
+    },
+    {
+      "q": "What disappears the moment you say its name?",
+      "a": "silence",
+      "hint": "Speak.",
+      "explanation": "You break silence when you talk."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 12x = 96",
+      "a": "8",
+      "hint": "Divide.",
+      "explanation": "96 ÷ 12 = 8."
+    },
+    {
+      "q": "Find 22% of 90.",
+      "a": "19.8",
+      "hint": "0.22 × 90.",
+      "explanation": "90×0.22=19.8."
+    },
+    {
+      "q": "Area of triangle 9 × 14?",
+      "a": "63",
+      "hint": "½bh.",
+      "explanation": "0.5×9×14=63."
+    },
+    {
+      "q": "Speed 120 km/h. Time for 300 km?",
+      "a": "2.5",
+      "hint": "d÷s.",
+      "explanation": "300÷120=2.5."
+    },
+    {
+      "q": "Solve: x − 11 = 22",
+      "a": "33",
+      "hint": "Add.",
+      "explanation": "22+11=33."
+    }
+  ]
+},
+
+"2026-02-03": {
+  "easy": [
+    {
+      "q": "What is 9 × 8?",
+      "a": "72",
+      "hint": "Multiply.",
+      "explanation": "9×8=72."
+    },
+    {
+      "q": "How many months in a year?",
+      "a": "12",
+      "hint": "Calendar.",
+      "explanation": "12 months."
+    },
+    {
+      "q": "Which is bigger: 30 or 29?",
+      "a": "30",
+      "hint": "Compare.",
+      "explanation": "30 is bigger."
+    },
+    {
+      "q": "Opposite of full?",
+      "a": "empty",
+      "hint": "Containers.",
+      "explanation": "Full ↔ empty."
+    },
+    {
+      "q": "How many sides in a decagon?",
+      "a": "10",
+      "hint": "Deca = ten.",
+      "explanation": "10 sides."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a face but cannot smile?",
+      "a": "clock",
+      "hint": "Time.",
+      "explanation": "Clock face."
+    },
+    {
+      "q": "What has bark but cannot bite?",
+      "a": "tree",
+      "hint": "Forest.",
+      "explanation": "Trees have bark."
+    },
+    {
+      "q": "What has a head and tail but no body?",
+      "a": "coin",
+      "hint": "Money.",
+      "explanation": "Coins fit the clue."
+    },
+    {
+      "q": "What gets stronger the more you pull it?",
+      "a": "knot",
+      "hint": "Tie.",
+      "explanation": "Knots tighten."
+    },
+    {
+      "q": "What kind of room has no walls?",
+      "a": "mushroom",
+      "hint": "Food.",
+      "explanation": "Mushroom sounds like 'room'."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 3x − 15 = 0",
+      "a": "5",
+      "hint": "Add 15.",
+      "explanation": "3x=15 → x=5."
+    },
+    {
+      "q": "Find 50% of 180.",
+      "a": "90",
+      "hint": "Half.",
+      "explanation": "Half of 180 = 90."
+    },
+    {
+      "q": "Perimeter of rectangle 12 × 16?",
+      "a": "56",
+      "hint": "2(l+w).",
+      "explanation": "2×(12+16)=56."
+    },
+    {
+      "q": "Speed 80 km/h. Time for 360 km?",
+      "a": "4.5",
+      "hint": "d÷s.",
+      "explanation": "360÷80=4.5."
+    },
+    {
+      "q": "Solve: x/10 = 7",
+      "a": "70",
+      "hint": "Multiply.",
+      "explanation": "7×10=70."
+    }
+  ]
+},
+
+"2026-02-04": {
+  "easy": [
+    {
+      "q": "What is 6 × 9?",
+      "a": "54",
+      "hint": "Multiply.",
+      "explanation": "6×9=54."
+    },
+    {
+      "q": "How many fingers on two hands?",
+      "a": "10",
+      "hint": "Count.",
+      "explanation": "5 each hand."
+    },
+    {
+      "q": "Which is smaller: 8 or 12?",
+      "a": "8",
+      "hint": "Compare.",
+      "explanation": "8 is smaller."
+    },
+    {
+      "q": "Opposite of early?",
+      "a": "late",
+      "hint": "Time.",
+      "explanation": "Early ↔ late."
+    },
+    {
+      "q": "How many sides in a square?",
+      "a": "4",
+      "hint": "Basic shape.",
+      "explanation": "Square has 4 sides."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a ring but no finger?",
+      "a": "phone",
+      "hint": "Sounds.",
+      "explanation": "Phones ring."
+    },
+    {
+      "q": "What gets sharper the more you use it?",
+      "a": "brain",
+      "hint": "Thinking.",
+      "explanation": "Your brain improves with use."
+    },
+    {
+      "q": "What goes up but never down?",
+      "a": "age",
+      "hint": "Birthday.",
+      "explanation": "Age increases."
+    },
+    {
+      "q": "What disappears when you say its name?",
+      "a": "silence",
+      "hint": "Speak.",
+      "explanation": "Talking breaks silence."
+    },
+    {
+      "q": "What has keys but no locks?",
+      "a": "piano",
+      "hint": "Music.",
+      "explanation": "Piano keys make sound."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 5x + 10 = 35",
+      "a": "5",
+      "hint": "Subtract 10.",
+      "explanation": "5x = 25 → x = 5."
+    },
+    {
+      "q": "Find 18% of 250.",
+      "a": "45",
+      "hint": "0.18 × 250.",
+      "explanation": "250×0.18=45."
+    },
+    {
+      "q": "Area of triangle 20 × 12?",
+      "a": "120",
+      "hint": "½bh.",
+      "explanation": "0.5×20×12=120."
+    },
+    {
+      "q": "Speed 100 km/h. Distance in 2 hours?",
+      "a": "200",
+      "hint": "Multiply.",
+      "explanation": "100×2=200."
+    },
+    {
+      "q": "Solve: x − 9 = 18",
+      "a": "27",
+      "hint": "Add 9.",
+      "explanation": "18+9=27."
+    }
+  ]
+},
+
+"2026-02-05": {
+  "easy": [
+    {
+      "q": "What is 22 + 8?",
+      "a": "30",
+      "hint": "Add.",
+      "explanation": "22 + 8 = 30."
+    },
+    {
+      "q": "How many legs does a cow have?",
+      "a": "4",
+      "hint": "Animal.",
+      "explanation": "Cows have 4 legs."
+    },
+    {
+      "q": "Which is colder: Antarctica or Sahara?",
+      "a": "antarctica",
+      "hint": "Climate.",
+      "explanation": "Antarctica is extremely cold."
+    },
+    {
+      "q": "Opposite of happy?",
+      "a": "sad",
+      "hint": "Emotion.",
+      "explanation": "Happy ↔ sad."
+    },
+    {
+      "q": "How many points on a standard star?",
+      "a": "5",
+      "hint": "Draw it.",
+      "explanation": "Star = 5 points."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What tastes better than it smells?",
+      "a": "tongue",
+      "hint": "Body.",
+      "explanation": "Your tongue tastes better than it smells."
+    },
+    {
+      "q": "What has a horn but cannot honk?",
+      "a": "rhino",
+      "hint": "Animal.",
+      "explanation": "Rhinos have horns."
+    },
+    {
+      "q": "What can you break without touching it?",
+      "a": "promise",
+      "hint": "Trust.",
+      "explanation": "Promises break."
+    },
+    {
+      "q": "What has words but never speaks?",
+      "a": "book",
+      "hint": "Pages.",
+      "explanation": "Books contain words."
+    },
+    {
+      "q": "What goes up when rain comes down?",
+      "a": "umbrella",
+      "hint": "Rainy days.",
+      "explanation": "People open umbrellas when it rains."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 7x = 49",
+      "a": "7",
+      "hint": "Divide.",
+      "explanation": "49 ÷ 7 = 7."
+    },
+    {
+      "q": "Find 8% of 500.",
+      "a": "40",
+      "hint": "0.08 × 500.",
+      "explanation": "500×0.08=40."
+    },
+    {
+      "q": "Area of rectangle 25 × 7?",
+      "a": "175",
+      "hint": "Multiply.",
+      "explanation": "25×7=175."
+    },
+    {
+      "q": "Speed 70 km/h. Time for 210 km?",
+      "a": "3",
+      "hint": "d÷s.",
+      "explanation": "210÷70=3 hours."
+    },
+    {
+      "q": "Solve: x + 8 = 40",
+      "a": "32",
+      "hint": "Subtract 8.",
+      "explanation": "40−8=32."
+    }
+  ]
+},
+
+"2026-02-06": {
+  "easy": [
+    {
+      "q": "What is 17 + 5?",
+      "a": "22",
+      "hint": "Add.",
+      "explanation": "17 + 5 = 22."
+    },
+    {
+      "q": "How many legs does a lion have?",
+      "a": "4",
+      "hint": "Animal.",
+      "explanation": "Lions have 4 legs."
+    },
+    {
+      "q": "Which is bigger: 80 or 79?",
+      "a": "80",
+      "hint": "Compare.",
+      "explanation": "80 is bigger."
+    },
+    {
+      "q": "Opposite of clean?",
+      "a": "dirty",
+      "hint": "Hygiene.",
+      "explanation": "Clean ↔ dirty."
+    },
+    {
+      "q": "How many letters in 'red'?",
+      "a": "3",
+      "hint": "Count.",
+      "explanation": "R-E-D = 3."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has four legs in the morning and six at night?",
+      "a": "bed",
+      "hint": "Furniture.",
+      "explanation": "You add two pillows ('legs') at night."
+    },
+    {
+      "q": "What kind of tree can you carry in your hand?",
+      "a": "palm",
+      "hint": "Wordplay.",
+      "explanation": "Palm of your hand and palm tree."
+    },
+    {
+      "q": "What has hands but no fingers?",
+      "a": "clock",
+      "hint": "Time.",
+      "explanation": "Clock hands."
+    },
+    {
+      "q": "What has cities but no people?",
+      "a": "map",
+      "hint": "Paper.",
+      "explanation": "Maps show cities."
+    },
+    {
+      "q": "What has a sharp point but cannot cut?",
+      "a": "pencil",
+      "hint": "Writing.",
+      "explanation": "Pencils have sharp points."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 16x = 64",
+      "a": "4",
+      "hint": "Divide.",
+      "explanation": "64÷16=4."
+    },
+    {
+      "q": "Find 20% of 140.",
+      "a": "28",
+      "hint": "0.20 × 140.",
+      "explanation": "140×0.2=28."
+    },
+    {
+      "q": "Perimeter of square side 20?",
+      "a": "80",
+      "hint": "4×side.",
+      "explanation": "4×20=80."
+    },
+    {
+      "q": "Speed 110 km/h. Distance in 3 hours?",
+      "a": "330",
+      "hint": "Multiply.",
+      "explanation": "110×3=330."
+    },
+    {
+      "q": "Solve: x/8 = 9",
+      "a": "72",
+      "hint": "Multiply.",
+      "explanation": "9×8=72."
+    }
+  ]
+},
+
+"2026-02-07": {
+  "easy": [
+    {
+      "q": "What is 25 − 9?",
+      "a": "16",
+      "hint": "Subtract.",
+      "explanation": "25 − 9 = 16."
+    },
+    {
+      "q": "How many colors in a traffic light?",
+      "a": "3",
+      "hint": "Signal.",
+      "explanation": "Red, yellow, green."
+    },
+    {
+      "q": "Which is colder: freezer or room?",
+      "a": "freezer",
+      "hint": "Temperature.",
+      "explanation": "Freezer is colder."
+    },
+    {
+      "q": "Opposite of slow?",
+      "a": "fast",
+      "hint": "Speed.",
+      "explanation": "Slow ↔ fast."
+    },
+    {
+      "q": "How many days in 1 week?",
+      "a": "7",
+      "hint": "Calendar.",
+      "explanation": "7 days."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has many teeth but cannot bite?",
+      "a": "comb",
+      "hint": "Hair.",
+      "explanation": "Combs have teeth."
+    },
+    {
+      "q": "What can be cracked, made, told, and played?",
+      "a": "joke",
+      "hint": "Laugh.",
+      "explanation": "Crack a joke."
+    },
+    {
+      "q": "What begins with T, ends with T, and has T inside?",
+      "a": "teapot",
+      "hint": "Drink.",
+      "explanation": "'Teapot' fits."
+    },
+    {
+      "q": "What can run but cannot walk?",
+      "a": "water",
+      "hint": "River.",
+      "explanation": "Water runs."
+    },
+    {
+      "q": "What is always in front of you but cannot be seen?",
+      "a": "future",
+      "hint": "Time.",
+      "explanation": "Future is unseen."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 30x = 150",
+      "a": "5",
+      "hint": "Divide.",
+      "explanation": "150÷30=5."
+    },
+    {
+      "q": "Find 44% of 200.",
+      "a": "88",
+      "hint": "0.44 × 200.",
+      "explanation": "200×0.44=88."
+    },
+    {
+      "q": "Area of triangle 14 × 9?",
+      "a": "63",
+      "hint": "½bh.",
+      "explanation": "0.5×14×9=63."
+    },
+    {
+      "q": "Speed 60 km/h. Time for 420 km?",
+      "a": "7",
+      "hint": "d÷s.",
+      "explanation": "420÷60=7."
+    },
+    {
+      "q": "Solve: x − 21 = 9",
+      "a": "30",
+      "hint": "Add.",
+      "explanation": "9+21=30."
+    }
+  ]
+},
+
+"2026-02-08": {
+  "easy": [
+    {
+      "q": "What is 12 × 3?",
+      "a": "36",
+      "hint": "Multiply.",
+      "explanation": "12×3=36."
+    },
+    {
+      "q": "How many legs does a giraffe have?",
+      "a": "4",
+      "hint": "Animal.",
+      "explanation": "Giraffes have 4 legs."
+    },
+    {
+      "q": "Which is bigger: 55 or 45?",
+      "a": "55",
+      "hint": "Compare.",
+      "explanation": "55 is bigger."
+    },
+    {
+      "q": "Opposite of night?",
+      "a": "day",
+      "hint": "Time.",
+      "explanation": "Night ↔ day."
+    },
+    {
+      "q": "How many vowels in 'tools'?",
+      "a": "2",
+      "hint": "Count vowels.",
+      "explanation": "O and O = 2 vowels."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What can you break without touching?",
+      "a": "promise",
+      "hint": "Trust.",
+      "explanation": "Promises break."
+    },
+    {
+      "q": "What flies without wings?",
+      "a": "time",
+      "hint": "Life.",
+      "explanation": "Time flies."
+    },
+    {
+      "q": "What has hands but cannot clap?",
+      "a": "clock",
+      "hint": "Time.",
+      "explanation": "Clock hands."
+    },
+    {
+      "q": "What has space but no room?",
+      "a": "keyboard",
+      "hint": "Space bar.",
+      "explanation": "Keyboards have spacebars."
+    },
+    {
+      "q": "What has four legs in the morning, two at noon, and three at night?",
+      "a": "human",
+      "hint": "Life stages.",
+      "explanation": "Crawls → walks → cane."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 6x = 96",
+      "a": "16",
+      "hint": "Divide.",
+      "explanation": "96÷6=16."
+    },
+    {
+      "q": "Find 33% of 120.",
+      "a": "39.6",
+      "hint": "0.33 × 120.",
+      "explanation": "120×0.33=39.6."
+    },
+    {
+      "q": "Perimeter of square side 11?",
+      "a": "44",
+      "hint": "4×side.",
+      "explanation": "4×11=44."
+    },
+    {
+      "q": "Speed 72 km/h. Distance in 5 hours?",
+      "a": "360",
+      "hint": "Multiply.",
+      "explanation": "72×5=360."
+    },
+    {
+      "q": "Solve: x/9 = 5",
+      "a": "45",
+      "hint": "Multiply.",
+      "explanation": "5×9=45."
+    }
+  ]
+},
+
+"2026-02-09": {
+  "easy": [
+    {
+      "q": "What is 10 × 5?",
+      "a": "50",
+      "hint": "Multiply.",
+      "explanation": "10×5=50."
+    },
+    {
+      "q": "How many letters in 'brain'?",
+      "a": "5",
+      "hint": "Count.",
+      "explanation": "B-R-A-I-N = 5."
+    },
+    {
+      "q": "Which is smaller: 99 or 100?",
+      "a": "99",
+      "hint": "Compare.",
+      "explanation": "99 is smaller."
+    },
+    {
+      "q": "Opposite of give?",
+      "a": "take",
+      "hint": "Actions.",
+      "explanation": "Give ↔ take."
+    },
+    {
+      "q": "How many days in February (leap year)?",
+      "a": "29",
+      "hint": "Leap year.",
+      "explanation": "Leap February = 29 days."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What gets bigger the more you remove?",
+      "a": "hole",
+      "hint": "Digging.",
+      "explanation": "Removing dirt widens hole."
+    },
+    {
+      "q": "What has a spine but no bones?",
+      "a": "book",
+      "hint": "Pages.",
+      "explanation": "Books have spines."
+    },
+    {
+      "q": "What has ears but cannot hear?",
+      "a": "corn",
+      "hint": "Food.",
+      "explanation": "Corn has ears."
+    },
+    {
+      "q": "What can travel around the world while staying in a corner?",
+      "a": "stamp",
+      "hint": "Mail.",
+      "explanation": "A stamp stays on an envelope."
+    },
+    {
+      "q": "What has teeth but cannot bite?",
+      "a": "comb",
+      "hint": "Hair tool.",
+      "explanation": "A comb has teeth."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 5x = 145",
+      "a": "29",
+      "hint": "Divide.",
+      "explanation": "145÷5 = 29."
+    },
+    {
+      "q": "Find 14% of 300.",
+      "a": "42",
+      "hint": "0.14 × 300.",
+      "explanation": "300×0.14 = 42."
+    },
+    {
+      "q": "Area of triangle 18 × 10?",
+      "a": "90",
+      "hint": "½bh.",
+      "explanation": "0.5×18×10 = 90."
+    },
+    {
+      "q": "Speed 84 km/h. Distance in 2.5 hours?",
+      "a": "210",
+      "hint": "Multiply.",
+      "explanation": "84×2.5 = 210."
+    },
+    {
+      "q": "Solve: x − 13 = 7",
+      "a": "20",
+      "hint": "Add.",
+      "explanation": "7+13 = 20."
+    }
+  ]
+},
+
+"2026-02-10": {
+  "easy": [
+    {
+      "q": "What is 5 × 4?",
+      "a": "20",
+      "hint": "Multiply.",
+      "explanation": "5×4 = 20."
+    },
+    {
+      "q": "How many legs does a bird have?",
+      "a": "2",
+      "hint": "Animal.",
+      "explanation": "Birds have 2 legs."
+    },
+    {
+      "q": "Which is colder: ice or boiling water?",
+      "a": "ice",
+      "hint": "Temperature.",
+      "explanation": "Ice is colder."
+    },
+    {
+      "q": "Opposite of long?",
+      "a": "short",
+      "hint": "Length.",
+      "explanation": "Long ↔ short."
+    },
+    {
+      "q": "How many vowels in 'apple'?",
+      "a": "2",
+      "hint": "A, E, I, O, U.",
+      "explanation": "A and E = 2 vowels."
+    }
+  ],
+  "medium": [
+    {
+      "q": "What has a head but no neck?",
+      "a": "coin",
+      "hint": "Currency.",
+      "explanation": "Coins have heads side."
+    },
+    {
+      "q": "What has a tail but no body?",
+      "a": "coin",
+      "hint": "Opposite side.",
+      "explanation": "Coins have tails side."
+    },
+    {
+      "q": "What kind of cup cannot hold water?",
+      "a": "hiccup",
+      "hint": "Sound.",
+      "explanation": "Hiccup is not a real cup."
+    },
+    {
+      "q": "What can be cracked but never opened?",
+      "a": "joke",
+      "hint": "Funny.",
+      "explanation": "You crack jokes."
+    },
+    {
+      "q": "What is always near you but cannot be touched?",
+      "a": "shadow",
+      "hint": "Light.",
+      "explanation": "Your shadow follows you."
+    }
+  ],
+  "hard": [
+    {
+      "q": "Solve: 18x = 144",
+      "a": "8",
+      "hint": "Divide.",
+      "explanation": "144÷18 = 8."
+    },
+    {
+      "q": "Find 26% of 400.",
+      "a": "104",
+      "hint": "0.26 × 400.",
+      "explanation": "400×0.26=104."
+    },
+    {
+      "q": "Perimeter of rectangle 30 × 20?",
+      "a": "100",
+      "hint": "2(l+w).",
+      "explanation": "2×(30+20)=100."
+    },
+    {
+      "q": "Speed 60 km/h. Time for 330 km?",
+      "a": "5.5",
+      "hint": "d÷s.",
+      "explanation": "330÷60=5.5 hours."
+    },
+    {
+      "q": "Solve: x/7 = 6",
+      "a": "42",
+      "hint": "Multiply.",
+      "explanation": "6×7 = 42."
+    }
+  ]
+}
 }
