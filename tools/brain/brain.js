@@ -1,11 +1,10 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// FINAL STABLE brain.js
+// FINAL DOM-SAFE brain.js
 // ================================
 
 // ---- Config ----
 const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
-const STORE_KEY = "et_brain_v1";
 
 // ---- State ----
 let setsData = null;
@@ -16,34 +15,24 @@ let scoreToday = 0;
 // ---- Helpers ----
 const todayKey = () => new Date().toISOString().slice(0, 10);
 
-const msToNextUtcMidnight = () => {
-  const d = new Date();
-  return (
-    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) -
-    Date.now()
-  );
-};
+// ---- DOM (SAFE SELECTORS) ----
+const qWrap =
+  document.querySelector("#questions") ||
+  document.querySelector(".questions") ||
+  document.querySelector("[data-questions]");
 
-const fmtHMS = (ms) => {
-  const s = Math.floor(ms / 1000);
-  const h = String(Math.floor(s / 3600)).padStart(2, "0");
-  const m = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
-  const sec = String(s % 60).padStart(2, "0");
-  return `${h}:${m}:${sec}`;
-};
+const submitBtn =
+  document.querySelector("#submitBtn") ||
+  document.querySelector(".submit-btn") ||
+  document.querySelector("[data-submit]");
 
-// ---- DOM ----
-const qWrap = document.getElementById("questions");
-const submitBtn = document.getElementById("submitBtn");
 const levelBtns = document.querySelectorAll("[data-level]");
-const resultScore = document.getElementById("todayScore");
+const resultScore =
+  document.querySelector("#todayScore") ||
+  document.querySelector("[data-score]");
 
-// ---- Timer ----
-const timerEl = document.getElementById("resetTimer");
-if (timerEl) {
-  const tick = () => (timerEl.textContent = fmtHMS(msToNextUtcMidnight()));
-  tick();
-  setInterval(tick, 1000);
+if (!qWrap) {
+  console.error("❌ Questions container not found in DOM");
 }
 
 // ---- Load Data ----
@@ -55,8 +44,10 @@ fetch(DATA_URL)
   })
   .catch((err) => {
     console.error("Failed to load brain data", err);
-    qWrap.innerHTML =
-      "<p class='muted'>Failed to load today’s questions.</p>";
+    if (qWrap) {
+      qWrap.innerHTML =
+        "<p class='muted'>Failed to load questions.</p>";
+    }
   });
 
 // ---- Load Level ----
@@ -65,14 +56,15 @@ function loadLevel(level) {
   answers = {};
   scoreToday = 0;
 
+  if (!qWrap) return;
   qWrap.innerHTML = "";
 
   const today = todayKey();
   const daySet = setsData?.[today];
 
-  if (!daySet || !daySet[level] || !daySet[level].length) {
+  if (!daySet || !daySet[level]) {
     qWrap.innerHTML =
-      "<p class='muted'>No questions available for today.</p>";
+      "<p class='muted'>No questions available today.</p>";
     return;
   }
 
@@ -83,7 +75,7 @@ function loadLevel(level) {
     div.innerHTML = `
       <div class="q-text">${i + 1}. ${q.q}</div>
       <input type="text" data-i="${i}" placeholder="Your answer" />
-      <button class="hint-btn" data-i="${i}">💡 Hint</button>
+      <button class="hint-btn" type="button" data-i="${i}">💡 Hint</button>
       <div class="hint hidden" id="hint-${i}">${q.hint}</div>
     `;
 
@@ -97,7 +89,9 @@ function loadLevel(level) {
 function bindInputs() {
   qWrap.querySelectorAll("input").forEach((inp) => {
     inp.addEventListener("input", (e) => {
-      answers[e.target.dataset.i] = e.target.value.trim().toLowerCase();
+      answers[e.target.dataset.i] = e.target.value
+        .trim()
+        .toLowerCase();
     });
   });
 
@@ -105,7 +99,7 @@ function bindInputs() {
     btn.addEventListener("click", () => {
       document
         .getElementById(`hint-${btn.dataset.i}`)
-        .classList.toggle("hidden");
+        ?.classList.toggle("hidden");
     });
   });
 }
@@ -114,7 +108,7 @@ function bindInputs() {
 if (submitBtn) {
   submitBtn.addEventListener("click", () => {
     const today = todayKey();
-    const questions = setsData[today][currentLevel];
+    const questions = setsData?.[today]?.[currentLevel] || [];
 
     scoreToday = 0;
 
