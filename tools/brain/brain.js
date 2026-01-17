@@ -1,17 +1,16 @@
 // ================================
 // EverydayTools.uk — Daily Brain
-// Sequential Questions + Enter Key + Dark/Light Mode
-// SAFE DOM VERSION
+// FINAL SAFE VERSION
+// Sequential Questions + Enter + Theme + Subscription
 // ================================
 
 const DATA_URL = "/tools/brain/data/sets-2026-01-12_to_2026-02-10.json";
-const STORE_KEY = "et_brain_seq_v1";
 
-// --- Helpers ---
+// ---------- Helpers ----------
 const todayKey = () => new Date().toISOString().slice(0, 10);
 const norm = (s) => String(s ?? "").trim().toLowerCase();
 
-// --- State ---
+// ---------- State ----------
 let brainDB = null;
 let currentLevel = "easy";
 let questions = [];
@@ -20,12 +19,15 @@ let correct = 0;
 let finished = false;
 let currentInput = null;
 
-// --- DOM (resolved later safely) ---
-let qWrap, submitBtn, levelBtns, todayScoreEl, levelSummaryEl, themeToggle;
+// ---------- DOM ----------
+let qWrap,
+  submitBtn,
+  levelBtns,
+  todayScoreEl,
+  levelSummaryEl,
+  themeToggle;
 
-// ================================
-// DOM READY
-// ================================
+// ---------- Init ----------
 document.addEventListener("DOMContentLoaded", () => {
   qWrap = document.getElementById("questions");
   submitBtn = document.getElementById("submitBtn");
@@ -53,7 +55,7 @@ function loadData() {
     .catch(() => {
       if (qWrap) {
         qWrap.innerHTML =
-          "<p class='brain-help-text'>Failed to load questions.</p>";
+          "<p class='brain-help-text'>Today’s challenge is preparing…</p>";
       }
     });
 }
@@ -73,6 +75,7 @@ function initLevel(level) {
   if (!questions.length) {
     qWrap.innerHTML =
       "<p class='brain-help-text'>No questions available for today.</p>";
+    updateSummary();
     return;
   }
 
@@ -99,11 +102,13 @@ function showQuestion() {
   const hintBtn = qWrap.querySelector(".brain-hint");
   const hintBox = qWrap.querySelector(".brain-hint-box");
 
-  currentInput.focus();
+  if (currentInput) currentInput.focus();
 
-  hintBtn.addEventListener("click", () => {
-    hintBox.classList.toggle("hidden");
-  });
+  if (hintBtn && hintBox) {
+    hintBtn.addEventListener("click", () => {
+      hintBox.classList.toggle("hidden");
+    });
+  }
 }
 
 // ================================
@@ -135,7 +140,7 @@ function submitAnswer() {
 function finishLevel() {
   qWrap.innerHTML = `
     <p class="brain-help-text">
-      You finished this level!<br>
+      You finished this level 🎉<br>
       <strong>Score: ${correct}/${questions.length}</strong>
     </p>
   `;
@@ -151,8 +156,13 @@ function finishLevel() {
 function updateSummary() {
   if (!levelSummaryEl) return;
 
-  levelSummaryEl.innerHTML = finished
-    ? `Finished! Score: ${correct}/${questions.length}`
+  if (!questions.length) {
+    levelSummaryEl.textContent = "No questions today.";
+    return;
+  }
+
+  levelSummaryEl.textContent = finished
+    ? `Finished · Score ${correct}/${questions.length}`
     : `Question ${index + 1} of ${questions.length}`;
 }
 
@@ -175,8 +185,11 @@ function setupEvents() {
   // Level buttons
   levelBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
+      if (btn.classList.contains("locked")) return;
+
       levelBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
+
       initLevel(btn.dataset.level);
     });
   });
@@ -215,3 +228,37 @@ function setupThemeToggle() {
     applyTheme(next);
   });
 }
+
+// ================================
+// SUBSCRIPTION (ISOLATED, SAFE)
+// ================================
+(() => {
+  const btn = document.getElementById("sub-btn");
+  const input = document.getElementById("sub-email");
+  const msg = document.getElementById("sub-msg");
+
+  if (!btn || !input || !msg) return;
+
+  btn.addEventListener("click", async () => {
+    const email = input.value.trim();
+    if (!email) {
+      msg.textContent = "Please enter a valid email.";
+      return;
+    }
+
+    msg.textContent = "Subscribing…";
+
+    try {
+      const r = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await r.json();
+      msg.textContent = data.message || "Subscribed successfully!";
+    } catch {
+      msg.textContent = "Please try again later.";
+    }
+  });
+})();
