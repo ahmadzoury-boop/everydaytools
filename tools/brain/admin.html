@@ -170,9 +170,15 @@
 
 <script>
 const key = new URLSearchParams(location.search).get("key");
+
+// If key missing, redirect to login
 if (!key) {
-  alert("Missing ?key=ADMIN_KEY in URL");
+  location.href = "/tools/brain/admin-login.html";
 }
+
+
+
+
 
 // --- Helpers ---
 
