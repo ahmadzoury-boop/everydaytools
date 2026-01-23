@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Brain Admin Login</title>
+  <style>
+    body {
+      background: #f0f0f0;
+      font-family: system-ui;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      width: 300px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px;
+      margin-top: 14px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #eee;
+    }
+    .msg {
+      margin-top: 10px;
+      color: #c00;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>🔐 Admin Login</h2>
+  <p style="font-size:14px;color:#444;">Enter your admin password</p>
+
+  <input id="pass" type="password" placeholder="Admin password">
+  <button onclick="login()">Login</button>
+
+  <div id="msg" class="msg"></div>
+</div>
+
+<script>
+function login() {
+  const pw = document.getElementById("pass").value.trim();
+  const msg = document.getElementById("msg");
+
+  if (!pw) {
+    msg.textContent = "Please enter a password.";
+    return;
+  }
+
+  // Redirect to the admin dashboard with the key
+  location.href = `/tools/brain/admin.html?key=${encodeURIComponent(pw)}`;
+}
+</script>
+
+</body>
+</html>
