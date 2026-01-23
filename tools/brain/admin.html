@@ -4,81 +4,435 @@
   <meta charset="UTF-8" />
   <title>Brain Admin Dashboard</title>
   <style>
-    body { font-family: system-ui; padding: 20px; background: #f5f5f5; }
-    h1 { margin-bottom: 10px; }
-    .card { background: white; padding: 16px; border-radius: 10px; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 8px; border-bottom: 1px solid #ddd; }
-    th { background: #f0f0f0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #222;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 2fr 3fr;
+      }
+    }
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #f0f0f0;
+      text-align: left;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    button:hover {
+      background: #eee;
+    }
+    input[type="text"], input[type="email"] {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      min-width: 180px;
+    }
+    .chart-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .chart-bar-label {
+      width: 80px;
+      flex-shrink: 0;
+    }
+    .chart-bar-track {
+      flex: 1;
+      background: #eee;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 8px;
+      margin: 0 8px;
+    }
+    .chart-bar-fill {
+      height: 100%;
+      background: #4a90e2;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #eee;
+      margin-left: 4px;
+    }
+    .badge.on {
+      background: #e0f5e6;
+      color: #156c2f;
+    }
+    .danger {
+      color: #b00020;
+    }
+    .small {
+      font-size: 12px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
 
 <h1>🧠 Brain Admin Dashboard</h1>
 
-<div class="card">
-  <h2>Subscribers</h2>
-  <p id="sub-count"></p>
-  <table id="subs-table"></table>
+<div class="card" style="margin-bottom:16px;">
+  <h2>Admin Controls</h2>
+  <div class="toolbar">
+    <label class="small">
+      Test email:
+      <input type="email" id="test-email" placeholder="you@example.com">
+    </label>
+    <button id="btn-send-test">Send test email</button>
+    <span id="admin-message" class="small"></span>
+  </div>
 </div>
 
-<div class="card">
-  <h2>Today Scores</h2>
-  <table id="today-table"></table>
+<div class="grid">
+  <div class="card">
+    <h2>Subscribers</h2>
+    <div class="toolbar">
+      <input type="text" id="sub-search" placeholder="Search email...">
+      <button id="btn-export-subs">Export CSV</button>
+      <span id="sub-count" class="small"></span>
+    </div>
+    <table id="subs-table"></table>
+  </div>
+
+  <div class="card">
+    <h2>Today Scores</h2>
+    <div class="toolbar">
+      <button id="btn-export-today">Export CSV</button>
+      <span id="today-count" class="small"></span>
+    </div>
+    <table id="today-table"></table>
+  </div>
 </div>
 
-<div class="card">
-  <h2>Weekly Leaderboard</h2>
-  <p id="weekly-stats"></p>
-  <table id="weekly-table"></table>
+<div class="grid" style="margin-top:16px;">
+  <div class="card">
+    <h2>Weekly Leaderboard</h2>
+    <div class="toolbar">
+      <button id="btn-export-weekly">Export CSV</button>
+      <span id="weekly-summary" class="small"></span>
+    </div>
+    <table id="weekly-table"></table>
+  </div>
+
+  <div class="card">
+    <h2>Charts</h2>
+    <h3 style="font-size:14px;margin-bottom:4px;">Daily Active Players (last 14 days)</h3>
+    <div id="chart-activity"></div>
+
+    <h3 style="font-size:14px;margin:12px 0 4px;">Subscribers by Day</h3>
+    <div id="chart-subs"></div>
+  </div>
 </div>
 
 <script>
 const key = new URLSearchParams(location.search).get("key");
+if (!key) {
+  alert("Missing ?key=ADMIN_KEY in URL");
+}
 
-fetch(`/api/brain-admin?key=${key}`)
-  .then(r => r.json())
+// --- Helpers ---
+
+function downloadCSV(filename, headers, rows) {
+  const lines = [];
+  lines.push(headers.join(","));
+  for (const row of rows) {
+    const escaped = row.map(v =>
+      String(v ?? "")
+        .replace(/"/g, '""')
+    );
+    lines.push('"' + escaped.join('","') + '"');
+  }
+  const csv = lines.join("\r\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function renderBars(container, data, valueKey, labelKey) {
+  container.innerHTML = "";
+  if (!data.length) {
+    container.innerHTML = '<p class="small">No data.</p>';
+    return;
+  }
+  const max = Math.max(...data.map(d => d[valueKey] || 0)) || 1;
+  for (const d of data) {
+    const v = d[valueKey] || 0;
+    const pct = Math.round((v / max) * 100);
+    const row = document.createElement("div");
+    row.className = "chart-bar";
+    row.innerHTML = `
+      <span class="chart-bar-label">${d[labelKey]}</span>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width:${pct}%;"></div>
+      </div>
+      <span class="small">${v}</span>
+    `;
+    container.appendChild(row);
+  }
+}
+
+// --- Global state for filtering ---
+let allSubscribers = [];
+let allToday = [];
+let allWeekly = [];
+
+// --- Load data ---
+fetch(`/api/brain-admin?key=${encodeURIComponent(key)}`)
+  .then(r => {
+    if (!r.ok) throw new Error("Failed to load admin data");
+    return r.json();
+  })
   .then(data => {
+    allSubscribers = data.subscribers || [];
+    allToday = data.todayScores || [];
+    allWeekly = data.weeklyScores || [];
+
     // Subscribers
     document.getElementById("sub-count").textContent =
-      `Total: ${data.subscribers.length}`;
-
-    document.getElementById("subs-table").innerHTML =
-      `<tr><th>Email</th><th>Daily</th><th>Weekly</th><th>Status</th></tr>` +
-      data.subscribers.map(s =>
-        `<tr>
-          <td>${s.email}</td>
-          <td>${s.daily_enabled}</td>
-          <td>${s.weekly_enabled}</td>
-          <td>${s.status}</td>
-        </tr>`
-      ).join("");
+      `Total: ${allSubscribers.length}`;
+    renderSubscribers(allSubscribers);
 
     // Today
-    document.getElementById("today-table").innerHTML =
-      `<tr><th>Email</th><th>Score</th></tr>` +
-      data.todayScores.map(t =>
-        `<tr><td>${t.email}</td><td>${t.score}</td></tr>`
-      ).join("");
+    document.getElementById("today-count").textContent =
+      `Entries: ${allToday.length}`;
+    renderToday(allToday);
 
     // Weekly
-    const ws = data.weeklyStats;
-    document.getElementById("weekly-stats").innerHTML =
-      `<b>Total players:</b> ${ws.totalPlayers}<br>
-       <b>Avg score:</b> ${ws.avgScore}<br>
-       <b>Highest:</b> ${ws.highestScore}`;
+    const ws = data.weeklyStats || {};
+    document.getElementById("weekly-summary").innerHTML =
+      `Players: ${ws.totalPlayers || 0} | Avg score: ${ws.avgScore || 0} | Highest: ${ws.highestScore || 0}`;
+    renderWeekly(allWeekly);
 
-    document.getElementById("weekly-table").innerHTML =
-      `<tr><th>#</th><th>Email</th><th>Total Score</th><th>Days</th></tr>` +
-      data.weeklyScores.map((w, i) =>
-        `<tr>
-           <td>${i+1}</td>
-           <td>${w.email}</td>
-           <td>${w.total_score}</td>
-           <td>${w.days_played}</td>
-        </tr>`
-      ).join("");
+    // Charts
+    renderBars(
+      document.getElementById("chart-activity"),
+      (data.timeSeries && data.timeSeries.activity) || [],
+      "players",
+      "day"
+    );
+    renderBars(
+      document.getElementById("chart-subs"),
+      (data.timeSeries && data.timeSeries.subscribers) || [],
+      "subs",
+      "day"
+    );
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Failed to load admin data. Check console.");
   });
+
+// --- Render functions ---
+
+function renderSubscribers(list) {
+  const table = document.getElementById("subs-table");
+  table.innerHTML =
+    `<tr>
+      <th>Email</th>
+      <th>Daily</th>
+      <th>Weekly</th>
+      <th>Status</th>
+      <th></th>
+    </tr>` +
+    list
+      .map(
+        s => `
+      <tr>
+        <td>${s.email}</td>
+        <td>${s.daily_enabled ? '<span class="badge on">ON</span>' : '<span class="badge">OFF</span>'}</td>
+        <td>${s.weekly_enabled ? '<span class="badge on">ON</span>' : '<span class="badge">OFF</span>'}</td>
+        <td>${s.status}</td>
+        <td><button data-email="${s.email}" class="btn-del danger">Delete</button></td>
+      </tr>`
+      )
+      .join("");
+
+  // Attach delete handlers
+  table.querySelectorAll(".btn-del").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const email = btn.getAttribute("data-email");
+      if (!confirm(`Delete subscriber ${email}? This also removes their scores.`)) return;
+      fetch(`/api/brain-admin?key=${encodeURIComponent(key)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "deleteSubscriber", email })
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (!res.ok) throw new Error(res.error || "Failed");
+        // Remove from local state and re-render
+        allSubscribers = allSubscribers.filter(s => s.email !== email);
+        renderSubscribers(allSubscribers);
+        document.getElementById("sub-count").textContent =
+          `Total: ${allSubscribers.length}`;
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Delete failed. See console.");
+      });
+    });
+  });
+}
+
+function renderToday(list) {
+  const table = document.getElementById("today-table");
+  table.innerHTML =
+    `<tr>
+      <th>Email</th>
+      <th>Score</th>
+    </tr>` +
+    list
+      .map(
+        t => `
+      <tr>
+        <td>${t.email}</td>
+        <td>${t.score}</td>
+      </tr>`
+      )
+      .join("");
+}
+
+function renderWeekly(list) {
+  const table = document.getElementById("weekly-table");
+  table.innerHTML =
+    `<tr>
+      <th>#</th>
+      <th>Email</th>
+      <th>Total Score</th>
+      <th>Days</th>
+    </tr>` +
+    list
+      .map(
+        (w, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${w.email}</td>
+        <td>${w.total_score}</td>
+        <td>${w.days_played}</td>
+      </tr>`
+      )
+      .join("");
+}
+
+// --- Search filter for subscribers ---
+document.getElementById("sub-search").addEventListener("input", (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  const filtered = !q
+    ? allSubscribers
+    : allSubscribers.filter(s => s.email.toLowerCase().includes(q));
+  renderSubscribers(filtered);
+});
+
+// --- CSV export buttons ---
+
+document.getElementById("btn-export-subs").addEventListener("click", () => {
+  const rows = allSubscribers.map(s => [
+    s.email,
+    s.daily_enabled,
+    s.weekly_enabled,
+    s.status,
+    s.created_at
+  ]);
+  downloadCSV("subscribers.csv",
+    ["email", "daily_enabled", "weekly_enabled", "status", "created_at"],
+    rows
+  );
+});
+
+document.getElementById("btn-export-today").addEventListener("click", () => {
+  const rows = allToday.map(t => [t.email, t.score, t.created_at]);
+  downloadCSV("today_scores.csv", ["email", "score", "created_at"], rows);
+});
+
+document.getElementById("btn-export-weekly").addEventListener("click", () => {
+  const rows = allWeekly.map((w, i) => [
+    i + 1,
+    w.email,
+    w.total_score,
+    w.days_played
+  ]);
+  downloadCSV("weekly_leaderboard.csv",
+    ["rank", "email", "total_score", "days_played"],
+    rows
+  );
+});
+
+// --- Admin Controls: send test email ---
+
+document.getElementById("btn-send-test").addEventListener("click", () => {
+  const email = document.getElementById("test-email").value.trim();
+  const msg = document.getElementById("admin-message");
+  msg.textContent = "";
+  if (!email) {
+    msg.textContent = "Enter an email first.";
+    return;
+  }
+  msg.textContent = "Sending...";
+  fetch(`/api/brain-admin?key=${encodeURIComponent(key)}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "sendTestEmail", email })
+  })
+    .then(r => r.json())
+    .then(res => {
+      if (!res.ok) throw new Error(res.error || "Failed");
+      msg.textContent = "Test email sent ✅";
+    })
+    .catch(err => {
+      console.error(err);
+      msg.textContent = "Failed to send. See console.";
+    });
+});
 </script>
 
 </body>
