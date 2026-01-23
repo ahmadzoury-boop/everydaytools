@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Brain Admin Dashboard</title>
+  <style>
+    body { font-family: system-ui; padding: 20px; background: #f5f5f5; }
+    h1 { margin-bottom: 10px; }
+    .card { background: white; padding: 16px; border-radius: 10px; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px; border-bottom: 1px solid #ddd; }
+    th { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+
+<h1>🧠 Brain Admin Dashboard</h1>
+
+<div class="card">
+  <h2>Subscribers</h2>
+  <p id="sub-count"></p>
+  <table id="subs-table"></table>
+</div>
+
+<div class="card">
+  <h2>Today Scores</h2>
+  <table id="today-table"></table>
+</div>
+
+<div class="card">
+  <h2>Weekly Leaderboard</h2>
+  <p id="weekly-stats"></p>
+  <table id="weekly-table"></table>
+</div>
+
+<script>
+const key = new URLSearchParams(location.search).get("key");
+
+fetch(`/api/brain-admin?key=${key}`)
+  .then(r => r.json())
+  .then(data => {
+    // Subscribers
+    document.getElementById("sub-count").textContent =
+      `Total: ${data.subscribers.length}`;
+
+    document.getElementById("subs-table").innerHTML =
+      `<tr><th>Email</th><th>Daily</th><th>Weekly</th><th>Status</th></tr>` +
+      data.subscribers.map(s =>
+        `<tr>
+          <td>${s.email}</td>
+          <td>${s.daily_enabled}</td>
+          <td>${s.weekly_enabled}</td>
+          <td>${s.status}</td>
+        </tr>`
+      ).join("");
+
+    // Today
+    document.getElementById("today-table").innerHTML =
+      `<tr><th>Email</th><th>Score</th></tr>` +
+      data.todayScores.map(t =>
+        `<tr><td>${t.email}</td><td>${t.score}</td></tr>`
+      ).join("");
+
+    // Weekly
+    const ws = data.weeklyStats;
+    document.getElementById("weekly-stats").innerHTML =
+      `<b>Total players:</b> ${ws.totalPlayers}<br>
+       <b>Avg score:</b> ${ws.avgScore}<br>
+       <b>Highest:</b> ${ws.highestScore}`;
+
+    document.getElementById("weekly-table").innerHTML =
+      `<tr><th>#</th><th>Email</th><th>Total Score</th><th>Days</th></tr>` +
+      data.weeklyScores.map((w, i) =>
+        `<tr>
+           <td>${i+1}</td>
+           <td>${w.email}</td>
+           <td>${w.total_score}</td>
+           <td>${w.days_played}</td>
+        </tr>`
+      ).join("");
+  });
+</script>
+
+</body>
+</html>
