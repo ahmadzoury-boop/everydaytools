@@ -407,6 +407,8 @@ async function updateAndMaybeSubmitDayScore(dateKey) {
   try {
     setResult("Loading puzzles...");
     await loadAllSets();
+    setResult(`Loaded ${allDates.length} days · ${allDates[0]} → ${allDates[allDates.length - 1]}`);
+
 
     // Decide initial date
     const saved = store.current;
