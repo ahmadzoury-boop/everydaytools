@@ -1,14 +1,13 @@
 /* =========================================================
-   EverydayTools.uk — Daily Brain (CLEAN CSS)
-   Mobile-first, “Countdown Timer” card vibe
-   Includes click/tap fix for overlays
+   EverydayTools.uk — Daily Brain (FINAL CLEAN CSS)
+   Catalog Mode + Glass Countdown Vibe
 ========================================================= */
 
-/* ---------- Theme tokens (optional) ---------- */
+/* ---------- Theme tokens ---------- */
 :root{
   --bg: #050509;
   --fg: #ffffff;
-  --card: rgba(0,0,0,0.18);
+  --card: rgba(0,0,0,0.20);
   --border: rgba(255,255,255,0.10);
   --muted: rgba(255,255,255,0.72);
   --muted2: rgba(255,255,255,0.55);
@@ -34,16 +33,7 @@
   overflow-wrap: break-word;
 }
 
-/* Header / hero */
-.brain-hero{
-  padding-bottom: 10px;
-}
-.brain-sub{
-  margin-top: 6px;
-  color: var(--muted);
-}
-
-/* ---------- Main card ---------- */
+/* ---------- Main glass card ---------- */
 .brain-card{
   margin-top: 12px;
   margin-bottom: 18px;
@@ -54,7 +44,10 @@
   backdrop-filter: blur(var(--blur));
 }
 
-/* ---------- Filter bar ---------- */
+/* =========================================================
+   Navigation / Filters
+========================================================= */
+
 .brain-filterbar{
   display:flex;
   align-items:center;
@@ -65,14 +58,13 @@
 
 .brain-filter-label{
   font-size:13px;
-  opacity:0.85;
   padding:6px 10px;
   border-radius:999px;
   border:1px solid var(--border);
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
 }
 
-/* Buttons grid like timer presets */
 .brain-filters{
   display:grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -80,7 +72,6 @@
   width:100%;
 }
 
-/* Buttons/chips (works with your existing .brain-chip class) */
 .brain-chip{
   width:100%;
   min-height:44px;
@@ -88,148 +79,135 @@
   border-radius: var(--radius-md);
 }
 
-/* Notes */
-.brain-streak-note{
-  margin-top: 6px;
-  color: var(--muted2);
-}
-
-/* ---------- “How it works” collapsible ---------- */
-.brain-how{
-  margin-top:16px;
-  padding:10px 12px;
-  border-radius: var(--radius-md);
-  border:1px solid var(--border);
-  background: rgba(255,255,255,0.04);
-}
-
-.brain-how > summary{
-  cursor:pointer;
-  user-select:none;
-  font-weight:700;
-  list-style:none;
-}
-
-.brain-how > summary::-webkit-details-marker{
-  display:none;
-}
-
-.brain-how > summary::before{
-  content:"▶ ";
-  opacity:0.9;
-}
-
-.brain-how[open] > summary::before{
-  content:"▼ ";
-}
-
-.brain-how ul{
-  margin:10px 0 0 18px;
-}
-
-/* ---------- Subscribe form ---------- */
-.brain-form{
-  margin-top:10px;
-}
-
-.brain-form-row{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.brain-form-row input{
-  min-height:44px;
-  font-size:16px;
-  border-radius: var(--radius-sm);
-}
-
-.brain-form-row .danger{
-  background:#b62324;
-}
-
 /* =========================================================
-   Injected levels (Easy/Medium/Hard sections)
+   CATALOG QUESTION CARDS (.q-card)
 ========================================================= */
-.level{
-  margin-top:14px;
+
+#questions{
+  margin-top: 12px;
+}
+
+/* Question card */
+.q-card{
+  margin-top: 14px;
   padding: var(--pad-md);
   border-radius: var(--radius-lg);
-  border:1px solid var(--border);
-  background: rgba(0,0,0,0.20);
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.25);
   backdrop-filter: blur(var(--blur));
 }
 
-.level h2{
-  font-size:18px;
-  margin-bottom:4px;
-}
-
-.question-box{
-  margin-top:10px;
+/* Header row */
+.q-top{
   display:flex;
-  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
   gap:10px;
+  margin-bottom: 10px;
 }
 
-.question-text{
-  font-size:16px;
-  line-height:1.4;
+.q-badge{
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .10em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: rgba(255,255,255,0.04);
+}
+
+.q-title{
+  font-size: 12px;
+  color: var(--muted2);
+}
+
+/* Question text */
+.q-text{
+  font-size: 16px;
+  line-height: 1.45;
   color: var(--fg);
+  margin-bottom: 10px;
 }
 
-.question-box input{
-  min-height:44px;
-  font-size:16px;
-  border-radius: var(--radius-sm);
-}
-
-/* Primary submit button */
-.primary-btn{
-  min-height:46px;
-  font-size:16px;
-  border-radius: var(--radius-md);
-  width:100%;
-}
-
-/* Hint button + hint box */
-.hint-btn{
-  margin-top:8px;
-  min-height:40px;
-  font-size:15px;
-  border-radius: var(--radius-sm);
-}
-
-.hint{
-  margin-top:8px;
-  padding:10px;
+/* Hint box */
+.q-hint{
+  margin-bottom: 10px;
+  padding: 10px;
   border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.06);
   color: var(--muted);
+  font-size: 14px;
 }
 
-/* Status badges row */
-#status{
+/* Answer row */
+.q-answer{
   display:flex;
-  gap:8px;
+  gap:10px;
   flex-wrap:wrap;
-  margin-bottom:10px;
+  align-items:center;
 }
 
-#status > .badge{
-  white-space: nowrap;
+.q-input{
+  flex: 1 1 220px;
+  min-height:44px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: #111;
+  font-size: 15px;
+  outline: none;
 }
 
-/* Result card */
+.q-input:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Check button */
+.q-check{
+  min-height:44px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  cursor:pointer;
+}
+
+.q-check:active{
+  transform: translateY(1px);
+}
+
+/* Feedback */
+.q-feedback{
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.q-feedback.good{
+  color: #35d07f;
+}
+
+.q-feedback.bad{
+  color: #ff6b6b;
+}
+
+/* =========================================================
+   Leaderboard / Result Card
+========================================================= */
+
 #result{
   margin-top:18px;
   padding: var(--pad-md);
   border-radius: var(--radius-lg);
   border:1px solid var(--border);
-  background: rgba(0,0,0,0.20);
+  background: rgba(0,0,0,0.25);
 }
 
-/* Tables (local + global leaderboard) */
 #result table{
   width:100%;
   border-collapse:collapse;
@@ -240,30 +218,20 @@
   font-size:14px;
 }
 
-/* Prevent weird overflow on small phones */
-.brain-page,
-.brain-card,
-.level{
-  max-width: 100%;
-  overflow-wrap: break-word;
-}
+/* =========================================================
+   Responsive
+========================================================= */
 
-/* ---------- Mobile: 2x2 grid ---------- */
 @media (max-width: 768px){
   .brain-card{
     padding: var(--pad-md);
-    border-radius: var(--radius-xl);
   }
 
   .brain-filters{
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .level{
-    padding: var(--pad-sm);
-  }
-
-  .question-text{
+  .q-text{
     font-size:15px;
   }
 
@@ -272,7 +240,6 @@
   }
 }
 
-/* ---------- Desktop: keep centered ---------- */
 @media (min-width: 1024px){
   .brain-card{
     padding: var(--pad-xl);
@@ -283,10 +250,10 @@
 }
 
 /* =========================================================
-   CRITICAL: CLICK/TAP FIX
-   If you have any decorative overlays (body::before, glow divs),
-   this prevents them blocking buttons.
+   CLICK/TAP FIX
+   Prevent decorative overlays blocking interaction
 ========================================================= */
+
 body::before,
 body::after,
 html::before,
@@ -301,19 +268,13 @@ html::after,
   pointer-events: none !important;
 }
 
-/* Ensure interactive UI sits above any background layers */
 .brain-page,
 .brain-card,
-.level,
-.brain-filterbar,
-.brain-filters,
-#status,
-#result,
+.q-card,
 button,
 a,
 input,
-select,
-summary{
+select{
   position: relative;
   z-index: 2;
 }
