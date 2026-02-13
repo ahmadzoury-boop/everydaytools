@@ -55,12 +55,17 @@
       margin-bottom: 18px;
     }
 
-    /* ✅ New: Date dropdown controls (CSS only) */
+    /* ✅ Helper class used in HTML */
+    .muted { color: var(--muted); }
+
+    /* ✅ Date dropdown controls */
     .brain-controls {
       margin: 0 0 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      position: relative;
+      z-index: 10; /* ✅ keep controls clickable */
     }
 
     .brain-controls label {
@@ -69,7 +74,8 @@
       margin-right: 8px;
     }
 
-    #dateSelect {
+    #dateSelect,
+    #pickDate {
       padding: 10px 12px;
       border-radius: 10px;
       border: 1px solid var(--border-subtle);
@@ -80,10 +86,11 @@
     }
 
     @media (prefers-color-scheme: light) {
-      #dateSelect { background: var(--card); }
+      #dateSelect, #pickDate { background: var(--card); }
     }
 
-    #dateSelect:focus {
+    #dateSelect:focus,
+    #pickDate:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px var(--accent);
     }
@@ -102,6 +109,7 @@
       font-size: 13px;
       padding: 8px 14px;
       cursor: pointer;
+      pointer-events: auto;
     }
 
     .brain-nav button:active { transform: translateY(1px); }
@@ -114,10 +122,17 @@
       margin-bottom: 16px;
       border: 1px solid var(--border-subtle);
       backdrop-filter: blur(12px);
+      position: relative;
     }
 
     @media (prefers-color-scheme: light) {
       .card { background: var(--card); }
+    }
+
+    /* ✅ If you ever add overlays on card pseudo elements, don’t steal clicks */
+    .card::before,
+    .card::after {
+      pointer-events: none;
     }
 
     .card-header {
@@ -451,17 +466,27 @@
       <h1>Daily Brain</h1>
       <div class="subtitle">One short challenge a day on EverydayTools.uk</div>
 
-      <!-- ✅ New: Dropdown + navigation (THIS is the correct place) -->
+      <!-- ✅ Controls -->
       <div class="brain-controls">
         <div>
           <label for="dateSelect">Pick a date:</label>
           <select id="dateSelect"></select>
+
+          <!-- ✅ Compatibility: some brain.js versions expect an input#pickDate -->
+          <input id="pickDate" type="date" style="display:none;" />
+          <!-- ✅ Compatibility: some versions expect an active label -->
+          <span id="activeDateLabel" style="display:none;"></span>
         </div>
 
         <div class="brain-nav">
+          <!-- ✅ Your current IDs -->
           <button id="btnPrevDay" type="button">◀ Prev</button>
           <button id="btnToday" type="button">Today</button>
           <button id="btnNextDay" type="button">Next ▶</button>
+
+          <!-- ✅ Compatibility: alternate IDs that older/newer JS might use -->
+          <button id="btnPrev" type="button" style="display:none;">Prev</button>
+          <button id="btnNext" type="button" style="display:none;">Next</button>
         </div>
 
         <div id="resultBox" class="muted" style="opacity:0;"></div>
@@ -509,7 +534,6 @@
         <span id="levelLabel">EASY</span>
       </div>
 
-      <!-- Optional (for catalog mode, brain.js can fill it) -->
       <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">
         Date: <span id="dayKey"></span>
       </div>
@@ -517,12 +541,7 @@
       <div id="questionText">Loading today’s puzzles…</div>
 
       <div class="answer-row">
-        <input
-          id="answerInput"
-          type="text"
-          placeholder="Your answer"
-          autocomplete="off"
-        />
+        <input id="answerInput" type="text" placeholder="Your answer" autocomplete="off" />
         <button id="submitBtn" type="button">Submit</button>
       </div>
 
@@ -535,7 +554,6 @@
 
       <div id="message"></div>
 
-      <!-- Optional container for the new brain.js style (won't break old UI) -->
       <div id="questions" style="margin-top:12px;"></div>
     </section>
 
@@ -621,6 +639,52 @@
       </div>
     </section>
   </main>
+
+  <!-- ✅ Compatibility bridge:
+       - Sync select#dateSelect with input#pickDate
+       - Proxy Prev/Next buttons so ANY brain.js (old/new) will work -->
+  <script>
+    (function () {
+      const qs = (id) => document.getElementById(id);
+
+      const dateSelect = qs("dateSelect");
+      const pickDate = qs("pickDate");
+
+      const btnPrevDay = qs("btnPrevDay");
+      const btnNextDay = qs("btnNextDay");
+      const btnToday = qs("btnToday");
+
+      const btnPrev = qs("btnPrev");
+      const btnNext = qs("btnNext");
+
+      // Proxy clicks (visible -> hidden)
+      if (btnPrevDay && btnPrev) btnPrevDay.addEventListener("click", () => btnPrev.click());
+      if (btnNextDay && btnNext) btnNextDay.addEventListener("click", () => btnNext.click());
+
+      // Proxy clicks (hidden -> visible) (for JS that binds to visible IDs)
+      if (btnPrev && btnPrevDay) btnPrev.addEventListener("click", () => {
+        // avoid infinite loop: only trigger if the event came from JS bindings
+        // (no recursion because this handler doesn't call btnPrev.click again)
+      });
+      if (btnNext && btnNextDay) btnNext.addEventListener("click", () => {});
+
+      // Sync dateSelect -> pickDate
+      if (dateSelect && pickDate) {
+        dateSelect.addEventListener("change", () => {
+          if (!dateSelect.value) return;
+          pickDate.value = dateSelect.value;
+          pickDate.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+
+        // Sync pickDate -> dateSelect
+        pickDate.addEventListener("change", () => {
+          if (!pickDate.value) return;
+          // If option exists, select it; if not, set value anyway
+          dateSelect.value = pickDate.value;
+        });
+      }
+    })();
+  </script>
 
   <script src="./brain.js"></script>
 </body>
