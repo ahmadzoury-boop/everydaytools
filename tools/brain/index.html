@@ -28,9 +28,7 @@
       }
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -57,6 +55,58 @@
       margin-bottom: 18px;
     }
 
+    /* ✅ New: Date dropdown controls (CSS only) */
+    .brain-controls {
+      margin: 0 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .brain-controls label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-right: 8px;
+    }
+
+    #dateSelect {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(11, 11, 25, 0.92);
+      color: var(--fg);
+      max-width: 340px;
+      outline: none;
+    }
+
+    @media (prefers-color-scheme: light) {
+      #dateSelect { background: var(--card); }
+    }
+
+    #dateSelect:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .brain-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brain-nav button {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--fg);
+      font-size: 13px;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    .brain-nav button:active { transform: translateY(1px); }
+
+    /* Existing styles */
     .card {
       background: rgba(11, 11, 25, 0.92);
       border-radius: 18px;
@@ -67,9 +117,7 @@
     }
 
     @media (prefers-color-scheme: light) {
-      .card {
-        background: var(--card);
-      }
+      .card { background: var(--card); }
     }
 
     .card-header {
@@ -134,16 +182,13 @@
       flex-wrap: wrap;
     }
 
-    .streak-main strong {
-      color: #ffd36b;
-    }
+    .streak-main strong { color: #ffd36b; }
 
     .streak-note {
       font-size: 12px;
       opacity: 0.9;
     }
 
-    /* Question card */
     .pill-label {
       display: inline-flex;
       align-items: center;
@@ -212,9 +257,7 @@
       cursor: pointer;
     }
 
-    #submitBtn:active {
-      transform: translateY(1px);
-    }
+    #submitBtn:active { transform: translateY(1px); }
 
     .hint-row {
       margin-top: 8px;
@@ -252,7 +295,6 @@
       margin-bottom: 6px;
     }
 
-    /* Today result + best days + leaderboard */
     .result-row {
       font-size: 14px;
       display: flex;
@@ -262,9 +304,7 @@
       margin-bottom: 8px;
     }
 
-    .result-row span.label {
-      color: var(--muted);
-    }
+    .result-row span.label { color: var(--muted); }
 
     .two-col {
       display: grid;
@@ -273,9 +313,7 @@
     }
 
     @media (min-width: 720px) {
-      .two-col {
-        grid-template-columns: 1.1fr 1.1fr;
-      }
+      .two-col { grid-template-columns: 1.1fr 1.1fr; }
     }
 
     table {
@@ -290,9 +328,7 @@
     }
 
     @media (prefers-color-scheme: light) {
-      th, td {
-        border-bottom-color: #eceff7;
-      }
+      th, td { border-bottom-color: #eceff7; }
     }
 
     th {
@@ -384,9 +420,7 @@
     .theme-orange .theme-dot { background: #ff8c32; }
     .theme-gold .theme-dot { background: #f4c542; }
 
-    .theme-btn.active {
-      border-color: var(--accent);
-    }
+    .theme-btn.active { border-color: var(--accent); }
 
     #subStatus {
       margin-top: 6px;
@@ -407,16 +441,31 @@
       text-decoration: none;
     }
 
-    .footer-links a:hover {
-      text-decoration: underline;
-    }
+    .footer-links a:hover { text-decoration: underline; }
   </style>
 </head>
+
 <body>
   <main class="brain-page">
     <header>
       <h1>Daily Brain</h1>
       <div class="subtitle">One short challenge a day on EverydayTools.uk</div>
+
+      <!-- ✅ New: Dropdown + navigation (THIS is the correct place) -->
+      <div class="brain-controls">
+        <div>
+          <label for="dateSelect">Pick a date:</label>
+          <select id="dateSelect"></select>
+        </div>
+
+        <div class="brain-nav">
+          <button id="btnPrevDay" type="button">◀ Prev</button>
+          <button id="btnToday" type="button">Today</button>
+          <button id="btnNextDay" type="button">Next ▶</button>
+        </div>
+
+        <div id="resultBox" class="muted" style="opacity:0;"></div>
+      </div>
     </header>
 
     <!-- Difficulty + timer + streak -->
@@ -425,15 +474,15 @@
         <div>
           <div class="section-title">Difficulty</div>
           <div class="diff-row">
-            <button id="btnEasy" class="diff-btn active">
+            <button id="btnEasy" class="diff-btn active" type="button">
               Easy
               <span class="badge">Start here</span>
             </button>
-            <button id="btnMedium" class="diff-btn">
+            <button id="btnMedium" class="diff-btn" type="button">
               Medium
               <span class="badge">Unlock after Easy</span>
             </button>
-            <button id="btnHard" class="diff-btn">
+            <button id="btnHard" class="diff-btn" type="button">
               Hard
               <span class="badge">Unlock after Medium</span>
             </button>
@@ -459,6 +508,12 @@
         <span class="dot"></span>
         <span id="levelLabel">EASY</span>
       </div>
+
+      <!-- Optional (for catalog mode, brain.js can fill it) -->
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">
+        Date: <span id="dayKey"></span>
+      </div>
+
       <div id="questionText">Loading today’s puzzles…</div>
 
       <div class="answer-row">
@@ -468,17 +523,20 @@
           placeholder="Your answer"
           autocomplete="off"
         />
-        <button id="submitBtn">Submit</button>
+        <button id="submitBtn" type="button">Submit</button>
       </div>
 
       <div class="hint-row">
-        <div id="hintBtn">
+        <div id="hintBtn" role="button" tabindex="0">
           <span>💡</span><span>Show hint</span>
         </div>
         <div id="hintText"></div>
       </div>
 
       <div id="message"></div>
+
+      <!-- Optional container for the new brain.js style (won't break old UI) -->
+      <div id="questions" style="margin-top:12px;"></div>
     </section>
 
     <!-- Results + leaderboard -->
@@ -490,7 +548,7 @@
       </div>
       <div class="name-row">
         <input id="globalNameInput" type="text" placeholder="Player name for the global board" />
-        <button id="submitScoreBtn" class="btn-outline-small">Submit score</button>
+        <button id="submitScoreBtn" class="btn-outline-small" type="button">Submit score</button>
       </div>
 
       <div class="two-col" style="margin-top: 14px;">
@@ -503,9 +561,7 @@
                 <th class="score">Score</th>
               </tr>
             </thead>
-            <tbody id="bestDaysBody">
-              <!-- Filled by JS -->
-            </tbody>
+            <tbody id="bestDaysBody"></tbody>
           </table>
           <div id="bestDaysEmpty" class="empty-text">No history yet.</div>
         </div>
@@ -519,9 +575,7 @@
                 <th class="score">Score</th>
               </tr>
             </thead>
-            <tbody id="leaderboardBody">
-              <!-- Filled by JS -->
-            </tbody>
+            <tbody id="leaderboardBody"></tbody>
           </table>
           <div id="leaderboardEmpty" class="empty-text">No global scores yet.</div>
         </div>
@@ -534,17 +588,18 @@
         <div style="flex:1 1 220px;">
           <div class="section-title">Theme</div>
           <div class="theme-row">
-            <button id="themeBlue" class="theme-btn theme-blue active">
+            <button id="themeBlue" class="theme-btn theme-blue active" type="button">
               <span class="theme-dot"></span> Blue
             </button>
-            <button id="themeOrange" class="theme-btn theme-orange">
+            <button id="themeOrange" class="theme-btn theme-orange" type="button">
               <span class="theme-dot"></span> Orange
             </button>
-            <button id="themeGold" class="theme-btn theme-gold">
+            <button id="themeGold" class="theme-btn theme-gold" type="button">
               <span class="theme-dot"></span> Golden
             </button>
           </div>
         </div>
+
         <div style="flex:1 1 260px;">
           <div class="section-title">Get the Daily Brain by email 🧠</div>
           <div style="font-size:13px; color:var(--muted); margin-bottom:8px;">
@@ -552,8 +607,8 @@
           </div>
           <div class="name-row">
             <input id="subEmailInput" type="email" placeholder="you@example.com" />
-            <button id="subBtn" class="btn-outline-small">Subscribe</button>
-            <button id="unsubBtn" class="btn-outline-small">Unsubscribe</button>
+            <button id="subBtn" class="btn-outline-small" type="button">Subscribe</button>
+            <button id="unsubBtn" class="btn-outline-small" type="button">Unsubscribe</button>
           </div>
           <div id="subStatus"></div>
         </div>
