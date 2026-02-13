@@ -1,29 +1,60 @@
-/* Brain page layout — mobile-first, Countdown-Timer style card */
+/* =========================================================
+   EverydayTools.uk — Daily Brain (CLEAN CSS)
+   Mobile-first, “Countdown Timer” card vibe
+   Includes click/tap fix for overlays
+========================================================= */
 
+/* ---------- Theme tokens (optional) ---------- */
+:root{
+  --bg: #050509;
+  --fg: #ffffff;
+  --card: rgba(0,0,0,0.18);
+  --border: rgba(255,255,255,0.10);
+  --muted: rgba(255,255,255,0.72);
+  --muted2: rgba(255,255,255,0.55);
+  --accent: #4ea1ff;
+
+  --radius-xl: 18px;
+  --radius-lg: 16px;
+  --radius-md: 14px;
+  --radius-sm: 12px;
+
+  --pad-xl: 18px;
+  --pad-lg: 16px;
+  --pad-md: 14px;
+  --pad-sm: 12px;
+
+  --blur: 6px;
+}
+
+/* ---------- Page wrapper ---------- */
 .brain-page{
-  padding-top:16px;
+  padding-top: 16px;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
+/* Header / hero */
 .brain-hero{
-  padding-bottom:10px;
+  padding-bottom: 10px;
 }
-
 .brain-sub{
-  margin-top:6px;
+  margin-top: 6px;
+  color: var(--muted);
 }
 
-/* The main centered card (like Countdown Timer) */
+/* ---------- Main card ---------- */
 .brain-card{
-  margin-top:12px;
-  margin-bottom:18px;
-  padding:16px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.16);
-  backdrop-filter: blur(6px);
+  margin-top: 12px;
+  margin-bottom: 18px;
+  padding: var(--pad-lg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--card);
+  backdrop-filter: blur(var(--blur));
 }
 
-/* Filter bar */
+/* ---------- Filter bar ---------- */
 .brain-filterbar{
   display:flex;
   align-items:center;
@@ -37,7 +68,8 @@
   opacity:0.85;
   padding:6px 10px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.03);
 }
 
 /* Buttons grid like timer presets */
@@ -48,25 +80,27 @@
   width:100%;
 }
 
+/* Buttons/chips (works with your existing .brain-chip class) */
 .brain-chip{
   width:100%;
   min-height:44px;
   font-size:16px;
-  border-radius:14px;
+  border-radius: var(--radius-md);
 }
 
 /* Notes */
 .brain-streak-note{
-  margin-top:6px;
+  margin-top: 6px;
+  color: var(--muted2);
 }
 
-/* How it works collapsible */
+/* ---------- “How it works” collapsible ---------- */
 .brain-how{
   margin-top:16px;
   padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.10);
+  border-radius: var(--radius-md);
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.04);
 }
 
 .brain-how > summary{
@@ -93,7 +127,7 @@
   margin:10px 0 0 18px;
 }
 
-/* Subscribe form layout */
+/* ---------- Subscribe form ---------- */
 .brain-form{
   margin-top:10px;
 }
@@ -107,57 +141,30 @@
 .brain-form-row input{
   min-height:44px;
   font-size:16px;
+  border-radius: var(--radius-sm);
 }
 
 .brain-form-row .danger{
   background:#b62324;
 }
 
-/* Mobile: match Countdown Timer feel */
-@media (max-width: 768px){
-  .brain-card{
-    padding:14px;
-    border-radius:18px;
-  }
-
-  /* 2x2 grid on mobile */
-  .brain-filters{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* Larger screens: keep it tidy */
-@media (min-width: 1024px){
-  .brain-card{
-    padding:18px;
-    max-width: 860px;
-    margin-left:auto;
-    margin-right:auto;
-  }
-}
-
-/* ===============================
-   Brain injected levels — mobile fix
-   Matches Countdown Timer layout
-================================ */
-
-/* Level card */
+/* =========================================================
+   Injected levels (Easy/Medium/Hard sections)
+========================================================= */
 .level{
   margin-top:14px;
-  padding:14px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.18);
-  backdrop-filter: blur(6px);
+  padding: var(--pad-md);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+  backdrop-filter: blur(var(--blur));
 }
 
-/* Level title */
 .level h2{
   font-size:18px;
   margin-bottom:4px;
 }
 
-/* Question container */
 .question-box{
   margin-top:10px;
   display:flex;
@@ -165,41 +172,40 @@
   gap:10px;
 }
 
-/* Question text */
 .question-text{
   font-size:16px;
   line-height:1.4;
+  color: var(--fg);
 }
 
-/* Inputs */
 .question-box input{
   min-height:44px;
   font-size:16px;
-  border-radius:12px;
+  border-radius: var(--radius-sm);
 }
 
 /* Primary submit button */
 .primary-btn{
   min-height:46px;
   font-size:16px;
-  border-radius:14px;
+  border-radius: var(--radius-md);
   width:100%;
 }
 
-/* Hint button */
+/* Hint button + hint box */
 .hint-btn{
   margin-top:8px;
   min-height:40px;
   font-size:15px;
-  border-radius:12px;
+  border-radius: var(--radius-sm);
 }
 
-/* Hint text box */
 .hint{
   margin-top:8px;
   padding:10px;
-  border-radius:12px;
+  border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.06);
+  color: var(--muted);
 }
 
 /* Status badges row */
@@ -217,10 +223,10 @@
 /* Result card */
 #result{
   margin-top:18px;
-  padding:14px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.18);
+  padding: var(--pad-md);
+  border-radius: var(--radius-lg);
+  border:1px solid var(--border);
+  background: rgba(0,0,0,0.20);
 }
 
 /* Tables (local + global leaderboard) */
@@ -242,11 +248,19 @@
   overflow-wrap: break-word;
 }
 
-/* Mobile tightening */
-@media (max-width:768px){
+/* ---------- Mobile: 2x2 grid ---------- */
+@media (max-width: 768px){
+  .brain-card{
+    padding: var(--pad-md);
+    border-radius: var(--radius-xl);
+  }
+
+  .brain-filters{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   .level{
-    padding:12px;
+    padding: var(--pad-sm);
   }
 
   .question-text{
@@ -254,6 +268,52 @@
   }
 
   #result{
-    padding:12px;
+    padding: var(--pad-sm);
   }
+}
+
+/* ---------- Desktop: keep centered ---------- */
+@media (min-width: 1024px){
+  .brain-card{
+    padding: var(--pad-xl);
+    max-width: 860px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+}
+
+/* =========================================================
+   CRITICAL: CLICK/TAP FIX
+   If you have any decorative overlays (body::before, glow divs),
+   this prevents them blocking buttons.
+========================================================= */
+body::before,
+body::after,
+html::before,
+html::after,
+.bg,
+.background,
+.glow,
+.noise,
+.gradient,
+.overlay,
+.backdrop{
+  pointer-events: none !important;
+}
+
+/* Ensure interactive UI sits above any background layers */
+.brain-page,
+.brain-card,
+.level,
+.brain-filterbar,
+.brain-filters,
+#status,
+#result,
+button,
+a,
+input,
+select,
+summary{
+  position: relative;
+  z-index: 2;
 }
