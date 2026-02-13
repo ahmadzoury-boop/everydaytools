@@ -404,3 +404,176 @@ async function updateAndMaybeSubmitDayScore(dateKey) {
     }
   }
 })();
+// =====================================================
+// Date Navigation + Dropdown (works with your HTML IDs)
+// Supports: #dateSelect + #btnPrevDay/#btnToday/#btnNextDay
+// Also supports: #pickDate + #btnPrev/#btnNext if present
+// =====================================================
+
+(function () {
+  const $ = (id) => document.getElementById(id);
+
+  const dateSelect = $("dateSelect");
+  const pickDate = $("pickDate"); // hidden in your HTML (compat)
+  const dayKeyEl = $("dayKey");
+  const activeDateLabel = $("activeDateLabel"); // hidden (compat)
+
+  const btnPrevDay = $("btnPrevDay");
+  const btnNextDay = $("btnNextDay");
+  const btnToday = $("btnToday");
+
+  const btnPrev = $("btnPrev"); // hidden compat
+  const btnNext = $("btnNext"); // hidden compat
+
+  // --- helpers ---
+  function toKey(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+  function fromKey(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  function addDays(key, n) {
+    const d = fromKey(key);
+    d.setDate(d.getDate() + n);
+    return toKey(d);
+  }
+
+  // --- find which dates exist in your setsData (or fall back) ---
+  function getAvailableKeys() {
+    // 1) if your brain.js already loaded setsData like { "2026-01-12": {...}, ... }
+    if (typeof setsData === "object" && setsData) {
+      return Object.keys(setsData).sort();
+    }
+
+    // 2) if your data structure is { days: { "YYYY-MM-DD": ... } }
+    if (typeof setsData === "object" && setsData && setsData.days) {
+      return Object.keys(setsData.days).sort();
+    }
+
+    // 3) fallback: only today
+    return [toKey(new Date())];
+  }
+
+  function nearestExisting(key, keys) {
+    if (!keys.length) return key;
+    if (keys.includes(key)) return key;
+
+    // pick closest by date
+    const target = new Date(key).getTime();
+    let best = keys[0];
+    let bestDist = Math.abs(new Date(best).getTime() - target);
+    for (const k of keys) {
+      const dist = Math.abs(new Date(k).getTime() - target);
+      if (dist < bestDist) {
+        best = k;
+        bestDist = dist;
+      }
+    }
+    return best;
+  }
+
+  // --- IMPORTANT: call your real render function ---
+  function renderByKey(key) {
+    // update date labels
+    if (dayKeyEl) dayKeyEl.textContent = key;
+    if (activeDateLabel) activeDateLabel.textContent = key;
+    if (pickDate) pickDate.value = key;
+    if (dateSelect) dateSelect.value = key;
+
+    // Try common function names (so we don’t need to guess yours)
+    if (typeof renderForDate === "function") return renderForDate(key);
+    if (typeof renderDay === "function") return renderDay(key);
+    if (typeof loadDay === "function") return loadDay(key);
+    if (typeof render === "function") return render(key);
+
+    console.warn(
+      "No date render function found. Add one of: renderForDate(key) / renderDay(key) / loadDay(key) / render(key)"
+    );
+  }
+
+  // --- fill dropdown ---
+  function populateDropdown(keys, selectedKey) {
+    if (!dateSelect) return;
+    dateSelect.innerHTML = "";
+    for (const k of keys) {
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = k;
+      dateSelect.appendChild(opt);
+    }
+    dateSelect.value = selectedKey;
+  }
+
+  // --- init after your data loads (retry a few times) ---
+  function initNav() {
+    const keys = getAvailableKeys();
+    const today = toKey(new Date());
+    const startKey = nearestExisting(today, keys);
+
+    populateDropdown(keys, startKey);
+    renderByKey(startKey);
+
+    // Dropdown change
+    if (dateSelect) {
+      dateSelect.addEventListener("change", () => {
+        if (!dateSelect.value) return;
+        renderByKey(dateSelect.value);
+      });
+    }
+
+    // Hidden pickDate (compat)
+    if (pickDate) {
+      pickDate.addEventListener("change", () => {
+        if (!pickDate.value) return;
+        renderByKey(pickDate.value);
+      });
+    }
+
+    // Buttons
+    const goPrev = () => {
+      const current = (dateSelect && dateSelect.value) || (pickDate && pickDate.value) || today;
+      // move to previous existing in list if possible
+      const idx = keys.indexOf(current);
+      const nextKey = idx > 0 ? keys[idx - 1] : addDays(current, -1);
+      renderByKey(nearestExisting(nextKey, keys));
+    };
+
+    const goNext = () => {
+      const current = (dateSelect && dateSelect.value) || (pickDate && pickDate.value) || today;
+      const idx = keys.indexOf(current);
+      const nextKey = (idx >= 0 && idx < keys.length - 1) ? keys[idx + 1] : addDays(current, +1);
+      renderByKey(nearestExisting(nextKey, keys));
+    };
+
+    const goToday = () => renderByKey(nearestExisting(today, keys));
+
+    if (btnPrevDay) btnPrevDay.addEventListener("click", goPrev);
+    if (btnNextDay) btnNextDay.addEventListener("click", goNext);
+    if (btnToday) btnToday.addEventListener("click", goToday);
+
+    // compat hidden buttons
+    if (btnPrev) btnPrev.addEventListener("click", goPrev);
+    if (btnNext) btnNext.addEventListener("click", goNext);
+  }
+
+  // Retry init in case setsData loads async
+  let tries = 0;
+  const t = setInterval(() => {
+    tries++;
+    // if your setsData becomes available later, this catches it
+    const keys = getAvailableKeys();
+    if (keys && keys.length) {
+      clearInterval(t);
+      initNav();
+    }
+    if (tries >= 25) {
+      clearInterval(t);
+      initNav(); // fallback anyway
+    }
+  }, 120);
+})();
+
