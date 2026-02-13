@@ -1,6 +1,8 @@
 /* =========================================================
-   EverydayTools.uk — Daily Brain (FINAL CLEAN CSS)
-   Catalog Mode + Glass Countdown Vibe
+   EverydayTools.uk — Daily Brain (FINAL ONE-STEP CSS)
+   Glass “Countdown Timer” vibe + Catalog q-cards styled
+   + Color-coded difficulty badges (Easy/Medium/Hard)
+   + Click/tap overlay fix
 ========================================================= */
 
 /* ---------- Theme tokens ---------- */
@@ -12,6 +14,10 @@
   --muted: rgba(255,255,255,0.72);
   --muted2: rgba(255,255,255,0.55);
   --accent: #4ea1ff;
+
+  --easy: #4ea1ff;
+  --medium: #ff8c32;
+  --hard: #ff4d4f;
 
   --radius-xl: 18px;
   --radius-lg: 16px;
@@ -108,8 +114,8 @@
 
 .q-badge{
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: .10em;
+  font-weight: 900;
+  letter-spacing: .12em;
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -173,7 +179,7 @@
   border: none;
   background: var(--accent);
   color: #ffffff;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
   cursor:pointer;
 }
@@ -188,16 +194,60 @@
   font-size: 14px;
 }
 
-.q-feedback.good{
-  color: #35d07f;
+.q-feedback.good{ color: #35d07f; }
+.q-feedback.bad{ color: #ff6b6b; }
+
+/* =========================================================
+   Difficulty color-coding (based on badge text)
+   Works without changing JS/HTML
+========================================================= */
+.q-card .q-badge{
+  /* default if unknown */
+  border-color: rgba(255,255,255,0.16);
 }
 
-.q-feedback.bad{
-  color: #ff6b6b;
+/* If badge contains EASY/MEDIUM/HARD text */
+.q-card:has(.q-badge:where(:not(*))){} /* no-op to keep parsing stable */
+
+.q-card:has(.q-badge){
+  /* nothing here; selectors below do the real work */
+}
+
+/* Modern browsers: style by text via data attr would be best,
+   but since we don't have it, we color by order (Q1=Easy, Q2=Medium, Q3=Hard) */
+#questions .q-card:nth-child(1) .q-badge{
+  color: #ffffff;
+  border-color: color-mix(in srgb, var(--easy) 55%, transparent);
+  background: color-mix(in srgb, var(--easy) 22%, transparent);
+}
+#questions .q-card:nth-child(1) .q-check{ background: var(--easy); }
+
+#questions .q-card:nth-child(2) .q-badge{
+  color: #ffffff;
+  border-color: color-mix(in srgb, var(--medium) 55%, transparent);
+  background: color-mix(in srgb, var(--medium) 22%, transparent);
+}
+#questions .q-card:nth-child(2) .q-check{ background: var(--medium); }
+
+#questions .q-card:nth-child(3) .q-badge{
+  color: #ffffff;
+  border-color: color-mix(in srgb, var(--hard) 55%, transparent);
+  background: color-mix(in srgb, var(--hard) 22%, transparent);
+}
+#questions .q-card:nth-child(3) .q-check{ background: var(--hard); }
+
+/* Fallback for browsers without color-mix */
+@supports not (background: color-mix(in srgb, #000 50%, transparent)){
+  #questions .q-card:nth-child(1) .q-badge{ border-color: rgba(78,161,255,0.55); background: rgba(78,161,255,0.18); color:#fff; }
+  #questions .q-card:nth-child(2) .q-badge{ border-color: rgba(255,140,50,0.55); background: rgba(255,140,50,0.18); color:#fff; }
+  #questions .q-card:nth-child(3) .q-badge{ border-color: rgba(255,77,79,0.55); background: rgba(255,77,79,0.18); color:#fff; }
+  #questions .q-card:nth-child(1) .q-check{ background: #4ea1ff; }
+  #questions .q-card:nth-child(2) .q-check{ background: #ff8c32; }
+  #questions .q-card:nth-child(3) .q-check{ background: #ff4d4f; }
 }
 
 /* =========================================================
-   Leaderboard / Result Card
+   Result / Leaderboards
 ========================================================= */
 
 #result{
@@ -250,8 +300,7 @@
 }
 
 /* =========================================================
-   CLICK/TAP FIX
-   Prevent decorative overlays blocking interaction
+   CLICK/TAP FIX — prevent decorative overlays blocking UI
 ========================================================= */
 
 body::before,
@@ -274,7 +323,8 @@ html::after,
 button,
 a,
 input,
-select{
+select,
+summary{
   position: relative;
   z-index: 2;
 }
