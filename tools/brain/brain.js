@@ -14,14 +14,20 @@
  *     ]
  *   }
  *
- * EXPECTED HTML IDs (recommended):
+ * EXPECTED HTML IDs:
  * - #dateSelect   (select)
  * - #dayKey       (date label container)
  * - #questions    (questions container)
  * - #resultBox    (optional: status/errors)
- * - #btnPrevDay   (optional button)
- * - #btnNextDay   (optional button)
- * - #btnToday     (optional button)
+ * - #btnPrevDay   (button)
+ * - #btnNextDay   (button)
+ * - #btnToday     (button)
+ *
+ * OPTIONAL COMPAT IDs (won’t hurt if missing):
+ * - #pickDate     (input[type=date])
+ * - #btnPrev      (button)
+ * - #btnNext      (button)
+ * - #activeDateLabel (span)
  */
 
 const CATALOG_URL = "/tools/brain/data/catalog.json";
@@ -63,13 +69,12 @@ function todayKeyUTC() {
 async function fetchJSON(url) {
   const r = await fetch(url, { cache: "no-store" });
   const txt = await r.text();
-  // If HTML comes back (404 page), show a useful error
   if (txt.trim().startsWith("<")) {
     throw new Error(`Expected JSON but got HTML from: ${url}`);
   }
   try {
     return JSON.parse(txt);
-  } catch (e) {
+  } catch {
     throw new Error(`Invalid JSON from: ${url}`);
   }
 }
@@ -93,6 +98,15 @@ function normalizeAnswer(s) {
     .replace(/\s+/g, " ");
 }
 
+function escapeHTML(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 // ---------- Catalog + Merge ----------
 async function loadCatalog() {
   if (catalog) return catalog;
@@ -102,7 +116,6 @@ async function loadCatalog() {
     throw new Error("catalog.json has no ranges");
   }
 
-  // Sort ranges by start date
   catalog.ranges.sort((a, b) => (a.from < b.from ? -1 : 1));
   return catalog;
 }
@@ -120,7 +133,6 @@ async function loadAllSets() {
   const cat = await loadCatalog();
   const merged = {};
 
-  // Fetch sequentially (simpler and avoids rate limits)
   for (const r of cat.ranges) {
     if (!r?.url) continue;
     const data = await fetchJSON(r.url);
@@ -128,7 +140,7 @@ async function loadAllSets() {
   }
 
   allSets = merged;
-  allDates = Object.keys(allSets).sort(); // YYYY-MM-DD sorts correctly
+  allDates = Object.keys(allSets).sort();
   if (!allDates.length) throw new Error("No dates found after merging ranges.");
 
   return allSets;
@@ -141,13 +153,11 @@ function buildDateDropdown(selectedDate) {
 
   sel.innerHTML = "";
 
-  // Special option: Play all (start from first date)
   const optAll = document.createElement("option");
   optAll.value = "__ALL__";
   optAll.textContent = "Play all puzzles (start)";
   sel.appendChild(optAll);
 
-  // Dates
   for (const d of allDates) {
     const opt = document.createElement("option");
     opt.value = d;
@@ -155,14 +165,13 @@ function buildDateDropdown(selectedDate) {
     sel.appendChild(opt);
   }
 
-  // Determine initial selection
   const initial = allDates.includes(selectedDate) ? selectedDate : todayKeyUTC();
   sel.value = allDates.includes(initial) ? initial : allDates[allDates.length - 1];
 
-  sel.addEventListener("change", () => {
+  // IMPORTANT: avoid stacking listeners if this ever runs again
+  sel.onchange = () => {
     const v = sel.value;
     if (v === "__ALL__") {
-      // Start from first date
       store.mode = "all";
       store.current = allDates[0];
       saveStore();
@@ -173,7 +182,7 @@ function buildDateDropdown(selectedDate) {
       saveStore();
       renderDay(v);
     }
-  });
+  };
 }
 
 // ---------- Questions pick (3 per day: easy+medium+hard) ----------
@@ -192,8 +201,13 @@ function pickThree(dayObj) {
 function renderDay(dateKey) {
   setResult("");
 
+  // keep day label in sync (and optional compat labels)
   const dateEl = qs("dayKey");
   if (dateEl) dateEl.textContent = dateKey;
+  const activeDateLabel = qs("activeDateLabel");
+  if (activeDateLabel) activeDateLabel.textContent = dateKey;
+  const pickDate = qs("pickDate");
+  if (pickDate) pickDate.value = dateKey;
 
   const container = qs("questions");
   if (!container) return;
@@ -202,11 +216,12 @@ function renderDay(dateKey) {
   const questions = pickThree(dayObj);
 
   if (!questions.length) {
-    container.innerHTML = `<div class="muted">No puzzles found for ${dateKey}</div>`;
+    container.innerHTML = `<div class="muted">No puzzles found for ${escapeHTML(dateKey)}</div>`;
+    store.current = dateKey;
+    saveStore();
     return;
   }
 
-  // Build UI with answer inputs
   container.innerHTML = questions
     .map((q, idx) => {
       const hintHtml = q.hint
@@ -223,7 +238,7 @@ function renderDay(dateKey) {
           ${hintHtml}
           <div class="q-answer">
             <input class="q-input" type="text" placeholder="Your answer..." />
-            <button class="q-check">Check</button>
+            <button class="q-check" type="button">Check</button>
           </div>
           <div class="q-feedback muted"></div>
         </div>
@@ -231,7 +246,6 @@ function renderDay(dateKey) {
     })
     .join("");
 
-  // Wire events
   const cards = Array.from(container.querySelectorAll(".q-card"));
   cards.forEach((card) => {
     const i = Number(card.getAttribute("data-idx"));
@@ -247,7 +261,6 @@ function renderDay(dateKey) {
       const correct = user.length > 0 && user === ans;
       const key = `${dateKey}::${i}`;
 
-      // Save attempt
       store.answers = store.answers || {};
       store.answers[key] = { user: input.value, correct, at: Date.now() };
       saveStore();
@@ -257,15 +270,22 @@ function renderDay(dateKey) {
         fb.classList.remove("bad");
         fb.classList.add("good");
       } else {
-        // Show explanation safely
         const exp = q.explanation ? ` ${q.explanation}` : "";
         fb.textContent = `❌ Not quite. Correct answer: ${q.a}.${exp}`;
         fb.classList.remove("good");
         fb.classList.add("bad");
       }
 
-      // Update daily score & optionally post it
       updateAndMaybeSubmitDayScore(dateKey);
+
+      // If user is in Play-all mode AND finished all 3 correct, auto-advance
+      if (store.mode === "all" && computeDayScore(dateKey) >= 3) {
+        const idx = idxOfDate(dateKey);
+        if (idx >= 0 && idx < allDates.length - 1) {
+          // small delay so user sees the success message
+          setTimeout(() => renderDay(allDates[idx + 1]), 450);
+        }
+      }
     };
 
     btn.addEventListener("click", runCheck);
@@ -273,35 +293,21 @@ function renderDay(dateKey) {
       if (e.key === "Enter") runCheck();
     });
 
-    // Restore previous
     const prev = store.answers?.[`${dateKey}::${i}`];
     if (prev?.user != null) {
       input.value = prev.user;
-      // Don't auto-check; keep it clean
     }
   });
 
-  // Set dropdown selection (if user navigates via buttons)
+  // Keep dropdown in sync (if navigated via buttons)
   const sel = qs("dateSelect");
-  if (sel && allDates.includes(dateKey)) {
-    sel.value = dateKey;
-  }
+  if (sel && allDates.includes(dateKey)) sel.value = dateKey;
 
-  // Save current
   store.current = dateKey;
   saveStore();
 }
 
-function escapeHTML(s) {
-  return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-// ---------- Navigation (optional buttons) ----------
+// ---------- Navigation ----------
 function idxOfDate(dateKey) {
   return allDates.indexOf(dateKey);
 }
@@ -325,12 +331,35 @@ function goToday() {
 }
 
 function wireNavButtons() {
-  const prev = qs("btnPrevDay");
-  const next = qs("btnNextDay");
+  // Main IDs (your HTML)
+  const prevDay = qs("btnPrevDay");
+  const nextDay = qs("btnNextDay");
   const today = qs("btnToday");
+
+  if (prevDay) prevDay.addEventListener("click", goPrev);
+  if (nextDay) nextDay.addEventListener("click", goNext);
+  if (today) today.addEventListener("click", goToday);
+
+  // Compat IDs (in case you keep hidden buttons in HTML)
+  const prev = qs("btnPrev");
+  const next = qs("btnNext");
+
   if (prev) prev.addEventListener("click", goPrev);
   if (next) next.addEventListener("click", goNext);
-  if (today) today.addEventListener("click", goToday);
+
+  // Compat date input (optional): changing it renders that date
+  const pickDate = qs("pickDate");
+  if (pickDate) {
+    pickDate.onchange = () => {
+      if (!pickDate.value) return;
+      if (allDates.includes(pickDate.value)) {
+        store.mode = "single";
+        store.current = pickDate.value;
+        saveStore();
+        renderDay(pickDate.value);
+      }
+    };
+  }
 }
 
 // ---------- Scoring ----------
@@ -350,17 +379,13 @@ function computeDayScore(dateKey) {
 async function updateAndMaybeSubmitDayScore(dateKey) {
   const score = computeDayScore(dateKey);
 
-  // Store local score history
   store.scores = store.scores || {};
   store.scores[dateKey] = { score, updatedAt: Date.now() };
   saveStore();
 
-  // Optionally display somewhere (if you have an element)
   const scoreEl = qs("dayScore");
   if (scoreEl) scoreEl.textContent = String(score);
 
-  // Submit to API (optional)
-  // Only submit if user has at least 1 correct (avoids spam)
   if (score <= 0) return;
 
   try {
@@ -369,8 +394,7 @@ async function updateAndMaybeSubmitDayScore(dateKey) {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ day: dateKey, score }),
     });
-
-    if (!res.ok) return; // silent fail
+    if (!res.ok) return;
   } catch {
     // silent fail
   }
@@ -404,176 +428,3 @@ async function updateAndMaybeSubmitDayScore(dateKey) {
     }
   }
 })();
-// =====================================================
-// Date Navigation + Dropdown (works with your HTML IDs)
-// Supports: #dateSelect + #btnPrevDay/#btnToday/#btnNextDay
-// Also supports: #pickDate + #btnPrev/#btnNext if present
-// =====================================================
-
-(function () {
-  const $ = (id) => document.getElementById(id);
-
-  const dateSelect = $("dateSelect");
-  const pickDate = $("pickDate"); // hidden in your HTML (compat)
-  const dayKeyEl = $("dayKey");
-  const activeDateLabel = $("activeDateLabel"); // hidden (compat)
-
-  const btnPrevDay = $("btnPrevDay");
-  const btnNextDay = $("btnNextDay");
-  const btnToday = $("btnToday");
-
-  const btnPrev = $("btnPrev"); // hidden compat
-  const btnNext = $("btnNext"); // hidden compat
-
-  // --- helpers ---
-  function toKey(d) {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
-  }
-  function fromKey(key) {
-    const [y, m, d] = key.split("-").map(Number);
-    return new Date(y, m - 1, d);
-  }
-  function addDays(key, n) {
-    const d = fromKey(key);
-    d.setDate(d.getDate() + n);
-    return toKey(d);
-  }
-
-  // --- find which dates exist in your setsData (or fall back) ---
-  function getAvailableKeys() {
-    // 1) if your brain.js already loaded setsData like { "2026-01-12": {...}, ... }
-    if (typeof setsData === "object" && setsData) {
-      return Object.keys(setsData).sort();
-    }
-
-    // 2) if your data structure is { days: { "YYYY-MM-DD": ... } }
-    if (typeof setsData === "object" && setsData && setsData.days) {
-      return Object.keys(setsData.days).sort();
-    }
-
-    // 3) fallback: only today
-    return [toKey(new Date())];
-  }
-
-  function nearestExisting(key, keys) {
-    if (!keys.length) return key;
-    if (keys.includes(key)) return key;
-
-    // pick closest by date
-    const target = new Date(key).getTime();
-    let best = keys[0];
-    let bestDist = Math.abs(new Date(best).getTime() - target);
-    for (const k of keys) {
-      const dist = Math.abs(new Date(k).getTime() - target);
-      if (dist < bestDist) {
-        best = k;
-        bestDist = dist;
-      }
-    }
-    return best;
-  }
-
-  // --- IMPORTANT: call your real render function ---
-  function renderByKey(key) {
-    // update date labels
-    if (dayKeyEl) dayKeyEl.textContent = key;
-    if (activeDateLabel) activeDateLabel.textContent = key;
-    if (pickDate) pickDate.value = key;
-    if (dateSelect) dateSelect.value = key;
-
-    // Try common function names (so we don’t need to guess yours)
-    if (typeof renderForDate === "function") return renderForDate(key);
-    if (typeof renderDay === "function") return renderDay(key);
-    if (typeof loadDay === "function") return loadDay(key);
-    if (typeof render === "function") return render(key);
-
-    console.warn(
-      "No date render function found. Add one of: renderForDate(key) / renderDay(key) / loadDay(key) / render(key)"
-    );
-  }
-
-  // --- fill dropdown ---
-  function populateDropdown(keys, selectedKey) {
-    if (!dateSelect) return;
-    dateSelect.innerHTML = "";
-    for (const k of keys) {
-      const opt = document.createElement("option");
-      opt.value = k;
-      opt.textContent = k;
-      dateSelect.appendChild(opt);
-    }
-    dateSelect.value = selectedKey;
-  }
-
-  // --- init after your data loads (retry a few times) ---
-  function initNav() {
-    const keys = getAvailableKeys();
-    const today = toKey(new Date());
-    const startKey = nearestExisting(today, keys);
-
-    populateDropdown(keys, startKey);
-    renderByKey(startKey);
-
-    // Dropdown change
-    if (dateSelect) {
-      dateSelect.addEventListener("change", () => {
-        if (!dateSelect.value) return;
-        renderByKey(dateSelect.value);
-      });
-    }
-
-    // Hidden pickDate (compat)
-    if (pickDate) {
-      pickDate.addEventListener("change", () => {
-        if (!pickDate.value) return;
-        renderByKey(pickDate.value);
-      });
-    }
-
-    // Buttons
-    const goPrev = () => {
-      const current = (dateSelect && dateSelect.value) || (pickDate && pickDate.value) || today;
-      // move to previous existing in list if possible
-      const idx = keys.indexOf(current);
-      const nextKey = idx > 0 ? keys[idx - 1] : addDays(current, -1);
-      renderByKey(nearestExisting(nextKey, keys));
-    };
-
-    const goNext = () => {
-      const current = (dateSelect && dateSelect.value) || (pickDate && pickDate.value) || today;
-      const idx = keys.indexOf(current);
-      const nextKey = (idx >= 0 && idx < keys.length - 1) ? keys[idx + 1] : addDays(current, +1);
-      renderByKey(nearestExisting(nextKey, keys));
-    };
-
-    const goToday = () => renderByKey(nearestExisting(today, keys));
-
-    if (btnPrevDay) btnPrevDay.addEventListener("click", goPrev);
-    if (btnNextDay) btnNextDay.addEventListener("click", goNext);
-    if (btnToday) btnToday.addEventListener("click", goToday);
-
-    // compat hidden buttons
-    if (btnPrev) btnPrev.addEventListener("click", goPrev);
-    if (btnNext) btnNext.addEventListener("click", goNext);
-  }
-
-  // Retry init in case setsData loads async
-  let tries = 0;
-  const t = setInterval(() => {
-    tries++;
-    // if your setsData becomes available later, this catches it
-    const keys = getAvailableKeys();
-    if (keys && keys.length) {
-      clearInterval(t);
-      initNav();
-    }
-    if (tries >= 25) {
-      clearInterval(t);
-      initNav(); // fallback anyway
-    }
-  }, 120);
-})();
-
