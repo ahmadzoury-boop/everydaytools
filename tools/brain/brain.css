@@ -328,3 +328,20 @@ summary{
   position: relative;
   z-index: 2;
 }
+/* =========================================================
+   ONE-STEP FIX: Hide old single-question UI
+   Keep only catalog questions (#questions)
+========================================================= */
+#questionText,
+#answerInput,
+#submitBtn,
+#hintBtn,
+#hintText,
+#message{
+  display:none !important;
+}
+
+/* also hide the old "Date:" line above questionText if you want */
+#levelLabel{
+  display:none !important;
+}
