@@ -1,0 +1,357 @@
+{
+  "2026-03-11": {
+    "easy": [
+      { "q": "What is 9 + 6?", "a": "15", "hint": "Add.", "explanation": "9 + 6 = 15." }
+    ],
+    "medium": [
+      { "q": "What is 12 × 3?", "a": "36", "hint": "Multiply.", "explanation": "12 × 3 = 36." }
+    ],
+    "hard": [
+      { "q": "What number comes next: 5, 10, 20, 40, ?", "a": "80", "hint": "×2 pattern.", "explanation": "Each number doubles." }
+    ]
+  },
+  "2026-03-12": {
+    "easy": [
+      { "q": "What is 14 − 5?", "a": "9", "hint": "Subtract.", "explanation": "14 − 5 = 9." }
+    ],
+    "medium": [
+      { "q": "What is 7²?", "a": "49", "hint": "7 × 7.", "explanation": "7 × 7 = 49." }
+    ],
+    "hard": [
+      { "q": "If a triangle has angles 50° and 60°, what is the third?", "a": "70", "hint": "Total = 180.", "explanation": "180 − 110 = 70." }
+    ]
+  },
+  "2026-03-13": {
+    "easy": [
+      { "q": "What is 8 × 2?", "a": "16", "hint": "Multiply.", "explanation": "8 × 2 = 16." }
+    ],
+    "medium": [
+      { "q": "What is 45 ÷ 5?", "a": "9", "hint": "Divide.", "explanation": "45 ÷ 5 = 9." }
+    ],
+    "hard": [
+      { "q": "What is the square root of 144?", "a": "12", "hint": "12 × 12.", "explanation": "√144 = 12." }
+    ]
+  },
+  "2026-03-14": {
+    "easy": [
+      { "q": "What is 11 + 8?", "a": "19", "hint": "Add.", "explanation": "11 + 8 = 19." }
+    ],
+    "medium": [
+      { "q": "What is 15% of 200?", "a": "30", "hint": "0.15 × 200.", "explanation": "0.15 × 200 = 30." }
+    ],
+    "hard": [
+      { "q": "What number is 3³?", "a": "27", "hint": "3 × 3 × 3.", "explanation": "3³ = 27." }
+    ]
+  },
+  "2026-03-15": {
+    "easy": [
+      { "q": "What is 20 − 7?", "a": "13", "hint": "Subtract.", "explanation": "20 − 7 = 13." }
+    ],
+    "medium": [
+      { "q": "What is 9 × 9?", "a": "81", "hint": "Multiply.", "explanation": "9 × 9 = 81." }
+    ],
+    "hard": [
+      { "q": "Solve: 4x = 28. What is x?", "a": "7", "hint": "Divide.", "explanation": "28 ÷ 4 = 7." }
+    ]
+  },
+
+  "2026-03-16": {
+    "easy": [
+      { "q": "What is 6 + 13?", "a": "19", "hint": "Add.", "explanation": "6 + 13 = 19." }
+    ],
+    "medium": [
+      { "q": "What is 100 − 37?", "a": "63", "hint": "Subtract.", "explanation": "100 − 37 = 63." }
+    ],
+    "hard": [
+      { "q": "If a car travels 60 km/h for 3 hours, distance?", "a": "180", "hint": "Speed × time.", "explanation": "60 × 3 = 180." }
+    ]
+  },
+
+  "2026-03-17": {
+    "easy": [
+      { "q": "What is 5 × 6?", "a": "30", "hint": "Multiply.", "explanation": "5 × 6 = 30." }
+    ],
+    "medium": [
+      { "q": "What is 64 ÷ 8?", "a": "8", "hint": "Divide.", "explanation": "64 ÷ 8 = 8." }
+    ],
+    "hard": [
+      { "q": "What is the next number: 2, 6, 18, 54, ?", "a": "162", "hint": "×3 pattern.", "explanation": "Each number ×3." }
+    ]
+  },
+
+  "2026-03-18": {
+    "easy": [
+      { "q": "What is 17 − 9?", "a": "8", "hint": "Subtract.", "explanation": "17 − 9 = 8." }
+    ],
+    "medium": [
+      { "q": "What is 25 × 4?", "a": "100", "hint": "Multiply.", "explanation": "25 × 4 = 100." }
+    ],
+    "hard": [
+      { "q": "How many degrees in a full circle?", "a": "360", "hint": "Geometry fact.", "explanation": "A circle has 360°." }
+    ]
+  },
+
+  "2026-03-19": {
+    "easy": [
+      { "q": "What is 3 × 7?", "a": "21", "hint": "Multiply.", "explanation": "3 × 7 = 21." }
+    ],
+    "medium": [
+      { "q": "What is 144 ÷ 12?", "a": "12", "hint": "Divide.", "explanation": "144 ÷ 12 = 12." }
+    ],
+    "hard": [
+      { "q": "What is 10²?", "a": "100", "hint": "Square.", "explanation": "10² = 100." }
+    ]
+  },
+
+  "2026-03-20": {
+    "easy": [
+      { "q": "What is 8 + 15?", "a": "23", "hint": "Add.", "explanation": "8 + 15 = 23." }
+    ],
+    "medium": [
+      { "q": "What is 90 ÷ 9?", "a": "10", "hint": "Divide.", "explanation": "90 ÷ 9 = 10." }
+    ],
+    "hard": [
+      { "q": "If x + 12 = 20, x?", "a": "8", "hint": "Subtract.", "explanation": "20 − 12 = 8." }
+    ]
+  },
+
+  "2026-03-21": {
+    "easy": [
+      { "q": "What is 18 − 4?", "a": "14", "hint": "Subtract.", "explanation": "18 − 4 = 14." }
+    ],
+    "medium": [
+      { "q": "What is 16 × 5?", "a": "80", "hint": "Multiply.", "explanation": "16 × 5 = 80." }
+    ],
+    "hard": [
+      { "q": "What is 2⁵?", "a": "32", "hint": "2 × 2 × 2 × 2 × 2.", "explanation": "2⁵ = 32." }
+    ]
+  },
+
+  "2026-03-22": {
+    "easy": [
+      { "q": "What is 7 + 9?", "a": "16", "hint": "Add.", "explanation": "7 + 9 = 16." }
+    ],
+    "medium": [
+      { "q": "What is 81 ÷ 9?", "a": "9", "hint": "Divide.", "explanation": "81 ÷ 9 = 9." }
+    ],
+    "hard": [
+      { "q": "Solve: 5x = 45.", "a": "9", "hint": "Divide.", "explanation": "45 ÷ 5 = 9." }
+    ]
+  },
+
+  "2026-03-23": {
+    "easy": [
+      { "q": "What is 4 × 8?", "a": "32", "hint": "Multiply.", "explanation": "4 × 8 = 32." }
+    ],
+    "medium": [
+      { "q": "What is 30% of 50?", "a": "15", "hint": "0.3 × 50.", "explanation": "15." }
+    ],
+    "hard": [
+      { "q": "What is √225?", "a": "15", "hint": "15 × 15.", "explanation": "√225 = 15." }
+    ]
+  },
+
+  "2026-03-24": {
+    "easy": [
+      { "q": "What is 12 + 14?", "a": "26", "hint": "Add.", "explanation": "12 + 14 = 26." }
+    ],
+    "medium": [
+      { "q": "What is 50 − 18?", "a": "32", "hint": "Subtract.", "explanation": "50 − 18 = 32." }
+    ],
+    "hard": [
+      { "q": "Next: 1, 4, 9, 16, ?", "a": "25", "hint": "Squares.", "explanation": "5² = 25." }
+    ]
+  },
+
+  "2026-03-25": {
+    "easy": [
+      { "q": "What is 10 + 5?", "a": "15", "hint": "Add.", "explanation": "10 + 5 = 15." }
+    ],
+    "medium": [
+      { "q": "What is 11 × 11?", "a": "121", "hint": "Multiply.", "explanation": "121." }
+    ],
+    "hard": [
+      { "q": "What is 360 ÷ 12?", "a": "30", "hint": "Divide.", "explanation": "360 ÷ 12 = 30." }
+    ]
+  },
+
+  "2026-03-26": {
+    "easy": [
+      { "q": "What is 6 × 9?", "a": "54", "hint": "Multiply.", "explanation": "6 × 9 = 54." }
+    ],
+    "medium": [
+      { "q": "What is 125 ÷ 5?", "a": "25", "hint": "Divide.", "explanation": "125 ÷ 5 = 25." }
+    ],
+    "hard": [
+      { "q": "Solve: x − 7 = 13.", "a": "20", "hint": "Add 7.", "explanation": "13 + 7 = 20." }
+    ]
+  },
+
+  "2026-03-27": {
+    "easy": [
+      { "q": "What is 15 − 6?", "a": "9", "hint": "Subtract.", "explanation": "15 − 6 = 9." }
+    ],
+    "medium": [
+      { "q": "What is 13 × 4?", "a": "52", "hint": "Multiply.", "explanation": "13 × 4 = 52." }
+    ],
+    "hard": [
+      { "q": "What is 7³?", "a": "343", "hint": "7 × 7 × 7.", "explanation": "343." }
+    ]
+  },
+
+  "2026-03-28": {
+    "easy": [
+      { "q": "What is 2 + 18?", "a": "20", "hint": "Add.", "explanation": "2 + 18 = 20." }
+    ],
+    "medium": [
+      { "q": "What is 144 ÷ 6?", "a": "24", "hint": "Divide.", "explanation": "144 ÷ 6 = 24." }
+    ],
+    "hard": [
+      { "q": "If 2x = 50, x?", "a": "25", "hint": "Divide.", "explanation": "50 ÷ 2 = 25." }
+    ]
+  },
+
+  "2026-03-29": {
+    "easy": [
+      { "q": "What is 9 × 3?", "a": "27", "hint": "Multiply.", "explanation": "9 × 3 = 27." }
+    ],
+    "medium": [
+      { "q": "What is 200 − 125?", "a": "75", "hint": "Subtract.", "explanation": "75." }
+    ],
+    "hard": [
+      { "q": "Next: 3, 6, 12, 24, ?", "a": "48", "hint": "×2.", "explanation": "24 × 2 = 48." }
+    ]
+  },
+
+  "2026-03-30": {
+    "easy": [
+      { "q": "What is 5 + 11?", "a": "16", "hint": "Add.", "explanation": "5 + 11 = 16." }
+    ],
+    "medium": [
+      { "q": "What is 72 ÷ 8?", "a": "9", "hint": "Divide.", "explanation": "72 ÷ 8 = 9." }
+    ],
+    "hard": [
+      { "q": "What is 9²?", "a": "81", "hint": "Multiply.", "explanation": "9² = 81." }
+    ]
+  },
+
+  "2026-03-31": {
+    "easy": [
+      { "q": "What is 14 + 7?", "a": "21", "hint": "Add.", "explanation": "14 + 7 = 21." }
+    ],
+    "medium": [
+      { "q": "What is 18 × 3?", "a": "54", "hint": "Multiply.", "explanation": "18 × 3 = 54." }
+    ],
+    "hard": [
+      { "q": "Solve: 6x = 72.", "a": "12", "hint": "Divide.", "explanation": "72 ÷ 6 = 12." }
+    ]
+  },
+
+  "2026-04-01": {
+    "easy": [
+      { "q": "What is 8 + 4?", "a": "12", "hint": "Add.", "explanation": "8 + 4 = 12." }
+    ],
+    "medium": [
+      { "q": "What is 49 ÷ 7?", "a": "7", "hint": "Divide.", "explanation": "49 ÷ 7 = 7." }
+    ],
+    "hard": [
+      { "q": "What is √169?", "a": "13", "hint": "13 × 13.", "explanation": "√169 = 13." }
+    ]
+  },
+
+  "2026-04-02": {
+    "easy": [
+      { "q": "What is 3 + 15?", "a": "18", "hint": "Add.", "explanation": "3 + 15 = 18." }
+    ],
+    "medium": [
+      { "q": "What is 24 × 4?", "a": "96", "hint": "Multiply.", "explanation": "96." }
+    ],
+    "hard": [
+      { "q": "What is 5³?", "a": "125", "hint": "5 × 5 × 5.", "explanation": "125." }
+    ]
+  },
+
+  "2026-04-03": {
+    "easy": [
+      { "q": "What is 20 − 9?", "a": "11", "hint": "Subtract.", "explanation": "20 − 9 = 11." }
+    ],
+    "medium": [
+      { "q": "What is 90 ÷ 6?", "a": "15", "hint": "Divide.", "explanation": "90 ÷ 6 = 15." }
+    ],
+    "hard": [
+      { "q": "Solve: x + 25 = 40.", "a": "15", "hint": "Subtract.", "explanation": "40 − 25 = 15." }
+    ]
+  },
+
+  "2026-04-04": {
+    "easy": [
+      { "q": "What is 7 × 8?", "a": "56", "hint": "Multiply.", "explanation": "7 × 8 = 56." }
+    ],
+    "medium": [
+      { "q": "What is 150 − 45?", "a": "105", "hint": "Subtract.", "explanation": "105." }
+    ],
+    "hard": [
+      { "q": "Next: 4, 8, 16, 32, ?", "a": "64", "hint": "×2.", "explanation": "32 × 2 = 64." }
+    ]
+  },
+
+  "2026-04-05": {
+    "easy": [
+      { "q": "What is 16 ÷ 4?", "a": "4", "hint": "Divide.", "explanation": "16 ÷ 4 = 4." }
+    ],
+    "medium": [
+      { "q": "What is 19 + 21?", "a": "40", "hint": "Add.", "explanation": "19 + 21 = 40." }
+    ],
+    "hard": [
+      { "q": "What is 11²?", "a": "121", "hint": "Multiply.", "explanation": "11² = 121." }
+    ]
+  },
+
+  "2026-04-06": {
+    "easy": [
+      { "q": "What is 25 − 5?", "a": "20", "hint": "Subtract.", "explanation": "25 − 5 = 20." }
+    ],
+    "medium": [
+      { "q": "What is 8 × 12?", "a": "96", "hint": "Multiply.", "explanation": "8 × 12 = 96." }
+    ],
+    "hard": [
+      { "q": "Solve: 9x = 81.", "a": "9", "hint": "Divide.", "explanation": "81 ÷ 9 = 9." }
+    ]
+  },
+
+  "2026-04-07": {
+    "easy": [
+      { "q": "What is 4 + 9?", "a": "13", "hint": "Add.", "explanation": "4 + 9 = 13." }
+    ],
+    "medium": [
+      { "q": "What is 200 ÷ 4?", "a": "50", "hint": "Divide.", "explanation": "200 ÷ 4 = 50." }
+    ],
+    "hard": [
+      { "q": "What is √256?", "a": "16", "hint": "16 × 16.", "explanation": "√256 = 16." }
+    ]
+  },
+
+  "2026-04-08": {
+    "easy": [
+      { "q": "What is 18 + 2?", "a": "20", "hint": "Add.", "explanation": "18 + 2 = 20." }
+    ],
+    "medium": [
+      { "q": "What is 30 × 3?", "a": "90", "hint": "Multiply.", "explanation": "30 × 3 = 90." }
+    ],
+    "hard": [
+      { "q": "What is 12²?", "a": "144", "hint": "Multiply.", "explanation": "12² = 144." }
+    ]
+  },
+
+  "2026-04-09": {
+    "easy": [
+      { "q": "What is 13 − 6?", "a": "7", "hint": "Subtract.", "explanation": "13 − 6 = 7." }
+    ],
+    "medium": [
+      { "q": "What is 144 ÷ 9?", "a": "16", "hint": "Divide.", "explanation": "144 ÷ 9 = 16." }
+    ],
+    "hard": [
+      { "q": "Solve: x + 18 = 30.", "a": "12", "hint": "Subtract.", "explanation": "30 − 18 = 12." }
+    ]
+  }
+}
