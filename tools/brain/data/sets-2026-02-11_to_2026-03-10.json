@@ -1,0 +1,310 @@
+{
+  "2026-02-11": {
+    "easy": [
+      { "q": "What is 18 + 7?", "a": "25", "hint": "Add 18 and 7.", "explanation": "18 + 7 = 25." }
+    ],
+    "medium": [
+      { "q": "A book costs $12. You buy 3 books. How much do you pay?", "a": "36", "hint": "Multiply 12 by 3.", "explanation": "12 × 3 = 36." }
+    ],
+    "hard": [
+      { "q": "A number is divisible by 6. It must be divisible by which two numbers?", "a": "2 and 3", "hint": "Think prime factors of 6.", "explanation": "6 = 2 × 3, so divisible by 2 and 3." }
+    ]
+  },
+  "2026-02-12": {
+    "easy": [
+      { "q": "What is 50 − 19?", "a": "31", "hint": "Subtract 19 from 50.", "explanation": "50 − 19 = 31." }
+    ],
+    "medium": [
+      { "q": "Find the next number: 5, 10, 20, 40, …", "a": "80", "hint": "Each term doubles.", "explanation": "40 × 2 = 80." }
+    ],
+    "hard": [
+      { "q": "If 3x + 5 = 20, what is x?", "a": "5", "hint": "Subtract 5, then divide by 3.", "explanation": "3x = 15 → x = 5." }
+    ]
+  },
+  "2026-02-13": {
+    "easy": [
+      { "q": "How many minutes are in 2 hours?", "a": "120", "hint": "1 hour = 60 minutes.", "explanation": "2 × 60 = 120." }
+    ],
+    "medium": [
+      { "q": "A rectangle is 8 cm by 5 cm. What is its area?", "a": "40", "hint": "Area = length × width.", "explanation": "8 × 5 = 40 cm²." }
+    ],
+    "hard": [
+      { "q": "You flip a fair coin 3 times. What is the probability of getting exactly 2 heads?", "a": "3/8", "hint": "Count outcomes with 2 heads.", "explanation": "There are 3 ways (HHT, HTH, THH) out of 8 total outcomes → 3/8." }
+    ]
+  },
+  "2026-02-14": {
+    "easy": [
+      { "q": "What is 9 × 6?", "a": "54", "hint": "Multiply 9 by 6.", "explanation": "9 × 6 = 54." }
+    ],
+    "medium": [
+      { "q": "If you have 3/4 of a pizza and eat 1/4, how much is left?", "a": "1/2", "hint": "Subtract fractions with same denominator.", "explanation": "3/4 − 1/4 = 2/4 = 1/2." }
+    ],
+    "hard": [
+      { "q": "A code uses A=1, B=2, … Z=26. What is the sum for the word CAB?", "a": "6", "hint": "C=3, A=1, B=2.", "explanation": "3 + 1 + 2 = 6." }
+    ]
+  },
+  "2026-02-15": {
+    "easy": [
+      { "q": "What is 100 ÷ 4?", "a": "25", "hint": "Divide 100 by 4.", "explanation": "100 ÷ 4 = 25." }
+    ],
+    "medium": [
+      { "q": "A train travels 180 km in 3 hours. What is its average speed (km/h)?", "a": "60", "hint": "Speed = distance ÷ time.", "explanation": "180 ÷ 3 = 60 km/h." }
+    ],
+    "hard": [
+      { "q": "Find the missing number: 2, 3, 5, 8, 12, …", "a": "17", "hint": "Look at the differences.", "explanation": "Differences are +1, +2, +3, +4, so next is +5 → 12 + 5 = 17." }
+    ]
+  },
+  "2026-02-16": {
+    "easy": [
+      { "q": "What is 7 + 8 + 5?", "a": "20", "hint": "Add step by step.", "explanation": "7 + 8 = 15; 15 + 5 = 20." }
+    ],
+    "medium": [
+      { "q": "If 5 pens cost $15, how much does 1 pen cost?", "a": "3", "hint": "Divide total cost by number of pens.", "explanation": "15 ÷ 5 = 3." }
+    ],
+    "hard": [
+      { "q": "A number leaves remainder 1 when divided by 3 and remainder 1 when divided by 5. What is the smallest such number?", "a": "1", "hint": "Try small numbers that fit both.", "explanation": "1 works: 1 mod 3 = 1 and 1 mod 5 = 1." }
+    ]
+  },
+  "2026-02-17": {
+    "easy": [
+      { "q": "What is 14 − 9?", "a": "5", "hint": "Subtract 9 from 14.", "explanation": "14 − 9 = 5." }
+    ],
+    "medium": [
+      { "q": "Convert 2.5 hours to minutes.", "a": "150", "hint": "Multiply by 60.", "explanation": "2.5 × 60 = 150 minutes." }
+    ],
+    "hard": [
+      { "q": "If the ratio of boys to girls is 3:5 and there are 40 students total, how many boys are there?", "a": "15", "hint": "Total parts = 3+5.", "explanation": "8 parts = 40 → 1 part = 5 → boys = 3×5 = 15." }
+    ]
+  },
+  "2026-02-18": {
+    "easy": [
+      { "q": "What is the next number: 1, 4, 7, 10, …?", "a": "13", "hint": "Add 3 each time.", "explanation": "10 + 3 = 13." }
+    ],
+    "medium": [
+      { "q": "A shirt is $40 with 25% off. What is the discount amount?", "a": "10", "hint": "Find 25% of 40.", "explanation": "25% of 40 = 0.25×40 = 10." }
+    ],
+    "hard": [
+      { "q": "How many different 3-letter arrangements can you make from A, B, C, D without repeating letters?", "a": "24", "hint": "This is permutations: 4×3×2.", "explanation": "4 choices for first, 3 for second, 2 for third → 24." }
+    ]
+  },
+  "2026-02-19": {
+    "easy": [
+      { "q": "What is 6 × 7?", "a": "42", "hint": "Multiply 6 by 7.", "explanation": "6 × 7 = 42." }
+    ],
+    "medium": [
+      { "q": "If a movie starts at 6:45 PM and lasts 1 hour 35 minutes, when does it end?", "a": "8:20 PM", "hint": "Add 1 hour then 35 minutes.", "explanation": "6:45 + 1:00 = 7:45; +0:35 = 8:20." }
+    ],
+    "hard": [
+      { "q": "A number is between 30 and 50 and divisible by 4 and 6. What is it?", "a": "36", "hint": "LCM of 4 and 6 is 12.", "explanation": "Multiples of 12 between 30 and 50: 36, 48. Divisible by both → 36 and 48; smallest is 36 (either works, but 36 is a valid answer)." }
+    ]
+  },
+  "2026-02-20": {
+    "easy": [
+      { "q": "What is 81 ÷ 9?", "a": "9", "hint": "81 divided by 9.", "explanation": "81 ÷ 9 = 9." }
+    ],
+    "medium": [
+      { "q": "What is 15% of 200?", "a": "30", "hint": "10% is 20, 5% is 10.", "explanation": "15% of 200 = 20 + 10 = 30." }
+    ],
+    "hard": [
+      { "q": "If 2x − 3 = 11, what is x?", "a": "7", "hint": "Add 3 then divide by 2.", "explanation": "2x = 14 → x = 7." }
+    ]
+  },
+  "2026-02-21": {
+    "easy": [
+      { "q": "How many sides does a hexagon have?", "a": "6", "hint": "Hex = six.", "explanation": "A hexagon has 6 sides." }
+    ],
+    "medium": [
+      { "q": "A tank holds 60 liters. It is 3/5 full. How many liters are in it?", "a": "36", "hint": "Find 3/5 of 60.", "explanation": "60 × 3/5 = 36." }
+    ],
+    "hard": [
+      { "q": "A farmer has chickens and cows totaling 20 animals. There are 56 legs total. How many cows are there?", "a": "8", "hint": "Chickens have 2 legs, cows have 4.", "explanation": "If all 20 were chickens: 40 legs. Extra legs = 56−40=16. Each cow adds 2 extra legs → 16/2=8 cows." }
+    ]
+  },
+  "2026-02-22": {
+    "easy": [
+      { "q": "What is 13 + 19?", "a": "32", "hint": "Add 13 and 19.", "explanation": "13 + 19 = 32." }
+    ],
+    "medium": [
+      { "q": "Simplify the fraction 18/24.", "a": "3/4", "hint": "Divide numerator and denominator by 6.", "explanation": "18÷6 = 3 and 24÷6 = 4 → 3/4." }
+    ],
+    "hard": [
+      { "q": "A pattern of dots forms triangles: 1, 3, 6, 10, … What is the next number?", "a": "15", "hint": "Add 2,3,4,...", "explanation": "Differences are +2,+3,+4 so next is +5 → 10+5=15." }
+    ]
+  },
+  "2026-02-23": {
+    "easy": [
+      { "q": "What is 45 − 17?", "a": "28", "hint": "Subtract 17 from 45.", "explanation": "45 − 17 = 28." }
+    ],
+    "medium": [
+      { "q": "A bag has 4 red and 6 blue marbles. What fraction are blue?", "a": "3/5", "hint": "Blue / total.", "explanation": "Total = 10. Blue = 6 → 6/10 = 3/5." }
+    ],
+    "hard": [
+      { "q": "If you rearrange the letters in 'TEAM', how many unique arrangements are possible?", "a": "24", "hint": "4 distinct letters.", "explanation": "4! = 24." }
+    ]
+  },
+  "2026-02-24": {
+    "easy": [
+      { "q": "What is the next number: 2, 5, 8, 11, …?", "a": "14", "hint": "Add 3 each time.", "explanation": "11 + 3 = 14." }
+    ],
+    "medium": [
+      { "q": "A phone costs $300. After a $45 discount, what is the final price?", "a": "255", "hint": "Subtract 45 from 300.", "explanation": "300 − 45 = 255." }
+    ],
+    "hard": [
+      { "q": "Two angles in a triangle are 35° and 65°. What is the third angle?", "a": "80°", "hint": "Triangle angles sum to 180°.", "explanation": "180 − (35 + 65) = 80." }
+    ]
+  },
+  "2026-02-25": {
+    "easy": [
+      { "q": "What is 5² (5 squared)?", "a": "25", "hint": "5 × 5.", "explanation": "5² = 25." }
+    ],
+    "medium": [
+      { "q": "If 9 items cost $72 total, what is the cost per item?", "a": "8", "hint": "Divide 72 by 9.", "explanation": "72 ÷ 9 = 8." }
+    ],
+    "hard": [
+      { "q": "A clock shows 3:00. What is the angle between the hour and minute hands?", "a": "90°", "hint": "At 3:00 the minute hand is at 12 and hour hand at 3.", "explanation": "That’s a right angle: 90°." }
+    ]
+  },
+  "2026-02-26": {
+    "easy": [
+      { "q": "What is 60 ÷ 5?", "a": "12", "hint": "Divide 60 by 5.", "explanation": "60 ÷ 5 = 12." }
+    ],
+    "medium": [
+      { "q": "A class has 18 students. 2/3 are present. How many are present?", "a": "12", "hint": "Find 2/3 of 18.", "explanation": "18 × 2/3 = 12." }
+    ],
+    "hard": [
+      { "q": "If x/4 = 7, what is x?", "a": "28", "hint": "Multiply both sides by 4.", "explanation": "x = 7 × 4 = 28." }
+    ]
+  },
+  "2026-02-27": {
+    "easy": [
+      { "q": "What is 3 × 12?", "a": "36", "hint": "Multiply 3 by 12.", "explanation": "3 × 12 = 36." }
+    ],
+    "medium": [
+      { "q": "A jar has 24 cookies. You eat 5. What percent is left?", "a": "79.17%", "hint": "Left = 19 out of 24.", "explanation": "19/24 ≈ 0.7917 → 79.17%." }
+    ],
+    "hard": [
+      { "q": "Find the next number: 1, 1, 2, 3, 5, 8, …", "a": "13", "hint": "Each is sum of previous two.", "explanation": "8 + 5 = 13." }
+    ]
+  },
+  "2026-02-28": {
+    "easy": [
+      { "q": "What is 27 + 13?", "a": "40", "hint": "Add 27 and 13.", "explanation": "27 + 13 = 40." }
+    ],
+    "medium": [
+      { "q": "A 10 km run takes 50 minutes. What is the pace per km (minutes)?", "a": "5", "hint": "Divide 50 by 10.", "explanation": "50 ÷ 10 = 5 minutes per km." }
+    ],
+    "hard": [
+      { "q": "A number is prime and between 40 and 50. What is it?", "a": "41, 43, or 47", "hint": "Check each number for divisibility.", "explanation": "41, 43, and 47 are prime." }
+    ]
+  },
+  "2026-03-01": {
+    "easy": [
+      { "q": "What is 11 × 3?", "a": "33", "hint": "Multiply 11 by 3.", "explanation": "11 × 3 = 33." }
+    ],
+    "medium": [
+      { "q": "If 6 workers finish a job in 12 days, how many worker-days is the job?", "a": "72", "hint": "Workers × days.", "explanation": "6 × 12 = 72 worker-days." }
+    ],
+    "hard": [
+      { "q": "You roll a fair die. What is the probability of rolling a number greater than 4?", "a": "1/3", "hint": "Numbers are 1–6.", "explanation": "Greater than 4: {5,6} → 2/6 = 1/3." }
+    ]
+  },
+  "2026-03-02": {
+    "easy": [
+      { "q": "What is 72 ÷ 8?", "a": "9", "hint": "Divide 72 by 8.", "explanation": "72 ÷ 8 = 9." }
+    ],
+    "medium": [
+      { "q": "A price increases from $80 to $100. What is the percent increase?", "a": "25%", "hint": "Increase ÷ original.", "explanation": "Increase = 20. 20/80 = 0.25 → 25%." }
+    ],
+    "hard": [
+      { "q": "Solve: 4(x − 2) = 20", "a": "7", "hint": "Divide by 4 first.", "explanation": "x − 2 = 5 → x = 7." }
+    ]
+  },
+  "2026-03-03": {
+    "easy": [
+      { "q": "What is the next number: 10, 20, 30, …?", "a": "40", "hint": "Add 10.", "explanation": "30 + 10 = 40." }
+    ],
+    "medium": [
+      { "q": "A square has perimeter 36 cm. What is one side length?", "a": "9", "hint": "Perimeter = 4×side.", "explanation": "36 ÷ 4 = 9." }
+    ],
+    "hard": [
+      { "q": "If a two-digit number has digits that sum to 9 and the tens digit is twice the ones digit, what is the number?", "a": "63", "hint": "Let ones digit be d.", "explanation": "Tens = 2d. 2d + d = 9 → d = 3 → number = 63." }
+    ]
+  },
+  "2026-03-04": {
+    "easy": [
+      { "q": "What is 16 + 16?", "a": "32", "hint": "Double 16.", "explanation": "16 + 16 = 32." }
+    ],
+    "medium": [
+      { "q": "You have 3.2 liters of water and use 0.75 liters. How much is left?", "a": "2.45", "hint": "Subtract 0.75 from 3.2.", "explanation": "3.20 − 0.75 = 2.45." }
+    ],
+    "hard": [
+      { "q": "A sequence increases by odd numbers: 2, 5, 10, 17, … What is the next term?", "a": "26", "hint": "Add 3,5,7,...", "explanation": "Differences are 3,5,7 so next is +9 → 17+9=26." }
+    ]
+  },
+  "2026-03-05": {
+    "easy": [
+      { "q": "What is 90 − 60?", "a": "30", "hint": "Subtract 60 from 90.", "explanation": "90 − 60 = 30." }
+    ],
+    "medium": [
+      { "q": "A recipe needs 2 cups of flour for 12 cookies. How many cups for 30 cookies?", "a": "5", "hint": "Scale proportionally.", "explanation": "30 is 2.5×12, so flour is 2.5×2 = 5 cups." }
+    ],
+    "hard": [
+      { "q": "What is the smallest positive number divisible by 8, 10, and 12?", "a": "120", "hint": "Find LCM.", "explanation": "LCM(8,10,12) = 120." }
+    ]
+  },
+  "2026-03-06": {
+    "easy": [
+      { "q": "What is 4 × 9?", "a": "36", "hint": "Multiply 4 by 9.", "explanation": "4 × 9 = 36." }
+    ],
+    "medium": [
+      { "q": "If 2/5 of a number is 14, what is the number?", "a": "35", "hint": "Divide by 2 then multiply by 5.", "explanation": "14 ÷ 2 = 7; 7 × 5 = 35." }
+    ],
+    "hard": [
+      { "q": "A bat and a ball cost $1.10 total. The bat costs $1.00 more than the ball. How much does the ball cost?", "a": "$0.05", "hint": "Let ball be x.", "explanation": "x + (x+1.00) = 1.10 → 2x = 0.10 → x = 0.05." }
+    ]
+  },
+  "2026-03-07": {
+    "easy": [
+      { "q": "How many days are in a week?", "a": "7", "hint": "Standard week length.", "explanation": "There are 7 days in a week." }
+    ],
+    "medium": [
+      { "q": "A store sells 3 items for $27. What is the price of 1 item?", "a": "9", "hint": "Divide 27 by 3.", "explanation": "27 ÷ 3 = 9." }
+    ],
+    "hard": [
+      { "q": "If the perimeter of a rectangle is 50 and its length is 15, what is its width?", "a": "10", "hint": "Perimeter = 2(L+W).", "explanation": "50 = 2(15+W) → 25 = 15+W → W = 10." }
+    ]
+  },
+  "2026-03-08": {
+    "easy": [
+      { "q": "What is 8 × 8?", "a": "64", "hint": "Multiply 8 by 8.", "explanation": "8 × 8 = 64." }
+    ],
+    "medium": [
+      { "q": "You read 45 pages per day. How many pages in 8 days?", "a": "360", "hint": "Multiply 45 by 8.", "explanation": "45 × 8 = 360." }
+    ],
+    "hard": [
+      { "q": "A number is 3 less than 4 times another number. If the smaller number is 29, what is the other number?", "a": "8", "hint": "29 = 4x − 3.", "explanation": "4x − 3 = 29 → 4x = 32 → x = 8." }
+    ]
+  },
+  "2026-03-09": {
+    "easy": [
+      { "q": "What is 1/2 of 60?", "a": "30", "hint": "Half means divide by 2.", "explanation": "60 ÷ 2 = 30." }
+    ],
+    "medium": [
+      { "q": "A discount takes $18 off a $120 item. What percent discount is that?", "a": "15%", "hint": "18 ÷ 120.", "explanation": "18/120 = 0.15 → 15%." }
+    ],
+    "hard": [
+      { "q": "How many integers from 1 to 100 are divisible by 7?", "a": "14", "hint": "Count multiples of 7.", "explanation": "⌊100/7⌋ = 14." }
+    ]
+  },
+  "2026-03-10": {
+    "easy": [
+      { "q": "What is 33 + 44?", "a": "77", "hint": "Add 33 and 44.", "explanation": "33 + 44 = 77." }
+    ],
+    "medium": [
+      { "q": "A car travels 240 km using 20 liters. What is the km per liter?", "a": "12", "hint": "Divide 240 by 20.", "explanation": "240 ÷ 20 = 12 km/L." }
+    ],
+    "hard": [
+      { "q": "If the mean of 6 numbers is 12, what is their total sum?", "a": "72", "hint": "Mean = sum ÷ count.", "explanation": "Sum = 12 × 6 = 72." }
+    ]
+  }
+}
