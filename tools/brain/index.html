@@ -5,689 +5,88 @@
   <title>Daily Brain – EverydayTools.uk</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
-
-  <style>
-    :root {
-      --bg: #050509;
-      --fg: #ffffff;
-      --card: #15151f;
-      --accent: #4ea1ff;
-      --muted: #888ba0;
-      --border-subtle: #262637;
-    }
-
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f5f6fb;
-        --fg: #111218;
-        --card: #ffffff;
-        --accent: #0066cc;
-        --muted: #6b6b7a;
-        --border-subtle: #e1e3f0;
-      }
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top, #161628 0, #050509 60%);
-      color: var(--fg);
-      padding: 16px;
-    }
-
-    .brain-page {
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      font-size: 26px;
-      margin: 0 0 4px;
-      font-weight: 700;
-    }
-
-    .subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    /* ✅ Helper class used in HTML */
-    .muted { color: var(--muted); }
-
-    /* ✅ Date dropdown controls */
-    .brain-controls {
-      margin: 0 0 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      position: relative;
-      z-index: 10; /* ✅ keep controls clickable */
-    }
-
-    .brain-controls label {
-      font-size: 14px;
-      color: var(--muted);
-      margin-right: 8px;
-    }
-
-    #dateSelect,
-    #pickDate {
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border-subtle);
-      background: rgba(11, 11, 25, 0.92);
-      color: var(--fg);
-      max-width: 340px;
-      outline: none;
-    }
-
-    @media (prefers-color-scheme: light) {
-      #dateSelect, #pickDate { background: var(--card); }
-    }
-
-    #dateSelect:focus,
-    #pickDate:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    .brain-nav {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .brain-nav button {
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      background: transparent;
-      color: var(--fg);
-      font-size: 13px;
-      padding: 8px 14px;
-      cursor: pointer;
-      pointer-events: auto;
-    }
-
-    .brain-nav button:active { transform: translateY(1px); }
-
-    /* Existing styles */
-    .card {
-      background: rgba(11, 11, 25, 0.92);
-      border-radius: 18px;
-      padding: 16px 16px 14px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border-subtle);
-      backdrop-filter: blur(12px);
-      position: relative;
-    }
-
-    @media (prefers-color-scheme: light) {
-      .card { background: var(--card); }
-    }
-
-    /* ✅ If you ever add overlays on card pseudo elements, don’t steal clicks */
-    .card::before,
-    .card::after {
-      pointer-events: none;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .diff-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .diff-btn {
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      background: transparent;
-      color: var(--fg);
-      font-size: 13px;
-      padding: 6px 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .diff-btn span.badge {
-      font-size: 11px;
-      padding: 1px 6px;
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      color: var(--muted);
-    }
-
-    .diff-btn.active {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: #ffffff;
-    }
-
-    .diff-btn[disabled] {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .timer-line {
-      font-size: 13px;
-      color: var(--muted);
-      text-align: right;
-    }
-
-    .streak-line {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .streak-main strong { color: #ffd36b; }
-
-    .streak-note {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-
-    .pill-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .pill-label span.dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-
-    #levelLabel {
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      font-size: 11px;
-      padding: 3px 7px;
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      color: var(--muted);
-    }
-
-    #questionText {
-      font-size: 16px;
-      line-height: 1.5;
-      margin-bottom: 10px;
-      min-height: 46px;
-    }
-
-    .answer-row {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    #answerInput {
-      width: 100%;
-      padding: 10px 11px;
-      border-radius: 10px;
-      border: 1px solid var(--border-subtle);
-      background: #ffffff;
-      color: #111;
-      font-size: 15px;
-      outline: none;
-    }
-
-    #answerInput:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    #submitBtn {
-      border-radius: 10px;
-      padding: 10px 12px;
-      border: none;
-      background: var(--accent);
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    #submitBtn:active { transform: translateY(1px); }
-
-    .hint-row {
-      margin-top: 8px;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    #hintBtn {
-      color: var(--accent);
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    #hintText {
-      display: none;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    #message {
-      margin-top: 8px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .result-row {
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .result-row span.label { color: var(--muted); }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-
-    @media (min-width: 720px) {
-      .two-col { grid-template-columns: 1.1fr 1.1fr; }
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th, td {
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    @media (prefers-color-scheme: light) {
-      th, td { border-bottom-color: #eceff7; }
-    }
-
-    th {
-      text-align: left;
-      font-weight: 600;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    td.score {
-      text-align: right;
-      font-weight: 500;
-    }
-
-    .empty-text {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .name-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 6px;
-      flex-wrap: wrap;
-    }
-
-    #globalNameInput,
-    #subEmailInput {
-      flex: 1 1 160px;
-      padding: 8px 10px;
-      font-size: 13px;
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      outline: none;
-      background: #ffffff;
-      color: #111;
-    }
-
-    #globalNameInput:focus,
-    #subEmailInput:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    .btn-outline,
-    .btn-outline-small {
-      border-radius: 999px;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      background: transparent;
-      font-size: 13px;
-      padding: 8px 14px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .btn-outline-small {
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-
-    .theme-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .theme-btn {
-      border-radius: 999px;
-      border: 1px solid var(--border-subtle);
-      background: transparent;
-      color: var(--fg);
-      font-size: 12px;
-      padding: 5px 10px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .theme-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .theme-blue .theme-dot { background: #4ea1ff; }
-    .theme-orange .theme-dot { background: #ff8c32; }
-    .theme-gold .theme-dot { background: #f4c542; }
-
-    .theme-btn.active { border-color: var(--accent); }
-
-    #subStatus {
-      margin-top: 6px;
-      font-size: 13px;
-    }
-
-    .footer-links {
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .footer-links a:hover { text-decoration: underline; }
-  </style>
+  <link rel="stylesheet" href="./brain.css?v=20260213-1" />
 </head>
 
 <body>
   <main class="brain-page">
-    <header>
+
+    <!-- HEADER -->
+    <header class="brain-hero">
       <h1>Daily Brain</h1>
-      <div class="subtitle">One short challenge a day on EverydayTools.uk</div>
+      <div class="brain-sub">
+        One short challenge a day on EverydayTools.uk
+      </div>
 
-      <!-- ✅ Controls -->
-      <div class="brain-controls">
-        <div>
-          <label for="dateSelect">Pick a date:</label>
-          <select id="dateSelect"></select>
+      <div class="brain-filterbar">
+        <label class="brain-filter-label" for="dateSelect">
+          Pick a date:
+        </label>
 
-          <!-- ✅ Compatibility: some brain.js versions expect an input#pickDate -->
-          <input id="pickDate" type="date" style="display:none;" />
-          <!-- ✅ Compatibility: some versions expect an active label -->
-          <span id="activeDateLabel" style="display:none;"></span>
-        </div>
+        <select id="dateSelect"></select>
 
-        <div class="brain-nav">
-          <!-- ✅ Your current IDs -->
-          <button id="btnPrevDay" type="button">◀ Prev</button>
-          <button id="btnToday" type="button">Today</button>
-          <button id="btnNextDay" type="button">Next ▶</button>
-
-          <!-- ✅ Compatibility: alternate IDs that older/newer JS might use -->
-          <button id="btnPrev" type="button" style="display:none;">Prev</button>
-          <button id="btnNext" type="button" style="display:none;">Next</button>
-        </div>
-
-        <div id="resultBox" class="muted" style="opacity:1;"></div>
-
+        <button id="btnPrevDay" type="button">◀ Prev</button>
+        <button id="btnToday" type="button">Today</button>
+        <button id="btnNextDay" type="button">Next ▶</button>
       </div>
     </header>
 
-    <!-- Difficulty + timer + streak -->
-    <section class="card">
-      <div class="card-header">
+    <!-- DIFFICULTY CARD (kept for design consistency) -->
+    <section class="brain-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
         <div>
-          <div class="section-title">Difficulty</div>
-          <div class="diff-row">
-            <button id="btnEasy" class="diff-btn active" type="button">
-              Easy
-              <span class="badge">Start here</span>
-            </button>
-            <button id="btnMedium" class="diff-btn" type="button">
-              Medium
-              <span class="badge">Unlock after Easy</span>
-            </button>
-            <button id="btnHard" class="diff-btn" type="button">
-              Hard
-              <span class="badge">Unlock after Medium</span>
-            </button>
-          </div>
+          <strong>Difficulty</strong>
         </div>
-        <div class="timer-line">
+        <div style="font-size:13px;color:var(--muted);">
           Resets in <span id="resetTime">00:00:00</span> (UTC)
         </div>
       </div>
-      <div class="streak-line">
-        <div class="streak-main">
-          <span id="streakText">Streak 🔥 0 · Best 0</span>
-        </div>
-        <div class="streak-note">
-          🔥 Your streak increases when you complete <strong>Easy + Medium</strong> on the same day.
-        </div>
+
+      <div style="margin-top:8px;color:var(--muted);font-size:13px;">
+        🔥 Your streak increases when you complete Easy + Medium on the same day.
       </div>
     </section>
 
-    <!-- Question -->
-    <section class="card">
-      <div class="pill-label">
-        <span class="dot"></span>
-        <span id="levelLabel">EASY</span>
-      </div>
-
+    <!-- QUESTIONS (CATALOG MODE ONLY) -->
+    <section class="brain-card">
       <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">
         Date: <span id="dayKey"></span>
       </div>
 
-      <div id="questionText">Loading today’s puzzles…</div>
+      <!-- brain.js injects q-card blocks here -->
+      <div id="questions"></div>
 
-      <div class="answer-row">
-        <input id="answerInput" type="text" placeholder="Your answer" autocomplete="off" />
-        <button id="submitBtn" type="button">Submit</button>
-      </div>
-
-      <div class="hint-row">
-        <div id="hintBtn" role="button" tabindex="0">
-          <span>💡</span><span>Show hint</span>
-        </div>
-        <div id="hintText"></div>
-      </div>
-
-      <div id="message"></div>
-
-      <div id="questions" style="margin-top:12px;"></div>
+      <div id="resultBox" style="margin-top:10px;font-size:13px;"></div>
     </section>
 
-    <!-- Results + leaderboard -->
-    <section class="card">
-      <div class="section-title">Today's Result</div>
-      <div class="result-row">
-        <span><span class="label">Score today:</span> <strong id="todayScore">0/15</strong></span>
-        <span><span class="label">Global name:</span></span>
-      </div>
-      <div class="name-row">
-        <input id="globalNameInput" type="text" placeholder="Player name for the global board" />
-        <button id="submitScoreBtn" class="btn-outline-small" type="button">Submit score</button>
+    <!-- RESULT / LEADERBOARD -->
+    <section id="result" class="brain-card">
+      <div style="font-weight:700;margin-bottom:6px;">
+        Today's Result
       </div>
 
-      <div class="two-col" style="margin-top: 14px;">
-        <div>
-          <div class="section-title">🏆 Your Best Days</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th class="score">Score</th>
-              </tr>
-            </thead>
-            <tbody id="bestDaysBody"></tbody>
-          </table>
-          <div id="bestDaysEmpty" class="empty-text">No history yet.</div>
-        </div>
-        <div>
-          <div class="section-title">🌍 Global Leaderboard</div>
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th class="score">Score</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardBody"></tbody>
-          </table>
-          <div id="leaderboardEmpty" class="empty-text">No global scores yet.</div>
-        </div>
+      <div style="font-size:14px;margin-bottom:8px;">
+        Score: <strong id="dayScore">0</strong>
       </div>
+
+      <div style="font-weight:700;margin-top:10px;">
+        🏆 Your Best Days
+      </div>
+      <table>
+        <tbody id="bestDaysBody"></tbody>
+      </table>
+
+      <div style="font-weight:700;margin-top:14px;">
+        🌍 Global Leaderboard
+      </div>
+      <table>
+        <tbody id="leaderboardBody"></tbody>
+      </table>
     </section>
 
-    <!-- Theme + subscription -->
-    <section class="card">
-      <div style="display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:flex-start;">
-        <div style="flex:1 1 220px;">
-          <div class="section-title">Theme</div>
-          <div class="theme-row">
-            <button id="themeBlue" class="theme-btn theme-blue active" type="button">
-              <span class="theme-dot"></span> Blue
-            </button>
-            <button id="themeOrange" class="theme-btn theme-orange" type="button">
-              <span class="theme-dot"></span> Orange
-            </button>
-            <button id="themeGold" class="theme-btn theme-gold" type="button">
-              <span class="theme-dot"></span> Golden
-            </button>
-          </div>
-        </div>
-
-        <div style="flex:1 1 260px;">
-          <div class="section-title">Get the Daily Brain by email 🧠</div>
-          <div style="font-size:13px; color:var(--muted); margin-bottom:8px;">
-            Receive one short brain challenge per day. No spam. No ads. Unsubscribe anytime.
-          </div>
-          <div class="name-row">
-            <input id="subEmailInput" type="email" placeholder="you@example.com" />
-            <button id="subBtn" class="btn-outline-small" type="button">Subscribe</button>
-            <button id="unsubBtn" class="btn-outline-small" type="button">Unsubscribe</button>
-          </div>
-          <div id="subStatus"></div>
-        </div>
-      </div>
-
-      <div class="footer-links">
-        <a href="/privacy">Privacy</a>
-        <a href="/terms">Terms</a>
-        <a href="/contact">Contact</a>
-      </div>
-    </section>
   </main>
 
-  <!-- ✅ Compatibility bridge:
-       - Sync select#dateSelect with input#pickDate
-       - Proxy Prev/Next buttons so ANY brain.js (old/new) will work -->
-  <script>
-    (function () {
-      const qs = (id) => document.getElementById(id);
-
-      const dateSelect = qs("dateSelect");
-      const pickDate = qs("pickDate");
-
-      const btnPrevDay = qs("btnPrevDay");
-      const btnNextDay = qs("btnNextDay");
-      const btnToday = qs("btnToday");
-
-      const btnPrev = qs("btnPrev");
-      const btnNext = qs("btnNext");
-
-      // Proxy clicks (visible -> hidden)
-      if (btnPrevDay && btnPrev) btnPrevDay.addEventListener("click", () => btnPrev.click());
-      if (btnNextDay && btnNext) btnNextDay.addEventListener("click", () => btnNext.click());
-
-      // Proxy clicks (hidden -> visible) (for JS that binds to visible IDs)
-      if (btnPrev && btnPrevDay) btnPrev.addEventListener("click", () => {
-        // avoid infinite loop: only trigger if the event came from JS bindings
-        // (no recursion because this handler doesn't call btnPrev.click again)
-      });
-      if (btnNext && btnNextDay) btnNext.addEventListener("click", () => {});
-
-      // Sync dateSelect -> pickDate
-      if (dateSelect && pickDate) {
-        dateSelect.addEventListener("change", () => {
-          if (!dateSelect.value) return;
-          pickDate.value = dateSelect.value;
-          pickDate.dispatchEvent(new Event("change", { bubbles: true }));
-        });
-
-        // Sync pickDate -> dateSelect
-        pickDate.addEventListener("change", () => {
-          if (!pickDate.value) return;
-          // If option exists, select it; if not, set value anyway
-          dateSelect.value = pickDate.value;
-        });
-      }
-    })();
-  </script>
-
-  <script src="/tools/brain/brain.js?v=20260213-1"></script>
-
+  <!-- Brain JS -->
+  <script src="./brain.js?v=20260213-1"></script>
 </body>
 </html>
