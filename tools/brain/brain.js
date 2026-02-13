@@ -1,3 +1,5 @@
+console.log("✅ brain.js loaded: v=20260213-1 (catalog)");
+
 // ================================================
 // EverydayTools.uk — Daily Brain (brain.js)
 // Catalog-based puzzles + Date dropdown + Play-all
