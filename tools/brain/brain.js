@@ -548,3 +548,49 @@ function init() {
 }
 
 init();
+async function loadStreakUI() {
+  // 1) Try to read email from URL (?email=...) first
+  const params = new URLSearchParams(window.location.search);
+  const emailFromUrl = params.get("email");
+
+  // 2) Or from localStorage (saved from a previous visit)
+  const storedEmail = localStorage.getItem("dailybrain_email");
+  const email = emailFromUrl || storedEmail;
+
+  if (!email) {
+    // No email known yet => don't show anything
+    return;
+  }
+
+  // If we got it from URL, save it for next time
+  if (emailFromUrl) {
+    localStorage.setItem("dailybrain_email", emailFromUrl);
+  }
+
+  try {
+    const res = await fetch(
+      "https://brain-digest.ahmadzoury.workers.dev/streak?email=" +
+        encodeURIComponent(email)
+    );
+
+    if (!res.ok) {
+      console.log("Streak API returned non-OK:", res.status);
+      return;
+    }
+
+    const streak = await res.json(); // { current_streak, best_streak, last_day_key }
+    const el = document.querySelector("#brain-streak");
+    if (!el) return;
+
+    if (streak.current_streak > 0) {
+      el.textContent = `🔥 Streak: ${streak.current_streak} days · Best: ${streak.best_streak}`;
+    } else {
+      el.textContent = "🔥 Start your streak today";
+    }
+  } catch (err) {
+    console.log("Error loading streak:", err);
+  }
+}
+
+// Make sure this runs when the page is ready
+document.addEventListener("DOMContentLoaded", loadStreakUI);

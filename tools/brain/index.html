@@ -11,30 +11,29 @@
 <body>
   <main class="brain-page">
 
-    <!-- HEADER -->
-    <header class="brain-hero">
-      <h1>Daily Brain</h1>
-      <div class="brain-sub">
-        One short challenge a day on EverydayTools.uk
-      </div>
-      <div class="brain-hero">
+
+<!-- HEADER -->
+<header class="brain-hero">
   <h1>Daily Brain</h1>
+
+  <div class="brain-sub">
+    One short challenge a day on EverydayTools.uk
+  </div>
+
+  <!-- 🔥 Streak badge (updated by JS) -->
   <div id="brain-streak" class="brain-streak-badge"></div>
-</div>
 
-
-      <div class="brain-filterbar">
-        <label class="brain-filter-label" for="dateSelect">
-          Pick a date:
-        </label>
-
-        <select id="dateSelect"></select>
-
-        <button id="btnPrevDay" type="button">◀ Prev</button>
-        <button id="btnToday" type="button">Today</button>
-        <button id="btnNextDay" type="button">Next ▶</button>
-      </div>
-    </header>
+  <!-- Date selector + prev/next controls -->
+  <div class="brain-filterbar">
+    <label class="brain-filter-label" for="dateSelect">
+      Pick a date:
+    </label>
+    <select id="dateSelect"></select>
+    <button id="btnPrevDay" type="button">◀ Prev</button>
+    <button id="btnNextDay" type="button">Next ▶</button>
+    <button id="btnToday" type="button">Today</button>
+  </div>
+</header>
 
     <!-- DIFFICULTY CARD (kept for design consistency) -->
     <section class="brain-card">
