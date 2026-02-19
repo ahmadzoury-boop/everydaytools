@@ -1,98 +1,232 @@
-console.log("✅ brain.js loaded: v=20260213-1 (catalog)");
+/* =========================================================
+   EverydayTools.uk — Daily Brain (brain.js)
+   Multi-file loader + recycle + full UI wiring
+   Works with your index.html IDs:
+   dateSelect, btnPrevDay, btnToday, btnNextDay,
+   resetTime, dayKey, questions, resultBox,
+   dayScore, bestDaysBody, leaderboardBody
+========================================================= */
 
-// ================================================
-// EverydayTools.uk — Daily Brain (brain.js)
-// Catalog-based puzzles + Date dropdown + Play-all
-// Works with multiple monthly JSON files (keeps old data)
-// ================================================
+// ================================
+// Multi-file sets loader + recycle
+// ================================
+const DATA_BASE = "/tools/brain/data/";
 
-/**
- * REQUIRED FILES:
- * - /tools/brain/data/catalog.json
- *   {
- *     "ranges":[
- *       {"from":"YYYY-MM-DD","to":"YYYY-MM-DD","url":"/tools/brain/data/sets-....json"},
- *       ...
- *     ]
- *   }
- *
- * EXPECTED HTML IDs:
- * - #dateSelect   (select)
- * - #dayKey       (date label container)
- * - #questions    (questions container)
- * - #resultBox    (optional: status/errors)
- * - #btnPrevDay   (button)
- * - #btnNextDay   (button)
- * - #btnToday     (button)
- *
- * OPTIONAL COMPAT IDs (won’t hurt if missing):
- * - #pickDate     (input[type=date])
- * - #btnPrev      (button)
- * - #btnNext      (button)
- * - #activeDateLabel (span)
- */
+const DATA_RANGES = [
+  { from: "2026-01-12", to: "2026-02-10", file: "sets-2026-01-12_to_2026-02-10.json" },
+  { from: "2026-02-11", to: "2026-03-10", file: "sets-2026-02-11_to_2026-03-10.json" },
+  { from: "2026-03-11", to: "2026-04-09", file: "sets-2026-03-11_to_2026-04-09.json" },
+];
 
-const CATALOG_URL = "/tools/brain/data/catalog.json";
-const STORE_KEY = "et_brain_v2_catalog";
+// Cache per file (fast)
+const __SETS_CACHE = new Map();
 
-// Optional API endpoints (will fail gracefully if not present)
-const SCORE_API_URL = "/api/brain-score";
-const LEADERBOARD_API_URL = "/api/brain-leaderboard";
+function dateInRange(date, from, to) {
+  return date >= from && date <= to;
+}
 
-// Optional: link on email etc
-const BRAIN_PAGE_URL = "/tools/brain/";
+function addDays(isoDate, days) {
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + days);
+  return dt.toISOString().slice(0, 10);
+}
 
-// ---------- State ----------
-let catalog = null;
-let allSets = null; // merged object: { "YYYY-MM-DD": {easy:[],medium:[],hard:[]} }
-let allDates = [];
-let store = safeJSON(localStorage.getItem(STORE_KEY), {});
+function daysBetween(a, b) {
+  const [ya, ma, da] = a.split("-").map(Number);
+  const [yb, mb, db] = b.split("-").map(Number);
+  const A = Date.UTC(ya, ma - 1, da);
+  const B = Date.UTC(yb, mb - 1, db);
+  return Math.floor((B - A) / 86400000);
+}
 
-// ---------- Helpers ----------
-function safeJSON(s, fallback) {
+function getGlobalSpan() {
+  const sorted = [...DATA_RANGES].sort((a, b) => a.from.localeCompare(b.from));
+  return { start: sorted[0].from, end: sorted[sorted.length - 1].to };
+}
+
+// Map ANY date into our available span by cycling forever
+function mapDateToCycle(requestedDayKey) {
+  const { start, end } = getGlobalSpan();
+
+  if (requestedDayKey >= start && requestedDayKey <= end) {
+    return { effective: requestedDayKey, cycled: false };
+  }
+
+  const spanDays = daysBetween(start, end) + 1;
+
+  // after end -> wrap forward
+  if (requestedDayKey > end) {
+    const offset = daysBetween(end, requestedDayKey); // 1,2,3...
+    const idx = (offset - 1) % spanDays;
+    return { effective: addDays(start, idx), cycled: true };
+  }
+
+  // before start -> wrap backwards
+  const offsetBack = daysBetween(requestedDayKey, start); // 1,2,3...
+  const idxBack = (offsetBack - 1) % spanDays;
+  return { effective: addDays(end, -idxBack), cycled: true };
+}
+
+function pickFileForDate(effectiveDayKey) {
+  for (const r of DATA_RANGES) {
+    if (dateInRange(effectiveDayKey, r.from, r.to)) {
+      return { url: DATA_BASE + r.file, range: r };
+    }
+  }
+  return null;
+}
+
+function listAvailableDayKeys(sets) {
+  if (!sets || typeof sets !== "object") return [];
+  return Object.keys(sets)
+    .filter((k) => /^\d{4}-\d{2}-\d{2}$/.test(k))
+    .sort();
+}
+
+// If exact day missing inside selected file, fallback to closest <= day, else last
+function fallbackWithinFile(sets, preferredKey) {
+  if (sets?.[preferredKey]) return { dayKey: preferredKey, usedFallback: false };
+  const keys = listAvailableDayKeys(sets);
+  if (!keys.length) return { dayKey: preferredKey, usedFallback: true };
+  const le = keys.filter((k) => k <= preferredKey);
+  return { dayKey: le.length ? le[le.length - 1] : keys[keys.length - 1], usedFallback: true };
+}
+
+async function fetchSetsFile(url) {
+  if (__SETS_CACHE.has(url)) return __SETS_CACHE.get(url);
+
+  const p = fetch(url, { cache: "no-store" }).then(async (r) => {
+    if (!r.ok) throw new Error(`Failed to load sets: ${r.status} ${r.statusText}`);
+    return r.json();
+  });
+
+  __SETS_CACHE.set(url, p);
+  return p;
+}
+
+async function loadSetsForDay(requestedDayKey) {
+  const { effective, cycled } = mapDateToCycle(requestedDayKey);
+
+  const pick = pickFileForDate(effective);
+  if (!pick) throw new Error(`No data range configured for effective date: ${effective}`);
+
+  const sets = await fetchSetsFile(pick.url);
+  const { dayKey, usedFallback } = fallbackWithinFile(sets, effective);
+
+  return {
+    requestedDayKey,
+    effectiveDayKey: effective,
+    usedCycle: cycled,
+    fileUrl: pick.url,
+    sets,
+    dayKey,        // final day key to show
+    usedFallback,
+  };
+}
+async function 
+// ================================
+// App state + storage
+// ================================
+const STORE_KEY = "et_brain_v2"; // bump version safely
+
+function readStore() {
   try {
-    return s ? JSON.parse(s) : fallback;
+    return JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
   } catch {
-    return fallback;
+    return {};
   }
 }
 
-function saveStore() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(store));
+function writeStore(s) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(s));
 }
 
-function todayKeyUTC() {
+let store = readStore();
+let currentRequestedKey = null; // date user selected (may be future)
+let currentLoaded = null;       // loaded object from loadSetsForDay()
+
+// ================================
+// DOM
+// ================================
+const elDateSelect = document.getElementById("dateSelect");
+const elPrev = document.getElementById("btnPrevDay");
+const elToday = document.getElementById("btnToday");
+const elNext = document.getElementById("btnNextDay");
+
+const elReset = document.getElementById("resetTime");
+const elDayKey = document.getElementById("dayKey");
+
+const elQuestions = document.getElementById("questions");
+const elResultBox = document.getElementById("resultBox");
+
+const elDayScore = document.getElementById("dayScore");
+const elBestDaysBody = document.getElementById("bestDaysBody");
+const elLeaderboardBody = document.getElementById("leaderboardBody");
+
+// ================================
+// Time helpers
+// ================================
+function todayUTCKey() {
   const d = new Date();
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
     .toISOString()
     .slice(0, 10);
 }
 
-async function fetchJSON(url) {
-  const r = await fetch(url, { cache: "no-store" });
-  const txt = await r.text();
-  if (txt.trim().startsWith("<")) {
-    throw new Error(`Expected JSON but got HTML from: ${url}`);
+function msToNextUtcMidnight() {
+  const d = new Date();
+  return (
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) -
+    Date.now()
+  );
+}
+
+function fmtHMS(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const hh = String(Math.floor(total / 3600)).padStart(2, "0");
+  const mm = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+  const ss = String(total % 60).padStart(2, "0");
+  return `${hh}:${mm}:${ss}`;
+}
+
+// ================================
+// UI: date dropdown + nav
+// ================================
+function buildDateOptions() {
+  // Past 30 days + next 120 days (requested keys)
+  const today = todayUTCKey();
+  const start = addDays(today, -30);
+  const end = addDays(today, 120);
+
+  const opts = [];
+  const days = daysBetween(start, end);
+  for (let i = 0; i <= days; i++) {
+    opts.push(addDays(start, i));
   }
-  try {
-    return JSON.parse(txt);
-  } catch {
-    throw new Error(`Invalid JSON from: ${url}`);
-  }
+
+  elDateSelect.innerHTML = opts
+    .map((k) => `<option value="${k}">${k}</option>`)
+    .join("");
+
+  return { start, end };
 }
 
-function qs(id) {
-  return document.getElementById(id);
+function setSelectedDate(key) {
+  currentRequestedKey = key;
+  elDateSelect.value = key;
 }
 
-function setResult(msg, isError = false) {
-  const box = qs("resultBox");
-  if (!box) return;
-  box.textContent = msg || "";
-  box.style.opacity = msg ? "1" : "0";
-  box.style.color = isError ? "crimson" : "";
+function stepDay(delta) {
+  const base = currentRequestedKey || todayUTCKey();
+  const next = addDays(base, delta);
+  setSelectedDate(next);
+  renderForRequestedDate(next);
 }
 
+// ================================
+// Question rendering + grading
+// ================================
 function normalizeAnswer(s) {
   return String(s ?? "")
     .trim()
@@ -100,335 +234,317 @@ function normalizeAnswer(s) {
     .replace(/\s+/g, " ");
 }
 
-function escapeHTML(s) {
-  return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function getDayStore(requestedKey) {
+  if (!store.days) store.days = {};
+  if (!store.days[requestedKey]) {
+    store.days[requestedKey] = {
+      requestedKey,
+      score: 0,
+      answers: {}, // qid -> { given, correct }
+      completedAt: null,
+      meta: null,  // { effectiveKey, usedCycle, usedFallback, fileUrl }
+    };
+  }
+  return store.days[requestedKey];
 }
 
-// ---------- Catalog + Merge ----------
-async function loadCatalog() {
-  if (catalog) return catalog;
-  catalog = await fetchJSON(CATALOG_URL);
+function makeQCard({ group, idx, qObj, expected, saved }) {
+  const qid = `${group}:${idx}`;
+  const given = saved?.answers?.[qid]?.given ?? "";
+  const wasCorrect = saved?.answers?.[qid]?.correct === true;
 
-  if (!catalog?.ranges?.length) {
-    throw new Error("catalog.json has no ranges");
-  }
+  const wrap = document.createElement("div");
+  wrap.className = "q-card";
+  wrap.style.border = "1px solid rgba(255,255,255,0.10)";
+  wrap.style.borderRadius = "14px";
+  wrap.style.padding = "14px";
+  wrap.style.background = "rgba(0,0,0,0.12)";
+  wrap.style.marginBottom = "10px";
 
-  catalog.ranges.sort((a, b) => (a.from < b.from ? -1 : 1));
-  return catalog;
-}
+  const title = document.createElement("div");
+  title.style.display = "flex";
+  title.style.justifyContent = "space-between";
+  title.style.alignItems = "center";
+  title.style.gap = "10px";
 
-function mergeSets(target, source) {
-  for (const [day, obj] of Object.entries(source || {})) {
-    target[day] = obj;
-  }
-  return target;
-}
+  const left = document.createElement("div");
+  left.innerHTML = `<strong>${group.toUpperCase()}</strong> <span style="opacity:.7;font-size:12px;">#${idx + 1}</span>`;
 
-async function loadAllSets() {
-  if (allSets) return allSets;
+  const right = document.createElement("div");
+  right.style.fontSize = "12px";
+  right.style.opacity = "0.85";
+  right.textContent = wasCorrect ? "✅ Correct" : "";
 
-  const cat = await loadCatalog();
-  const merged = {};
+  title.appendChild(left);
+  title.appendChild(right);
 
-  for (const r of cat.ranges) {
-    if (!r?.url) continue;
-    const data = await fetchJSON(r.url);
-    mergeSets(merged, data);
-  }
+  const qText = document.createElement("div");
+  qText.style.marginTop = "10px";
+  qText.style.fontSize = "14px";
+  qText.textContent = qObj.q || "";
 
-  allSets = merged;
-  allDates = Object.keys(allSets).sort();
-  if (!allDates.length) throw new Error("No dates found after merging ranges.");
+  const hint = document.createElement("div");
+  hint.style.marginTop = "8px";
+  hint.style.fontSize = "12px";
+  hint.style.opacity = "0.75";
+  hint.textContent = qObj.hint ? `Hint: ${qObj.hint}` : "";
 
-  return allSets;
-}
+  const row = document.createElement("div");
+  row.style.display = "flex";
+  row.style.gap = "10px";
+  row.style.marginTop = "12px";
+  row.style.flexWrap = "wrap";
 
-// ---------- UI: Dropdown ----------
-function buildDateDropdown(selectedDate) {
-  const sel = qs("dateSelect");
-  if (!sel) return;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = given;
+  input.placeholder = "Your answer…";
+  input.style.flex = "1";
+  input.style.minWidth = "180px";
+  input.style.padding = "10px 12px";
+  input.style.borderRadius = "12px";
+  input.style.border = "1px solid rgba(255,255,255,0.12)";
+  input.style.background = "rgba(0,0,0,0.20)";
+  input.style.color = "inherit";
+  input.autocomplete = "off";
 
-  sel.innerHTML = "";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = "Check";
+  btn.style.padding = "10px 12px";
+  btn.style.borderRadius = "12px";
+  btn.style.border = "1px solid rgba(255,255,255,0.14)";
+  btn.style.background = "rgba(78,161,255,0.18)";
+  btn.style.color = "inherit";
+  btn.style.cursor = "pointer";
 
-  const optAll = document.createElement("option");
-  optAll.value = "__ALL__";
-  optAll.textContent = "Play all puzzles (start)";
-  sel.appendChild(optAll);
+  const feedback = document.createElement("div");
+  feedback.style.marginTop = "10px";
+  feedback.style.fontSize = "12px";
+  feedback.style.opacity = "0.9";
 
-  for (const d of allDates) {
-    const opt = document.createElement("option");
-    opt.value = d;
-    opt.textContent = d;
-    sel.appendChild(opt);
-  }
-
-  const initial = allDates.includes(selectedDate) ? selectedDate : todayKeyUTC();
-  sel.value = allDates.includes(initial) ? initial : allDates[allDates.length - 1];
-
-  // IMPORTANT: avoid stacking listeners if this ever runs again
-  sel.onchange = () => {
-    const v = sel.value;
-    if (v === "__ALL__") {
-      store.mode = "all";
-      store.current = allDates[0];
-      saveStore();
-      renderDay(store.current);
+  function setFeedback(ok) {
+    if (ok) {
+      feedback.textContent = "✅ Correct!";
+      right.textContent = "✅ Correct";
     } else {
-      store.mode = "single";
-      store.current = v;
-      saveStore();
-      renderDay(v);
+      feedback.textContent = "❌ Not correct yet.";
+      right.textContent = "";
     }
-  };
+  }
+
+  // Initial feedback if already correct
+  if (wasCorrect) {
+    setFeedback(true);
+  }
+
+  function gradeAndSave() {
+    const val = normalizeAnswer(input.value);
+    const exp = normalizeAnswer(expected);
+
+    const ok = val.length > 0 && val === exp;
+
+    const dayRec = getDayStore(currentRequestedKey);
+    dayRec.answers[qid] = { given: input.value, correct: ok };
+
+    // score: 1 per correct (simple and clear)
+    dayRec.score = Object.values(dayRec.answers).filter((x) => x.correct).length;
+
+    writeStore(store);
+    setFeedback(ok);
+    updateResultPanels();
+  }
+
+  btn.addEventListener("click", gradeAndSave);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") gradeAndSave();
+  });
+
+  row.appendChild(input);
+  row.appendChild(btn);
+
+  wrap.appendChild(title);
+  wrap.appendChild(qText);
+  if (qObj.hint) wrap.appendChild(hint);
+  wrap.appendChild(row);
+  wrap.appendChild(feedback);
+
+  return wrap;
 }
 
-// ---------- Questions pick (3 per day: easy+medium+hard) ----------
-function pickThree(dayObj) {
-  if (!dayObj) return [];
-
+function flattenDay(dayObj) {
+  // returns [{group, qObj}]
   const out = [];
-  if (Array.isArray(dayObj.easy) && dayObj.easy.length) out.push({ diff: "easy", ...dayObj.easy[0] });
-  if (Array.isArray(dayObj.medium) && dayObj.medium.length) out.push({ diff: "medium", ...dayObj.medium[0] });
-  if (Array.isArray(dayObj.hard) && dayObj.hard.length) out.push({ diff: "hard", ...dayObj.hard[0] });
+  if (!dayObj) return out;
+
+  if (Array.isArray(dayObj.easy)) dayObj.easy.forEach((q) => out.push({ group: "easy", q }));
+  if (Array.isArray(dayObj.medium)) dayObj.medium.forEach((q) => out.push({ group: "medium", q }));
+  if (Array.isArray(dayObj.hard)) dayObj.hard.forEach((q) => out.push({ group: "hard", q }));
+
+  // fallback if day itself is array
+  if (!out.length && Array.isArray(dayObj)) dayObj.forEach((q) => out.push({ group: "mix", q }));
 
   return out;
 }
 
-// ---------- Render ----------
-function renderDay(dateKey) {
-  setResult("");
+// ================================
+// Panels: score, best days, leaderboard placeholder
+// ================================
+function updateResultPanels() {
+  const rec = getDayStore(currentRequestedKey);
+  elDayScore.textContent = String(rec.score || 0);
 
-  // keep day label in sync (and optional compat labels)
-  const dateEl = qs("dayKey");
-  if (dateEl) dateEl.textContent = dateKey;
-  const activeDateLabel = qs("activeDateLabel");
-  if (activeDateLabel) activeDateLabel.textContent = dateKey;
-  const pickDate = qs("pickDate");
-  if (pickDate) pickDate.value = dateKey;
+  // best days = top scores from local store
+  const allDays = Object.values(store.days || {});
+  const top = allDays
+    .map((d) => ({ key: d.requestedKey, score: Number(d.score || 0) }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score || a.key.localeCompare(b.key))
+    .slice(0, 7);
 
-  const container = qs("questions");
-  if (!container) return;
+  elBestDaysBody.innerHTML = top.length
+    ? top
+        .map(
+          (x) => `
+        <tr>
+          <td style="padding:6px 0;opacity:.85;">${x.key}</td>
+          <td style="padding:6px 0;text-align:right;font-weight:700;">${x.score}</td>
+        </tr>`
+        )
+        .join("")
+    : `<tr><td style="padding:8px 0;opacity:.7;">No scores yet.</td><td></td></tr>`;
 
-  const dayObj = allSets?.[dateKey];
-  const questions = pickThree(dayObj);
-
-  if (!questions.length) {
-    container.innerHTML = `<div class="muted">No puzzles found for ${escapeHTML(dateKey)}</div>`;
-    store.current = dateKey;
-    saveStore();
-    return;
+  // Global leaderboard: keep stable even if no API
+  // If you later add an endpoint, you can wire it here.
+  if (!elLeaderboardBody.dataset.loaded) {
+    elLeaderboardBody.innerHTML = `
+      <tr><td style="padding:8px 0;opacity:.7;">
+        Leaderboard will appear here (API not connected yet).
+      </td><td></td></tr>
+    `;
+    elLeaderboardBody.dataset.loaded = "1";
   }
+}
 
-  container.innerHTML = questions
-    .map((q, idx) => {
-      const hintHtml = q.hint
-        ? `<div class="q-hint"><b>Hint:</b> ${escapeHTML(q.hint)}</div>`
-        : "";
+// ================================
+// Main render
+// ================================
+async function renderForRequestedDate(requestedKey) {
+  // basic UI state
+  elQuestions.innerHTML = "";
+  elResultBox.textContent = "Loading today’s puzzles…";
+  elDayKey.textContent = requestedKey;
 
-      return `
-        <div class="q-card" data-idx="${idx}">
-          <div class="q-top">
-            <div class="q-badge">${escapeHTML((q.diff || "").toUpperCase())}</div>
-            <div class="q-title">Q${idx + 1}</div>
-          </div>
-          <div class="q-text">${escapeHTML(q.q || "")}</div>
-          ${hintHtml}
-          <div class="q-answer">
-            <input class="q-input" type="text" placeholder="Your answer..." />
-            <button class="q-check" type="button">Check</button>
-          </div>
-          <div class="q-feedback muted"></div>
-        </div>
-      `;
-    })
-    .join("");
+  // make sure local record exists
+  const rec = getDayStore(requestedKey);
 
-  const cards = Array.from(container.querySelectorAll(".q-card"));
-  cards.forEach((card) => {
-    const i = Number(card.getAttribute("data-idx"));
-    const q = questions[i];
-    const input = card.querySelector(".q-input");
-    const btn = card.querySelector(".q-check");
-    const fb = card.querySelector(".q-feedback");
+  try {
+    const loaded = await loadSetsForDay(requestedKey);
+    currentLoaded = loaded;
 
-    const runCheck = () => {
-      const user = normalizeAnswer(input.value);
-      const ans = normalizeAnswer(q.a);
-
-      const correct = user.length > 0 && user === ans;
-      const key = `${dateKey}::${i}`;
-
-      store.answers = store.answers || {};
-      store.answers[key] = { user: input.value, correct, at: Date.now() };
-      saveStore();
-
-      if (correct) {
-        fb.textContent = "✅ Correct!";
-        fb.classList.remove("bad");
-        fb.classList.add("good");
-      } else {
-        const exp = q.explanation ? ` ${q.explanation}` : "";
-        fb.textContent = `❌ Not quite. Correct answer: ${q.a}.${exp}`;
-        fb.classList.remove("good");
-        fb.classList.add("bad");
-      }
-
-      updateAndMaybeSubmitDayScore(dateKey);
-
-      // If user is in Play-all mode AND finished all 3 correct, auto-advance
-      if (store.mode === "all" && computeDayScore(dateKey) >= 3) {
-        const idx = idxOfDate(dateKey);
-        if (idx >= 0 && idx < allDates.length - 1) {
-          // small delay so user sees the success message
-          setTimeout(() => renderDay(allDates[idx + 1]), 450);
-        }
-      }
+    // Save metadata to local record (useful for debugging)
+    rec.meta = {
+      effectiveKey: loaded.effectiveDayKey,
+      usedCycle: loaded.usedCycle,
+      usedFallback: loaded.usedFallback,
+      fileUrl: loaded.fileUrl,
     };
+    writeStore(store);
 
-    btn.addEventListener("click", runCheck);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") runCheck();
-    });
+    const dayKeyToShow = loaded.dayKey;
+    elDayKey.textContent = dayKeyToShow;
 
-    const prev = store.answers?.[`${dateKey}::${i}`];
-    if (prev?.user != null) {
-      input.value = prev.user;
+    const day = loaded.sets[dayKeyToShow];
+    const flat = flattenDay(day);
+
+    // Note area
+    const notes = [];
+    if (loaded.usedCycle) {
+      notes.push(`Recycled: ${loaded.requestedDayKey} → ${loaded.effectiveDayKey}`);
     }
-  });
+    if (loaded.usedFallback) {
+      notes.push(`Adjusted inside file to: ${loaded.dayKey}`);
+    }
 
-  // Keep dropdown in sync (if navigated via buttons)
-  const sel = qs("dateSelect");
-  if (sel && allDates.includes(dateKey)) sel.value = dateKey;
+    if (!flat.length) {
+      elResultBox.textContent = `No questions found for ${dayKeyToShow}.`;
+      updateResultPanels();
+      return;
+    }
 
-  store.current = dateKey;
-  saveStore();
-}
+    elResultBox.innerHTML = notes.length
+      ? `<span style="opacity:.75;">${notes.join(" · ")}</span>`
+      : "";
 
-// ---------- Navigation ----------
-function idxOfDate(dateKey) {
-  return allDates.indexOf(dateKey);
-}
-
-function goPrev() {
-  const cur = store.current || todayKeyUTC();
-  const i = idxOfDate(cur);
-  if (i > 0) renderDay(allDates[i - 1]);
-}
-
-function goNext() {
-  const cur = store.current || todayKeyUTC();
-  const i = idxOfDate(cur);
-  if (i >= 0 && i < allDates.length - 1) renderDay(allDates[i + 1]);
-}
-
-function goToday() {
-  const t = todayKeyUTC();
-  if (allDates.includes(t)) renderDay(t);
-  else renderDay(allDates[allDates.length - 1]);
-}
-
-function wireNavButtons() {
-  // Main IDs (your HTML)
-  const prevDay = qs("btnPrevDay");
-  const nextDay = qs("btnNextDay");
-  const today = qs("btnToday");
-
-  if (prevDay) prevDay.addEventListener("click", goPrev);
-  if (nextDay) nextDay.addEventListener("click", goNext);
-  if (today) today.addEventListener("click", goToday);
-
-  // Compat IDs (in case you keep hidden buttons in HTML)
-  const prev = qs("btnPrev");
-  const next = qs("btnNext");
-
-  if (prev) prev.addEventListener("click", goPrev);
-  if (next) next.addEventListener("click", goNext);
-
-  // Compat date input (optional): changing it renders that date
-  const pickDate = qs("pickDate");
-  if (pickDate) {
-    pickDate.onchange = () => {
-      if (!pickDate.value) return;
-      if (allDates.includes(pickDate.value)) {
-        store.mode = "single";
-        store.current = pickDate.value;
-        saveStore();
-        renderDay(pickDate.value);
-      }
+    // Render
+    const groups = {
+      easy: flat.filter((x) => x.group === "easy").map((x) => x.q),
+      medium: flat.filter((x) => x.group === "medium").map((x) => x.q),
+      hard: flat.filter((x) => x.group === "hard").map((x) => x.q),
+      mix: flat.filter((x) => x.group === "mix").map((x) => x.q),
     };
-  }
-}
 
-// ---------- Scoring ----------
-function computeDayScore(dateKey) {
-  const dayObj = allSets?.[dateKey];
-  const questions = pickThree(dayObj);
-  if (!questions.length) return 0;
+    const order = ["easy", "medium", "hard", "mix"];
+    for (const g of order) {
+      const arr = groups[g];
+      if (!arr || !arr.length) continue;
 
-  let score = 0;
-  for (let i = 0; i < questions.length; i++) {
-    const attempt = store.answers?.[`${dateKey}::${i}`];
-    if (attempt?.correct) score += 1;
-  }
-  return score; // 0..3
-}
+      arr.forEach((qObj, idx) => {
+        const expected = qObj.a ?? "";
+        const card = makeQCard({
+          group: g === "mix" ? "mix" : g,
+          idx,
+          qObj,
+          expected,
+          saved: rec,
+        });
+        elQuestions.appendChild(card);
+      });
+    }
 
-async function updateAndMaybeSubmitDayScore(dateKey) {
-  const score = computeDayScore(dateKey);
-
-  store.scores = store.scores || {};
-  store.scores[dateKey] = { score, updatedAt: Date.now() };
-  saveStore();
-
-  const scoreEl = qs("dayScore");
-  if (scoreEl) scoreEl.textContent = String(score);
-
-  if (score <= 0) return;
-
-  try {
-    const res = await fetch(SCORE_API_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ day: dateKey, score }),
-    });
-    if (!res.ok) return;
-  } catch {
-    // silent fail
-  }
-}
-
-// ---------- Init ----------
-(async function init() {
-  try {
-    setResult("Loading puzzles...");
-    await loadAllSets();
-    setResult(`Loaded ${allDates.length} days · ${allDates[0]} → ${allDates[allDates.length - 1]}`);
-
-
-    // Decide initial date
-    const saved = store.current;
-    let start = saved && allDates.includes(saved) ? saved : todayKeyUTC();
-    if (!allDates.includes(start)) start = allDates[allDates.length - 1];
-
-    // Build UI
-    buildDateDropdown(start);
-    wireNavButtons();
-
-    // Render start
-    renderDay(start);
-
-    setResult("");
+    updateResultPanels();
   } catch (e) {
     console.error(e);
-    setResult(`Error: ${String(e?.message || e)}`, true);
-    const container = qs("questions");
-    if (container) {
-      container.innerHTML = `<div class="muted">Failed to load puzzles. Check console.</div>`;
-    }
+    elResultBox.textContent = "Failed to load puzzles. Check console.";
+    updateResultPanels();
   }
-})();
+}
+
+// ================================
+// Init
+// ================================
+function startResetTimer() {
+  function tick() {
+    elReset.textContent = fmtHMS(msToNextUtcMidnight());
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+function wireEvents() {
+  elDateSelect.addEventListener("change", () => {
+    const key = elDateSelect.value;
+    setSelectedDate(key);
+    renderForRequestedDate(key);
+  });
+
+  elPrev.addEventListener("click", () => stepDay(-1));
+  elNext.addEventListener("click", () => stepDay(1));
+  elToday.addEventListener("click", () => {
+    const t = todayUTCKey();
+    setSelectedDate(t);
+    renderForRequestedDate(t);
+  });
+}
+
+function init() {
+  buildDateOptions();
+  wireEvents();
+  startResetTimer();
+
+  const initial = todayUTCKey();
+  setSelectedDate(initial);
+  renderForRequestedDate(initial);
+}
+
+init();
