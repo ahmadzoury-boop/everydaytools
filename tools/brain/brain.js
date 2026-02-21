@@ -124,6 +124,7 @@ async function loadSetsForDay(requestedDayKey) {
     usedFallback,
   };
 }
+
 // ================================
 // App state + storage
 // ================================
@@ -203,7 +204,6 @@ function buildDateOptions() {
   for (let i = 0; i <= days; i++) {
     opts.push(addDays(start, i));
   }
-}
 
   elDateSelect.innerHTML = opts
     .map((k) => `<option value="${k}">${k}</option>`)
@@ -548,6 +548,10 @@ function init() {
 }
 
 init();
+
+// ================================
+// Streak UI (email-based)
+// ================================
 async function loadStreakUI() {
   // 1) Try to read email from URL (?email=...) first
   const params = new URLSearchParams(window.location.search);
