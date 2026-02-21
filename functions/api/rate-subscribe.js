@@ -7,8 +7,8 @@
 // - Sends a confirmation email via Resend that includes:
 //     - Pair
 //     - Frequency
-//     - Today's rate
-// - Returns JSON: { success: true } or { success: false, error: ... }
+//     - Today's rate + inverse
+//     - Button + link back to the live converter with the pair preselected
 //
 // Required env vars (Pages → Settings → Variables & Secrets):
 //   RESEND_API_KEY    (Resend token, starts with "re_...")
@@ -71,7 +71,6 @@ export async function onRequestPost({ request, env }) {
     const fromHeader = `${fromName} <${fromEmail}>`;
 
     // ---------- Store subscription in KV (if available) ----------
-    // This gives us a foundation for a future daily/weekly worker.
     if (env.SUBSCRIBERS && typeof env.SUBSCRIBERS.put === "function") {
       const key = `rates:${email.toLowerCase()}:${fromCode}-${toCode}:${frequency}`;
       const now = new Date().toISOString();
@@ -87,7 +86,6 @@ export async function onRequestPost({ request, env }) {
       try {
         await env.SUBSCRIBERS.put(key, JSON.stringify(record));
       } catch (kvErr) {
-        // Don't fail the whole request if KV write fails; just log in the response.
         console.log("KV put error:", kvErr);
       }
     }
@@ -95,6 +93,7 @@ export async function onRequestPost({ request, env }) {
     // ---------- Fetch today's live rate for the pair ----------
     let todayRate = null;
     let inverseRate = null;
+    let rateDate = null;
 
     try {
       const rateRes = await fetch(
@@ -113,6 +112,7 @@ export async function onRequestPost({ request, env }) {
         if (typeof r === "number" && isFinite(r)) {
           todayRate = r;
           inverseRate = r !== 0 ? 1 / r : null;
+          rateDate = rateJson.date || null;
         }
       }
     } catch (rateErr) {
@@ -122,61 +122,104 @@ export async function onRequestPost({ request, env }) {
     const pair = `${fromCode} → ${toCode}`;
     const niceFreq = frequency === "daily" ? "Daily" : "Weekly";
 
+    // Link back to the converter with this pair preselected
+    const baseUrl = "https://everydaytools.uk/tools/finance/currency-converter";
+    const converterUrl =
+      `${baseUrl}?from=${encodeURIComponent(fromCode)}` +
+      `&to=${encodeURIComponent(toCode)}` +
+      `&utm_source=rate_confirm&utm_medium=email&utm_campaign=currency_alerts`;
+
     // ---------- Build email content ----------
     const subject = `Subscribed to ${pair} ${niceFreq.toLowerCase()} rate alerts`;
 
+    const dateLabel = rateDate ? ` (${rateDate})` : "";
+
     const rateLineHtml = todayRate
-      ? `<p style="margin:0 0 8px;">
-           <strong>Today’s rate:</strong>
-           1 ${fromCode} ≈ ${formatNumber(todayRate, 6)} ${toCode}${
-          inverseRate
-            ? `<br/><strong>Inverse:</strong> 1 ${toCode} ≈ ${formatNumber(
-                inverseRate,
-                6
-              )} ${fromCode}`
-            : ""
-        }
+      ? `<p style="margin:0 0 10px;">
+           <strong>Today’s rate${dateLabel}:</strong><br/>
+           1 ${fromCode} ≈ ${formatNumber(todayRate, 6)} ${toCode}<br/>
+           <strong>Inverse:</strong> 1 ${toCode} ≈ ${
+          inverseRate ? formatNumber(inverseRate, 6) : "n/a"
+        } ${fromCode}
          </p>`
-      : `<p style="margin:0 0 8px;">
+      : `<p style="margin:0 0 10px;">
            <strong>Today’s rate:</strong> temporarily unavailable.
          </p>`;
 
     const html = `
-      <div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:#111;">
-        <h1 style="font-size:18px;margin-bottom:8px;">You're subscribed ✅</h1>
-        <p style="margin:0 0 8px;">
-          Thanks for subscribing to exchange-rate alerts on <strong>EverydayTools.uk</strong>.
+      <div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:#111;line-height:1.5;">
+        <h1 style="font-size:20px;margin:0 0 10px;">You're subscribed ✅</h1>
+
+        <p style="margin:0 0 10px;">
+          Thanks for subscribing to exchange-rate alerts on
+          <strong>EverydayTools.uk</strong>.
         </p>
-        <p style="margin:0 0 8px;">
-          <strong>Pair:</strong> ${fromCode} → ${toCode}<br/>
-          <strong>Frequency:</strong> ${niceFreq}
-        </p>
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 10px;">
+          <tr>
+            <td style="padding:0 12px 6px 0;"><strong>Pair:</strong></td>
+            <td style="padding:0 0 6px 0;">${fromCode} → ${toCode}</td>
+          </tr>
+          <tr>
+            <td style="padding:0 12px 0 0;"><strong>Frequency:</strong></td>
+            <td style="padding:0 0 0 0;">${niceFreq}</td>
+          </tr>
+        </table>
+
         ${rateLineHtml}
-        <p style="margin:0 0 8px;">
-          You'll start receiving emails with the latest mid-market rate for this pair,
-          plus a short summary of recent moves (once the daily/weekly digest worker is enabled).
+
+        <p style="margin:16px 0 10px;">
+          You can always check the live rate and chart here:
         </p>
-        <p style="margin:0 0 8px;font-size:12px;color:#555;">
-          You can unsubscribe any time using the link inside each future email.
+
+        <!-- CTA button -->
+        <p style="margin:0 0 14px;">
+          <a href="${converterUrl}"
+             style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;
+                    padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;">
+            Open live converter for ${fromCode} → ${toCode}
+          </a>
         </p>
-        <p style="margin-top:18px;font-size:12px;color:#777;">
+
+        <!-- Plain link in case button styles are stripped -->
+        <p style="margin:0 0 14px;font-size:12px;color:#555;">
+          Or copy & paste this link into your browser:<br/>
+          <a href="${converterUrl}" style="color:#2563eb;">${converterUrl}</a>
+        </p>
+
+        <p style="margin:10px 0 6px;font-size:13px;color:#333;">
+          Each alert email will include today’s rate, the inverse rate,
+          and a one-click link back to the live converter with your pair preselected.
+        </p>
+
+        <p style="margin:4px 0 6px;font-size:13px;color:#333;">
+          You can also create more alerts from the converter page
+          (for example <strong>EUR → TRY, weekly</strong>) if you track multiple pairs.
+        </p>
+
+        <p style="margin:4px 0 10px;font-size:13px;color:#333;">
+          Coming next (like Daily Brain): optional <strong>daily/weekly digest emails</strong>
+          with a small chart, last 7-day change, and a short summary of recent moves
+          for your favourite pairs once the digest worker is enabled.
+        </p>
+
+        <p style="margin:10px 0 8px;font-size:12px;color:#555;">
+          You’ll be able to unsubscribe any time using the link inside future alert emails.
+        </p>
+
+        <p style="margin:16px 0 0;font-size:11px;color:#999;">
           If you didn’t request this, you can safely ignore this message.
         </p>
       </div>
     `;
 
     const rateLineText = todayRate
-      ? `Today’s rate: 1 ${fromCode} ≈ ${formatNumber(
+      ? `Today’s rate${dateLabel}: 1 ${fromCode} ≈ ${formatNumber(
           todayRate,
           6
-        )} ${toCode}${
-          inverseRate
-            ? ` | Inverse: 1 ${toCode} ≈ ${formatNumber(
-                inverseRate,
-                6
-              )} ${fromCode}`
-            : ""
-        }`
+        )} ${toCode}; inverse: 1 ${toCode} ≈ ${
+          inverseRate ? formatNumber(inverseRate, 6) : "n/a"
+        } ${fromCode}`
       : "Today’s rate: temporarily unavailable.";
 
     const text = [
@@ -186,8 +229,19 @@ export async function onRequestPost({ request, env }) {
       `Frequency: ${niceFreq}`,
       rateLineText,
       "",
-      "You'll start receiving emails with the latest mid-market rate for this pair.",
-      "You can unsubscribe any time using the link in each email (once digests are enabled).",
+      "Open live converter:",
+      converterUrl,
+      "",
+      "Each alert email will include today’s rate, the inverse rate,",
+      "and a one-click link back to the live converter with your pair preselected.",
+      "",
+      "You can also create more alerts from the converter page",
+      "for example EUR → TRY, weekly, if you track multiple pairs.",
+      "",
+      "Coming next (like Daily Brain): optional daily/weekly digest emails with a small chart,",
+      "last 7-day change, and a short summary of recent moves for your favourite pairs.",
+      "",
+      "You’ll be able to unsubscribe using the link in those emails.",
       "",
       "If you didn’t request this, you can ignore this message.",
     ].join("\n");
@@ -210,7 +264,6 @@ export async function onRequestPost({ request, env }) {
 
     const resendText = await resendRes.text();
     if (!resendRes.ok) {
-      // Return 200 so frontend can show friendly error
       return new Response(
         JSON.stringify({
           success: false,
@@ -223,7 +276,6 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    // All good
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: JSON_HEADERS,
