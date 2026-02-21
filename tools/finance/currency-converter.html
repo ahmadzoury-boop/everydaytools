@@ -1538,64 +1538,85 @@ exchange rate calculator, forex calculator, foreign exchange calculator
         setTimeout(()=>{ copyButton.textContent = prev; }, 1300);
       }).catch(()=>{});
     }
+// ==========
+//  Subscribe
+// ==========
+async function handleSubscribe(e){
+  e.preventDefault();
 
-    // ==========
-    //  Subscribe
-    // ==========
-    async function handleSubscribe(e){
-      if (e) e.preventDefault();
+  const email = document.getElementById("currency-email").value.trim();
+  const frequency = document.getElementById("currency-frequency").value;
+  const from = subFromSelect.value;
+  const to = subToSelect.value;
 
-      const email=document.getElementById("currency-email").value.trim();
-      const frequency=document.getElementById("currency-frequency").value;
-      const from=subFromSelect.value;
-      const to=subToSelect.value;
+  if (!email){
+    subscribeStatus.className = "subscribe-status bad";
+    subscribeStatus.textContent = t("enterEmail");
+    return;
+  }
+  if (from === to){
+    subscribeStatus.className = "subscribe-status bad";
+    subscribeStatus.textContent = t("chooseDifferentPair");
+    return;
+  }
 
-      if (!email){
-        subscribeStatus.className="subscribe-status bad";
-        subscribeStatus.textContent=t("enterEmail");
-        return;
-      }
-      if (from===to){
-        subscribeStatus.className="subscribe-status bad";
-        subscribeStatus.textContent=t("chooseDifferentPair");
-        return;
-      }
+  subscribeStatus.className = "subscribe-status muted";
+  subscribeStatus.textContent = t("subscribing");
+  subscribeBtn.disabled = true;
 
-      subscribeStatus.className="subscribe-status muted";
-      subscribeStatus.textContent=t("subscribing");
-      subscribeBtn.disabled=true;
+  try{
+    const endpoint = new URL("/api/rate-subscribe", window.location.origin).toString();
 
-      try{
-        const endpoint=new URL("/api/rate-subscribe", window.location.origin).toString();
-        const res=await fetch(endpoint,{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body:JSON.stringify({ email, frequency, from, to })
-        });
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, frequency, from, to })
+    });
 
-        const raw=await res.text();
-        let data=null;
-        try{ data=JSON.parse(raw); } catch { data={ success:false, error: raw || ("HTTP "+res.status) }; }
-
-        if (res.ok && data && data.success){
-          subscribeStatus.className="subscribe-status ok";
-          subscribeStatus.textContent=t("subscribedOk");
-          subscribeForm.reset();
-
-          // keep selected pair after reset
-          subFromSelect.value=from;
-          subToSelect.value=to;
-        } else {
-          subscribeStatus.className="subscribe-status bad";
-          subscribeStatus.textContent=t("failedPrefix") + (data?.error || ("HTTP "+res.status));
-        }
-      } catch(err){
-        subscribeStatus.className="subscribe-status bad";
-        subscribeStatus.textContent=t("networkErrorPrefix") + (err.message || "Unknown error");
-      } finally {
-        subscribeBtn.disabled=false;
-      }
+    const raw = await res.text();
+    let data = null;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      // not JSON, leave data = null
     }
+
+    // Accept multiple possible "success" shapes from the Worker
+    const successFlag = !!(
+      data &&
+      (
+        data.success === true ||     // { success: true }
+        data.ok === true ||          // { ok: true }
+        data.status === "ok" ||      // { status: "ok" }
+        data.status === "subscribed" // { status: "subscribed" }
+      )
+    );
+
+    if (res.ok && successFlag){
+      subscribeStatus.className = "subscribe-status ok";
+      subscribeStatus.textContent = t("subscribedOk");
+
+      // Reset form fields but keep the chosen pair
+      subscribeForm.reset();
+      subFromSelect.value = from;
+      subToSelect.value = to;
+    } else {
+      const errMsg =
+        (data && (data.error || data.message)) ||
+        raw ||
+        ("HTTP " + res.status);
+
+      subscribeStatus.className = "subscribe-status bad";
+      subscribeStatus.textContent = t("failedPrefix") + errMsg;
+    }
+  } catch(err){
+    subscribeStatus.className = "subscribe-status bad";
+    subscribeStatus.textContent =
+      t("networkErrorPrefix") + (err.message || "Unknown error");
+  } finally {
+    subscribeBtn.disabled = false;
+  }
+}
 
     // ==========
     //  Resize
