@@ -651,7 +651,8 @@ exchange rate calculator, forex calculator, foreign exchange calculator
                   <option value="weekly" data-i18n="weeklyUpdates">Weekly updates</option>
                 </select>
 
-                <button class="subscribe-btn" id="subscribeBtn" type="submit" data-i18n="subscribeBtn">Subscribe</button>
+                <!-- CHANGED: type="button" instead of submit -->
+                <button class="subscribe-btn" id="subscribeBtn" type="button" data-i18n="subscribeBtn">Subscribe</button>
               </div>
 
               <div class="subscribe-row2">
@@ -813,7 +814,6 @@ exchange rate calculator, forex calculator, foreign exchange calculator
         networkErrorPrefix:"خطأ بالشبكة ❌ "
       },
 
-      // Note: translations are "good enough" UI-level; you can refine later.
       es: {
         converterTitle:"Convertidor de Divisas en Vivo",
         converterSubtitle:"Convierte al instante con tipos en tiempo real. Auto-conversión, tendencia 7/30 días y 1 año, volatilidad, pares en tendencia y alertas por email.",
@@ -1543,7 +1543,7 @@ exchange rate calculator, forex calculator, foreign exchange calculator
     //  Subscribe
     // ==========
     async function handleSubscribe(e){
-      e.preventDefault();
+      if (e) e.preventDefault();
 
       const email=document.getElementById("currency-email").value.trim();
       const frequency=document.getElementById("currency-frequency").value;
@@ -1642,7 +1642,9 @@ exchange rate calculator, forex calculator, foreign exchange calculator
     range30dBtn.addEventListener("click", ()=>setRange("30d"));
     range1yBtn.addEventListener("click", ()=>setRange("1y"));
 
-    subscribeForm.addEventListener("submit", handleSubscribe);
+    // NEW: click handler on button, plus submit handler for Enter key
+    if (subscribeBtn) subscribeBtn.addEventListener("click", handleSubscribe);
+    if (subscribeForm) subscribeForm.addEventListener("submit", handleSubscribe);
 
     window.addEventListener("resize", handleResize);
 
