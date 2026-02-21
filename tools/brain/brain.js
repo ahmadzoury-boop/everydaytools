@@ -124,7 +124,6 @@ async function loadSetsForDay(requestedDayKey) {
     usedFallback,
   };
 }
-async function 
 // ================================
 // App state + storage
 // ================================
@@ -204,6 +203,7 @@ function buildDateOptions() {
   for (let i = 0; i <= days; i++) {
     opts.push(addDays(start, i));
   }
+}
 
   elDateSelect.innerHTML = opts
     .map((k) => `<option value="${k}">${k}</option>`)
