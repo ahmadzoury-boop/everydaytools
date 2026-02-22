@@ -29,8 +29,8 @@ export async function onRequest(context) {
     r.text()
   );
 
-  const unsubUrl = `${env.PUBLIC_URL}/functions/api/unsubscribe?email=${encodeURIComponent(
-    email
+  // new
+  const unsubUrl = `${env.PUBLIC_URL}/functions/api/currency-unsubscribe?email=...`;
   )}`;
 
   const openPixelUrl = `${env.PUBLIC_URL}/functions/api/open-pixel?email=${encodeURIComponent(
