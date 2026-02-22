@@ -3,6 +3,7 @@ import { ensureTables } from "../../../utils/digest-lib.js";
 
 export async function onRequest(context) {
   const { request, env } = context;
+
   const url = new URL(request.url);
   const email = (url.searchParams.get("email") || "").trim().toLowerCase();
   const kind = url.searchParams.get("kind") || "daily";
@@ -14,7 +15,7 @@ export async function onRequest(context) {
     eur: "https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=EUR",
     gbp: "https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=GBP",
     try: "https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=TRY",
-    aed: "https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=AED`
+    aed: "https://www.xe.com/currencyconverter/convert/?Amount=1&From=USD&To=AED"
   };
 
   const target = targets[linkKey] || targets.dashboard;
@@ -22,6 +23,7 @@ export async function onRequest(context) {
   try {
     if (email && env.DIGEST_DB) {
       await ensureTables(env.DIGEST_DB);
+
       const now = new Date().toISOString();
       await env.DIGEST_DB
         .prepare(
