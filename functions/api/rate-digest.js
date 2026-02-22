@@ -1,54 +1,58 @@
+// /functions/api/rate-digest.js
+import {
+  todayKeyUTC,
+  getOrCreateDailyRates,
+  getHistory
+} from "../../../utils/digest-lib.js";
+import { generateMiniChart } from "../../../utils/chart.js";
+
 export async function onRequest(context) {
   const { request, env } = context;
+  const url = new URL(request.url);
 
-  const type = new URL(request.url).searchParams.get("type") || "daily";
+  const type = url.searchParams.get("type") === "weekly" ? "weekly" : "daily";
+  const email =
+    (url.searchParams.get("email") || "preview@example.com").trim().toLowerCase();
 
-  const mockData = generateMockRates();
+  const dateKey = todayKeyUTC();
 
-  // Load template
+  // Data
+  const todayRates = await getOrCreateDailyRates(env, dateKey);
+  const history = await getHistory(env, dateKey, 7); // EUR series
+
+  const chartDataUrl = await generateMiniChart(history);
+
   const templatePath =
-    type === "weekly"
-      ? "/templates/weekly.html"
-      : "/templates/daily.html";
+    type === "weekly" ? "/templates/weekly.html" : "/templates/daily.html";
 
-  const template = await env.ASSETS.fetch(templatePath).then((r) => r.text());
+  const template = await fetch(env.PUBLIC_URL + templatePath).then((r) =>
+    r.text()
+  );
 
-  // Generate chart as Base64 PNG
-  const chart = await generateMiniChart(mockData.history);
+  const unsubUrl = `${env.PUBLIC_URL}/functions/api/unsubscribe?email=${encodeURIComponent(
+    email
+  )}`;
 
-  // Insert data into template
+  const openPixelUrl = `${env.PUBLIC_URL}/functions/api/open-pixel?email=${encodeURIComponent(
+    email
+  )}&kind=${type}&date=${dateKey}`;
+
+  const dashboardUrl = `${env.PUBLIC_URL}/functions/api/r?email=${encodeURIComponent(
+    email
+  )}&kind=${type}&date=${dateKey}&link=dashboard`;
+
   const html = template
-    .replace("{{DATE}}", mockData.date)
-    .replace("{{USD_EUR}}", mockData.rates.USD_EUR)
-    .replace("{{USD_GBP}}", mockData.rates.USD_GBP)
-    .replace("{{USD_TRY}}", mockData.rates.USD_TRY)
-    .replace("{{USD_AED}}", mockData.rates.USD_AED)
-    .replace("{{CHART_DATA}}", chart);
+    .replace(/{{DATE}}/g, dateKey)
+    .replace(/{{USD_EUR}}/g, todayRates.usd_eur.toFixed(3))
+    .replace(/{{USD_GBP}}/g, todayRates.usd_gbp.toFixed(3))
+    .replace(/{{USD_TRY}}/g, todayRates.usd_try.toFixed(2))
+    .replace(/{{USD_AED}}/g, todayRates.usd_aed.toFixed(2))
+    .replace(/{{CHART_DATA}}/g, chartDataUrl)
+    .replace(/{{UNSUB_URL}}/g, unsubUrl)
+    .replace(/{{OPEN_PIXEL_URL}}/g, openPixelUrl)
+    .replace(/{{DASHBOARD_URL}}/g, dashboardUrl);
 
   return new Response(html, {
     headers: { "Content-Type": "text/html" }
   });
 }
-
-// ---------- MOCK DATA ----------
-function generateMockRates() {
-  const today = new Date().toISOString().slice(0, 10);
-
-  const base = {
-    USD_EUR: (0.90 + Math.random() * 0.04).toFixed(3),
-    USD_GBP: (0.77 + Math.random() * 0.04).toFixed(3),
-    USD_TRY: (30.0 + Math.random() * 1.8).toFixed(2),
-    USD_AED: 3.67
-  };
-
-  const history = Array.from({ length: 7 }).map(() => 0.90 + Math.random() * 0.05);
-
-  return {
-    date: today,
-    rates: base,
-    history
-  };
-}
-
-// Import chart generator
-import { generateMiniChart } from "../../utils/chart.js";
