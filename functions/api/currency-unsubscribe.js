@@ -1,4 +1,4 @@
-// /functions/api/unsubscribe.js
+// /functions/api/currency-unsubscribe.js
 import { unsubscribeByEmail } from "../../../utils/digest-lib.js";
 
 export async function onRequest(context) {

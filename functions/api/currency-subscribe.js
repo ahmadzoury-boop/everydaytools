@@ -1,4 +1,4 @@
-// /functions/api/subscribe.js
+// /functions/api/currency-subscribe.js
 import { upsertSubscriber } from "../../../utils/digest-lib.js";
 
 export async function onRequest(context) {
@@ -11,10 +11,9 @@ export async function onRequest(context) {
     }
 
     await upsertSubscriber(env, email);
-
     return json({ ok: true, email });
   } catch (err) {
-    console.error("Subscribe error:", err);
+    console.error("currency-subscribe error:", err);
     return json({ ok: false, error: "Internal error" }, 500);
   }
 }
@@ -27,7 +26,7 @@ async function extractEmail(request) {
   const ct = request.headers.get("content-type") || "";
   if (ct.includes("application/json")) {
     const body = await request.json().catch(() => ({}));
-    return (body.email || "").trim().toLowerCase();
+    return (body.email || "").toString().trim().toLowerCase();
   }
   if (ct.includes("application/x-www-form-urlencoded")) {
     const form = await request.formData();
