@@ -1,54 +1,56 @@
-export async function onRequest(context) {
+export async function onRequestPost(context) {
+
+  const { request, env } = context;
+
+  let body = {};
+
+  try {
+    body = await request.json();
+  } catch (e) {
+    return new Response(JSON.stringify({
+      ok:false,
+      error:"Invalid JSON body"
+    }),{
+      headers:{ "Content-Type":"application/json" }
+    });
+  }
+
+  const email = (body.email || "").trim().toLowerCase();
+
+  if (!email) {
+    return new Response(JSON.stringify({
+      ok:false,
+      error:"Missing email"
+    }),{
+      headers:{ "Content-Type":"application/json" }
+    });
+  }
 
   try {
 
-    const { request, env } = context;
-
-    const url = new URL(request.url);
-    const email = (url.searchParams.get("email") || "").trim().toLowerCase();
-
-    if (!email) {
-      return new Response(JSON.stringify({
-        ok:false,
-        error:"Missing email"
-      }),{
-        headers:{ "Content-Type":"application/json" }
-      });
-    }
-
-    if (!env.BRAIN_DB) {
-      return new Response(JSON.stringify({
-        ok:false,
-        error:"BRAIN_DB binding missing"
-      }),{
-        headers:{ "Content-Type":"application/json" }
-      });
-    }
-
     await env.BRAIN_DB.prepare(`
       INSERT INTO brain_subscribers (email, created_at)
-      VALUES (?1, datetime('now'))
+      VALUES (?, datetime('now'))
       ON CONFLICT(email) DO NOTHING
     `)
     .bind(email)
     .run();
 
-    return new Response(JSON.stringify({
-      ok:true,
-      email
-    }),{
-      headers:{ "Content-Type":"application/json" }
-    });
-
-  } catch(err){
+  } catch (err) {
 
     return new Response(JSON.stringify({
       ok:false,
-      error: err.message
+      error:String(err)
     }),{
       headers:{ "Content-Type":"application/json" }
     });
 
   }
+
+  return new Response(JSON.stringify({
+    ok:true
+  }),{
+    headers:{ "Content-Type":"application/json" }
+  });
 
 }
