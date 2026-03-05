@@ -1,18 +1,34 @@
 export async function onRequest(context) {
 
-  const email = context.request.url.split("email=")[1];
+  const { request, env } = context;
 
-  if (!email) {
-    return new Response(JSON.stringify({ ok:false,error:"Missing email"}));
+  let email;
+
+  if (request.method === "POST") {
+    const body = await request.json().catch(()=>({}));
+    email = body.email;
+  } else {
+    const url = new URL(request.url);
+    email = url.searchParams.get("email");
   }
 
-  const db = context.env.BRAIN_DB;
+  if (!email) {
+    return new Response(JSON.stringify({
+      ok:false,
+      error:"Missing email"
+    }),{headers:{'Content-Type':'application/json'}});
+  }
 
-  await db.prepare(`
-    INSERT INTO brain_subscribers(email,created_at)
-    VALUES(?1,datetime('now'))
+  await env.BRAIN_DB.prepare(`
+    INSERT INTO brain_subscribers (email, created_at)
+    VALUES (?1, datetime('now'))
     ON CONFLICT(email) DO NOTHING
   `).bind(email).run();
 
-  return new Response(JSON.stringify({ ok:true }));
+  return new Response(JSON.stringify({
+    ok:true,
+    email
+  }),{
+    headers:{'Content-Type':'application/json'}
+  });
 }
