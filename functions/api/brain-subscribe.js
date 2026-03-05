@@ -5,12 +5,12 @@ export async function onRequest(context) {
 
   let email = "";
 
-  // GET request support
+  // GET support
   if (request.method === "GET") {
     email = (url.searchParams.get("email") || "").trim().toLowerCase();
   }
 
-  // POST request support
+  // POST support
   if (request.method === "POST") {
     try {
       const body = await request.json();
@@ -25,8 +25,12 @@ export async function onRequest(context) {
     });
   }
 
-  // Save subscriber
+  /* ------------------------------
+     SAVE SUBSCRIBER TO D1
+  ------------------------------ */
+
   try {
+
     await env.BRAIN_DB.prepare(`
       INSERT INTO brain_subscribers (email, created_at)
       VALUES (?, datetime('now'))
@@ -34,34 +38,43 @@ export async function onRequest(context) {
     `)
     .bind(email)
     .run();
+
   } catch (err) {
+
     return Response.json({
-      ok: false,
-      error: String(err)
+      ok:false,
+      error:String(err)
     });
+
   }
 
-  // Send email via Resend
+  /* ------------------------------
+     SEND EMAIL WITH RESEND
+  ------------------------------ */
+
   try {
 
-    const payload = {
-      from: "Daily Brain <hello@everydaytools.uk>",
-      to: [email],
-      subject: "Welcome to Daily Brain 🧠",
-      html: `
-        <h2>Welcome to Daily Brain</h2>
+    const html = `
+      <h2>🧠 Welcome to Daily Brain</h2>
 
-        <p>You are now subscribed.</p>
+      <p>You are now subscribed to the Daily Brain puzzles.</p>
 
-        <p>
-        Play today's puzzle:
-        <br><br>
-        <a href="https://everydaytools.uk/tools/brain/">
-        Open Daily Brain
-        </a>
-        </p>
-      `
-    };
+      <p>
+      Solve today's challenge here:
+      </p>
+
+      <p>
+      <a href="https://everydaytools.uk/tools/brain">
+      Open Daily Brain
+      </a>
+      </p>
+
+      <hr>
+
+      <p style="font-size:12px;color:#888">
+      EverydayTools.uk
+      </p>
+    `;
 
     await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -69,15 +82,22 @@ export async function onRequest(context) {
         "Authorization": `Bearer ${env.RESEND_API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        from: "Daily Brain <onboarding@resend.dev>",
+        to: [email],
+        subject: "🧠 Welcome to Daily Brain",
+        html: html
+      })
     });
 
   } catch (err) {
+
     console.log("Email error:", err);
+
   }
 
   return Response.json({
-    ok: true
+    ok:true
   });
 
 }
