@@ -1,5 +1,4 @@
 // /functions/api/r.js
-import { ensureTables } from "../../../utils/digest-lib.js";
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -22,9 +21,9 @@ export async function onRequest(context) {
 
   try {
     if (email && env.DIGEST_DB) {
-      await ensureTables(env.DIGEST_DB);
-
       const now = new Date().toISOString();
+
+      // Attempt click logging (no ensureTables dependency)
       await env.DIGEST_DB
         .prepare(
           `INSERT INTO clicks (email, kind, date_key, link_key, target_url, clicked_at)
@@ -41,6 +40,7 @@ export async function onRequest(context) {
         .run();
     }
   } catch (err) {
+    // Do not break redirect if logging fails
     console.error("click tracker error:", err);
   }
 
