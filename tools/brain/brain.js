@@ -598,3 +598,52 @@ async function loadStreakUI() {
 
 // Make sure this runs when the page is ready
 document.addEventListener("DOMContentLoaded", loadStreakUI);
+// ================================
+// Email Subscription
+// ================================
+const subscribeForm = document.getElementById("subscribeForm");
+const subscribeEmail = document.getElementById("subscribeEmail");
+const subscribeMsg = document.getElementById("subscribeMsg");
+
+if (subscribeForm) {
+  subscribeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = (subscribeEmail?.value || "").trim();
+
+    if (!email) {
+      subscribeMsg.textContent = "❌ Please enter your email";
+      return;
+    }
+
+    subscribeMsg.textContent = "Subscribing...";
+
+    try {
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+
+      if (data.ok) {
+        subscribeMsg.textContent = "✅ Subscribed successfully!";
+        subscribeEmail.value = "";
+
+        // Save email for streak system
+        localStorage.setItem("dailybrain_email", email);
+
+      } else {
+        subscribeMsg.textContent =
+          "❌ " + (data.error || "Subscription failed");
+      }
+
+    } catch (err) {
+      console.error(err);
+      subscribeMsg.textContent = "❌ Network error";
+    }
+  });
+}
