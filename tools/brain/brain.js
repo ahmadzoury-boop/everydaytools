@@ -1,15 +1,8 @@
 /* =========================================================
    EverydayTools.uk — Daily Brain (brain.js)
    Multi-file loader + recycle + full UI wiring
-   Works with your index.html IDs:
-   dateSelect, btnPrevDay, btnToday, btnNextDay,
-   resetTime, dayKey, questions, resultBox,
-   dayScore, bestDaysBody, leaderboardBody
 ========================================================= */
 
-// ================================
-// Multi-file sets loader + recycle
-// ================================
 const DATA_BASE = "/tools/brain/data/";
 
 const DATA_RANGES = [
@@ -18,7 +11,6 @@ const DATA_RANGES = [
   { from: "2026-03-11", to: "2026-04-09", file: "sets-2026-03-11_to_2026-04-09.json" },
 ];
 
-// Cache per file (fast)
 const __SETS_CACHE = new Map();
 
 function dateInRange(date, from, to) {
@@ -45,7 +37,6 @@ function getGlobalSpan() {
   return { start: sorted[0].from, end: sorted[sorted.length - 1].to };
 }
 
-// Map ANY date into our available span by cycling forever
 function mapDateToCycle(requestedDayKey) {
   const { start, end } = getGlobalSpan();
 
@@ -55,15 +46,13 @@ function mapDateToCycle(requestedDayKey) {
 
   const spanDays = daysBetween(start, end) + 1;
 
-  // after end -> wrap forward
   if (requestedDayKey > end) {
-    const offset = daysBetween(end, requestedDayKey); // 1,2,3...
+    const offset = daysBetween(end, requestedDayKey);
     const idx = (offset - 1) % spanDays;
     return { effective: addDays(start, idx), cycled: true };
   }
 
-  // before start -> wrap backwards
-  const offsetBack = daysBetween(requestedDayKey, start); // 1,2,3...
+  const offsetBack = daysBetween(requestedDayKey, start);
   const idxBack = (offsetBack - 1) % spanDays;
   return { effective: addDays(end, -idxBack), cycled: true };
 }
@@ -77,573 +66,288 @@ function pickFileForDate(effectiveDayKey) {
   return null;
 }
 
-function listAvailableDayKeys(sets) {
-  if (!sets || typeof sets !== "object") return [];
-  return Object.keys(sets)
-    .filter((k) => /^\d{4}-\d{2}-\d{2}$/.test(k))
-    .sort();
-}
-
-// If exact day missing inside selected file, fallback to closest <= day, else last
-function fallbackWithinFile(sets, preferredKey) {
-  if (sets?.[preferredKey]) return { dayKey: preferredKey, usedFallback: false };
-  const keys = listAvailableDayKeys(sets);
-  if (!keys.length) return { dayKey: preferredKey, usedFallback: true };
-  const le = keys.filter((k) => k <= preferredKey);
-  return { dayKey: le.length ? le[le.length - 1] : keys[keys.length - 1], usedFallback: true };
-}
-
 async function fetchSetsFile(url) {
+
   if (__SETS_CACHE.has(url)) return __SETS_CACHE.get(url);
 
-  const p = fetch(url, { cache: "no-store" }).then(async (r) => {
-    if (!r.ok) throw new Error(`Failed to load sets: ${r.status} ${r.statusText}`);
+  const p = fetch(url,{cache:"no-store"}).then(r=>{
+    if(!r.ok) throw new Error("Failed loading sets");
     return r.json();
   });
 
-  __SETS_CACHE.set(url, p);
+  __SETS_CACHE.set(url,p);
+
   return p;
 }
 
-async function loadSetsForDay(requestedDayKey) {
-  const { effective, cycled } = mapDateToCycle(requestedDayKey);
+async function loadSetsForDay(requestedDayKey){
 
-  const pick = pickFileForDate(effective);
-  if (!pick) throw new Error(`No data range configured for effective date: ${effective}`);
+  const {effective}=mapDateToCycle(requestedDayKey);
 
-  const sets = await fetchSetsFile(pick.url);
-  const { dayKey, usedFallback } = fallbackWithinFile(sets, effective);
+  const pick=pickFileForDate(effective);
 
-  return {
-    requestedDayKey,
-    effectiveDayKey: effective,
-    usedCycle: cycled,
-    fileUrl: pick.url,
-    sets,
-    dayKey,        // final day key to show
-    usedFallback,
-  };
+  const sets=await fetchSetsFile(pick.url);
+
+  const day=sets[effective] || Object.values(sets)[0];
+
+  return {sets,dayKey:effective,day}
+
 }
 
-// ================================
-// App state + storage
-// ================================
-const STORE_KEY = "et_brain_v2"; // bump version safely
+/* =========================================================
+   STORAGE
+========================================================= */
 
-function readStore() {
-  try {
-    return JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-  } catch {
-    return {};
-  }
-}
+const STORE_KEY="et_brain_v2";
 
-function writeStore(s) {
-  localStorage.setItem(STORE_KEY, JSON.stringify(s));
-}
+function readStore(){
 
-let store = readStore();
-let currentRequestedKey = null; // date user selected (may be future)
-let currentLoaded = null;       // loaded object from loadSetsForDay()
-
-// ================================
-// DOM
-// ================================
-const elDateSelect = document.getElementById("dateSelect");
-const elPrev = document.getElementById("btnPrevDay");
-const elToday = document.getElementById("btnToday");
-const elNext = document.getElementById("btnNextDay");
-
-const elReset = document.getElementById("resetTime");
-const elDayKey = document.getElementById("dayKey");
-
-const elQuestions = document.getElementById("questions");
-const elResultBox = document.getElementById("resultBox");
-
-const elDayScore = document.getElementById("dayScore");
-const elBestDaysBody = document.getElementById("bestDaysBody");
-const elLeaderboardBody = document.getElementById("leaderboardBody");
-
-// ================================
-// Time helpers
-// ================================
-function todayUTCKey() {
-  const d = new Date();
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
-    .toISOString()
-    .slice(0, 10);
-}
-
-function msToNextUtcMidnight() {
-  const d = new Date();
-  return (
-    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) -
-    Date.now()
-  );
-}
-
-function fmtHMS(ms) {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const hh = String(Math.floor(total / 3600)).padStart(2, "0");
-  const mm = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
-  const ss = String(total % 60).padStart(2, "0");
-  return `${hh}:${mm}:${ss}`;
-}
-
-// ================================
-// UI: date dropdown + nav
-// ================================
-function buildDateOptions() {
-  // Past 30 days + next 120 days (requested keys)
-  const today = todayUTCKey();
-  const start = addDays(today, -30);
-  const end = addDays(today, 120);
-
-  const opts = [];
-  const days = daysBetween(start, end);
-  for (let i = 0; i <= days; i++) {
-    opts.push(addDays(start, i));
+  try{
+    return JSON.parse(localStorage.getItem(STORE_KEY) || "{}")
+  }catch{
+    return {}
   }
 
-  elDateSelect.innerHTML = opts
-    .map((k) => `<option value="${k}">${k}</option>`)
-    .join("");
-
-  return { start, end };
 }
 
-function setSelectedDate(key) {
-  currentRequestedKey = key;
-  elDateSelect.value = key;
+function writeStore(s){
+
+  localStorage.setItem(STORE_KEY,JSON.stringify(s))
+
 }
 
-function stepDay(delta) {
-  const base = currentRequestedKey || todayUTCKey();
-  const next = addDays(base, delta);
-  setSelectedDate(next);
-  renderForRequestedDate(next);
+let store=readStore()
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const elQuestions=document.getElementById("questions")
+const elResultBox=document.getElementById("resultBox")
+const elDayKey=document.getElementById("dayKey")
+const elDayScore=document.getElementById("dayScore")
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+function normalizeAnswer(s){
+
+  return String(s||"").trim().toLowerCase()
+
 }
 
-// ================================
-// Question rendering + grading
-// ================================
-function normalizeAnswer(s) {
-  return String(s ?? "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
-}
+function getDayStore(key){
 
-function getDayStore(requestedKey) {
-  if (!store.days) store.days = {};
-  if (!store.days[requestedKey]) {
-    store.days[requestedKey] = {
-      requestedKey,
-      score: 0,
-      answers: {}, // qid -> { given, correct }
-      completedAt: null,
-      meta: null,  // { effectiveKey, usedCycle, usedFallback, fileUrl }
-    };
-  }
-  return store.days[requestedKey];
-}
+  if(!store.days) store.days={}
 
-function makeQCard({ group, idx, qObj, expected, saved }) {
-  const qid = `${group}:${idx}`;
-  const given = saved?.answers?.[qid]?.given ?? "";
-  const wasCorrect = saved?.answers?.[qid]?.correct === true;
+  if(!store.days[key]){
 
-  const wrap = document.createElement("div");
-  wrap.className = "q-card";
-  wrap.style.border = "1px solid rgba(255,255,255,0.10)";
-  wrap.style.borderRadius = "14px";
-  wrap.style.padding = "14px";
-  wrap.style.background = "rgba(0,0,0,0.12)";
-  wrap.style.marginBottom = "10px";
+    store.days[key]={score:0,answers:{}}
 
-  const title = document.createElement("div");
-  title.style.display = "flex";
-  title.style.justifyContent = "space-between";
-  title.style.alignItems = "center";
-  title.style.gap = "10px";
-
-  const left = document.createElement("div");
-  left.innerHTML = `<strong>${group.toUpperCase()}</strong> <span style="opacity:.7;font-size:12px;">#${idx + 1}</span>`;
-
-  const right = document.createElement("div");
-  right.style.fontSize = "12px";
-  right.style.opacity = "0.85";
-  right.textContent = wasCorrect ? "✅ Correct" : "";
-
-  title.appendChild(left);
-  title.appendChild(right);
-
-  const qText = document.createElement("div");
-  qText.style.marginTop = "10px";
-  qText.style.fontSize = "14px";
-  qText.textContent = qObj.q || "";
-
-  const hint = document.createElement("div");
-  hint.style.marginTop = "8px";
-  hint.style.fontSize = "12px";
-  hint.style.opacity = "0.75";
-  hint.textContent = qObj.hint ? `Hint: ${qObj.hint}` : "";
-
-  const row = document.createElement("div");
-  row.style.display = "flex";
-  row.style.gap = "10px";
-  row.style.marginTop = "12px";
-  row.style.flexWrap = "wrap";
-
-  const input = document.createElement("input");
-  input.type = "text";
-  input.value = given;
-  input.placeholder = "Your answer…";
-  input.style.flex = "1";
-  input.style.minWidth = "180px";
-  input.style.padding = "10px 12px";
-  input.style.borderRadius = "12px";
-  input.style.border = "1px solid rgba(255,255,255,0.12)";
-  input.style.background = "rgba(0,0,0,0.20)";
-  input.style.color = "inherit";
-  input.autocomplete = "off";
-
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.textContent = "Check";
-  btn.style.padding = "10px 12px";
-  btn.style.borderRadius = "12px";
-  btn.style.border = "1px solid rgba(255,255,255,0.14)";
-  btn.style.background = "rgba(78,161,255,0.18)";
-  btn.style.color = "inherit";
-  btn.style.cursor = "pointer";
-
-  const feedback = document.createElement("div");
-  feedback.style.marginTop = "10px";
-  feedback.style.fontSize = "12px";
-  feedback.style.opacity = "0.9";
-
-  function setFeedback(ok) {
-    if (ok) {
-      feedback.textContent = "✅ Correct!";
-      right.textContent = "✅ Correct";
-    } else {
-      feedback.textContent = "❌ Not correct yet.";
-      right.textContent = "";
-    }
   }
 
-  // Initial feedback if already correct
-  if (wasCorrect) {
-    setFeedback(true);
-  }
+  return store.days[key]
 
-  function gradeAndSave() {
-    const val = normalizeAnswer(input.value);
-    const exp = normalizeAnswer(expected);
-
-    const ok = val.length > 0 && val === exp;
-
-    const dayRec = getDayStore(currentRequestedKey);
-    dayRec.answers[qid] = { given: input.value, correct: ok };
-
-    // score: 1 per correct (simple and clear)
-    dayRec.score = Object.values(dayRec.answers).filter((x) => x.correct).length;
-
-    writeStore(store);
-    setFeedback(ok);
-    updateResultPanels();
-  }
-
-  btn.addEventListener("click", gradeAndSave);
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") gradeAndSave();
-  });
-
-  row.appendChild(input);
-  row.appendChild(btn);
-
-  wrap.appendChild(title);
-  wrap.appendChild(qText);
-  if (qObj.hint) wrap.appendChild(hint);
-  wrap.appendChild(row);
-  wrap.appendChild(feedback);
-
-  return wrap;
 }
 
-function flattenDay(dayObj) {
-  // returns [{group, qObj}]
-  const out = [];
-  if (!dayObj) return out;
+function makeCard(q,group,index,dayKey){
 
-  if (Array.isArray(dayObj.easy)) dayObj.easy.forEach((q) => out.push({ group: "easy", q }));
-  if (Array.isArray(dayObj.medium)) dayObj.medium.forEach((q) => out.push({ group: "medium", q }));
-  if (Array.isArray(dayObj.hard)) dayObj.hard.forEach((q) => out.push({ group: "hard", q }));
+  const expected=q.a
 
-  // fallback if day itself is array
-  if (!out.length && Array.isArray(dayObj)) dayObj.forEach((q) => out.push({ group: "mix", q }));
+  const wrap=document.createElement("div")
+  wrap.className="q-card"
 
-  return out;
-}
+  const input=document.createElement("input")
+  const btn=document.createElement("button")
+  const feedback=document.createElement("div")
 
-// ================================
-// Panels: score, best days, leaderboard placeholder
-// ================================
-function updateResultPanels() {
-  const rec = getDayStore(currentRequestedKey);
-  elDayScore.textContent = String(rec.score || 0);
+  input.placeholder="Your answer"
+  btn.textContent="Check"
 
-  // best days = top scores from local store
-  const allDays = Object.values(store.days || {});
-  const top = allDays
-    .map((d) => ({ key: d.requestedKey, score: Number(d.score || 0) }))
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score || a.key.localeCompare(b.key))
-    .slice(0, 7);
+  btn.onclick=()=>{
 
-  elBestDaysBody.innerHTML = top.length
-    ? top
-        .map(
-          (x) => `
-        <tr>
-          <td style="padding:6px 0;opacity:.85;">${x.key}</td>
-          <td style="padding:6px 0;text-align:right;font-weight:700;">${x.score}</td>
-        </tr>`
-        )
-        .join("")
-    : `<tr><td style="padding:8px 0;opacity:.7;">No scores yet.</td><td></td></tr>`;
+    const val=normalizeAnswer(input.value)
 
-  // Global leaderboard: keep stable even if no API
-  // If you later add an endpoint, you can wire it here.
-  if (!elLeaderboardBody.dataset.loaded) {
-    elLeaderboardBody.innerHTML = `
-      <tr><td style="padding:8px 0;opacity:.7;">
-        Leaderboard will appear here (API not connected yet).
-      </td><td></td></tr>
-    `;
-    elLeaderboardBody.dataset.loaded = "1";
+    const ok=val===normalizeAnswer(expected)
+
+    const rec=getDayStore(dayKey)
+
+    rec.answers[group+index]={correct:ok}
+
+    rec.score=Object.values(rec.answers).filter(x=>x.correct).length
+
+    writeStore(store)
+
+    feedback.textContent=ok?"✅ Correct":"❌ Try again"
+
+    updatePanels(dayKey)
+
   }
+
+  wrap.innerHTML=`<strong>${group}</strong><p>${q.q}</p>`
+
+  wrap.appendChild(input)
+  wrap.appendChild(btn)
+  wrap.appendChild(feedback)
+
+  return wrap
+
 }
 
-// ================================
-// Main render
-// ================================
-async function renderForRequestedDate(requestedKey) {
-  // basic UI state
-  elQuestions.innerHTML = "";
-  elResultBox.textContent = "Loading today’s puzzles…";
-  elDayKey.textContent = requestedKey;
+/* =========================================================
+   PANELS
+========================================================= */
 
-  // make sure local record exists
-  const rec = getDayStore(requestedKey);
+function updatePanels(dayKey){
 
-  try {
-    const loaded = await loadSetsForDay(requestedKey);
-    currentLoaded = loaded;
+  const rec=getDayStore(dayKey)
 
-    // Save metadata to local record (useful for debugging)
-    rec.meta = {
-      effectiveKey: loaded.effectiveDayKey,
-      usedCycle: loaded.usedCycle,
-      usedFallback: loaded.usedFallback,
-      fileUrl: loaded.fileUrl,
-    };
-    writeStore(store);
+  elDayScore.textContent=rec.score||0
 
-    const dayKeyToShow = loaded.dayKey;
-    elDayKey.textContent = dayKeyToShow;
+}
 
-    const day = loaded.sets[dayKeyToShow];
-    const flat = flattenDay(day);
+/* =========================================================
+   MAIN RENDER
+========================================================= */
 
-    // Note area
-    const notes = [];
-    if (loaded.usedCycle) {
-      notes.push(`Recycled: ${loaded.requestedDayKey} → ${loaded.effectiveDayKey}`);
-    }
-    if (loaded.usedFallback) {
-      notes.push(`Adjusted inside file to: ${loaded.dayKey}`);
+async function render(){
+
+  const today=new Date().toISOString().slice(0,10)
+
+  const loaded=await loadSetsForDay(today)
+
+  elDayKey.textContent=loaded.dayKey
+
+  elQuestions.innerHTML=""
+
+  const day=loaded.day
+
+  if(day.easy){
+
+    day.easy.forEach((q,i)=>{
+
+      elQuestions.appendChild(makeCard(q,"easy",i,loaded.dayKey))
+
+    })
+
+  }
+
+  if(day.medium){
+
+    day.medium.forEach((q,i)=>{
+
+      elQuestions.appendChild(makeCard(q,"medium",i,loaded.dayKey))
+
+    })
+
+  }
+
+  updatePanels(loaded.dayKey)
+
+}
+
+render()
+
+/* =========================================================
+   STREAK
+========================================================= */
+
+async function loadStreakUI(){
+
+  const email=localStorage.getItem("dailybrain_email")
+
+  if(!email) return
+
+  try{
+
+    const res=await fetch("https://brain-digest.ahmadzoury.workers.dev/streak?email="+encodeURIComponent(email))
+
+    const data=await res.json()
+
+    const el=document.getElementById("brain-streak")
+
+    if(!el) return
+
+    if(data.current_streak>0){
+
+      el.textContent=`🔥 Streak ${data.current_streak}`
+
     }
 
-    if (!flat.length) {
-      elResultBox.textContent = `No questions found for ${dayKeyToShow}.`;
-      updateResultPanels();
-      return;
-    }
+  }catch{}
 
-    elResultBox.innerHTML = notes.length
-      ? `<span style="opacity:.75;">${notes.join(" · ")}</span>`
-      : "";
-
-    // Render
-    const groups = {
-      easy: flat.filter((x) => x.group === "easy").map((x) => x.q),
-      medium: flat.filter((x) => x.group === "medium").map((x) => x.q),
-      hard: flat.filter((x) => x.group === "hard").map((x) => x.q),
-      mix: flat.filter((x) => x.group === "mix").map((x) => x.q),
-    };
-
-    const order = ["easy", "medium", "hard", "mix"];
-    for (const g of order) {
-      const arr = groups[g];
-      if (!arr || !arr.length) continue;
-
-      arr.forEach((qObj, idx) => {
-        const expected = qObj.a ?? "";
-        const card = makeQCard({
-          group: g === "mix" ? "mix" : g,
-          idx,
-          qObj,
-          expected,
-          saved: rec,
-        });
-        elQuestions.appendChild(card);
-      });
-    }
-
-    updateResultPanels();
-  } catch (e) {
-    console.error(e);
-    elResultBox.textContent = "Failed to load puzzles. Check console.";
-    updateResultPanels();
-  }
 }
 
-// ================================
-// Init
-// ================================
-function startResetTimer() {
-  function tick() {
-    elReset.textContent = fmtHMS(msToNextUtcMidnight());
-  }
-  tick();
-  setInterval(tick, 1000);
+document.addEventListener("DOMContentLoaded",loadStreakUI)
+
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm=document.getElementById("subscribeForm")
+const subscribeEmail=document.getElementById("subscribeEmail")
+const subscribeMsg=document.getElementById("subscribeMsg")
+
+if(subscribeForm){
+
+subscribeForm.addEventListener("submit",async e=>{
+
+e.preventDefault()
+
+const email=subscribeEmail.value.trim()
+
+if(!email || !email.includes("@")){
+
+subscribeMsg.textContent="❌ Please enter a valid email"
+return
+
 }
 
-function wireEvents() {
-  elDateSelect.addEventListener("change", () => {
-    const key = elDateSelect.value;
-    setSelectedDate(key);
-    renderForRequestedDate(key);
-  });
+subscribeMsg.textContent="Subscribing..."
 
-  elPrev.addEventListener("click", () => stepDay(-1));
-  elNext.addEventListener("click", () => stepDay(1));
-  elToday.addEventListener("click", () => {
-    const t = todayUTCKey();
-    setSelectedDate(t);
-    renderForRequestedDate(t);
-  });
+try{
+
+const res=await fetch("/api/brain-subscribe",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({email})
+})
+
+let data
+
+try{
+
+data=await res.json()
+
+}catch{
+
+throw new Error("Invalid response")
+
 }
 
-function init() {
-  buildDateOptions();
-  wireEvents();
-  startResetTimer();
+if(data.ok){
 
-  const initial = todayUTCKey();
-  setSelectedDate(initial);
-  renderForRequestedDate(initial);
+subscribeMsg.textContent="✅ Subscribed successfully!"
+
+localStorage.setItem("dailybrain_email",email)
+
+subscribeEmail.value=""
+
+}else{
+
+subscribeMsg.textContent="❌ "+(data.error||"Subscription failed")
+
 }
 
-init();
+}catch(err){
 
-// ================================
-// Streak UI (email-based)
-// ================================
-async function loadStreakUI() {
-  // 1) Try to read email from URL (?email=...) first
-  const params = new URLSearchParams(window.location.search);
-  const emailFromUrl = params.get("email");
+console.error(err)
 
-  // 2) Or from localStorage (saved from a previous visit)
-  const storedEmail = localStorage.getItem("dailybrain_email");
-  const email = emailFromUrl || storedEmail;
+subscribeMsg.textContent="❌ Network error"
 
-  if (!email) {
-    // No email known yet => don't show anything
-    return;
-  }
-
-  // If we got it from URL, save it for next time
-  if (emailFromUrl) {
-    localStorage.setItem("dailybrain_email", emailFromUrl);
-  }
-
-  try {
-    const res = await fetch(
-      "https://brain-digest.ahmadzoury.workers.dev/streak?email=" +
-        encodeURIComponent(email)
-    );
-
-    if (!res.ok) {
-      console.log("Streak API returned non-OK:", res.status);
-      return;
-    }
-
-    const streak = await res.json(); // { current_streak, best_streak, last_day_key }
-    const el = document.querySelector("#brain-streak");
-    if (!el) return;
-
-    if (streak.current_streak > 0) {
-      el.textContent = `🔥 Streak: ${streak.current_streak} days · Best: ${streak.best_streak}`;
-    } else {
-      el.textContent = "🔥 Start your streak today";
-    }
-  } catch (err) {
-    console.log("Error loading streak:", err);
-  }
 }
 
-// Make sure this runs when the page is ready
-document.addEventListener("DOMContentLoaded", loadStreakUI);
-// ================================
-// Email Subscription
-// ================================
-const subscribeForm = document.getElementById("subscribeForm");
-const subscribeEmail = document.getElementById("subscribeEmail");
-const subscribeMsg = document.getElementById("subscribeMsg");
+})
 
-if (subscribeForm) {
-  subscribeForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = (subscribeEmail?.value || "").trim();
-
-    if (!email) {
-      subscribeMsg.textContent = "❌ Please enter your email";
-      return;
-    }
-
-    subscribeMsg.textContent = "Subscribing...";
-
-    try {
-      const res = await fetch("/api/brain-subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email })
-      });
-
-      const data = await res.json();
-
-      if (data.ok) {
-        subscribeMsg.textContent = "✅ Subscribed successfully!";
-        subscribeEmail.value = "";
-
-        // Save email for streak system
-        localStorage.setItem("dailybrain_email", email);
-
-      } else {
-        subscribeMsg.textContent =
-          "❌ " + (data.error || "Subscription failed");
-      }
-
-    } catch (err) {
-      console.error(err);
-      subscribeMsg.textContent = "❌ Network error";
-    }
-  });
 }
