@@ -1,8 +1,7 @@
 // /functions/api/currency-subscribe.js
-import { upsertSubscriber } from "../../../utils/digest-lib.js";
 
 export async function onRequest(context) {
-  const { request, env } = context;
+  const { request } = context;
 
   try {
     const email = await extractEmail(request);
@@ -10,8 +9,23 @@ export async function onRequest(context) {
       return json({ ok: false, error: "Email is required" }, 400);
     }
 
-    await upsertSubscriber(env, email);
-    return json({ ok: true, email });
+    // forward request to the Currency Digest Worker
+    const res = await fetch("https://currency-digest.ahmadzoury.workers.dev/subscribe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        pair: "USD/EUR",
+        daily_enabled: true,
+        weekly_enabled: false
+      })
+    });
+
+    const data = await res.json();
+    return json(data);
+
   } catch (err) {
     console.error("currency-subscribe error:", err);
     return json({ ok: false, error: "Internal error" }, 500);
@@ -24,14 +38,17 @@ async function extractEmail(request) {
   if (qpEmail) return qpEmail.trim().toLowerCase();
 
   const ct = request.headers.get("content-type") || "";
+
   if (ct.includes("application/json")) {
     const body = await request.json().catch(() => ({}));
     return (body.email || "").toString().trim().toLowerCase();
   }
+
   if (ct.includes("application/x-www-form-urlencoded")) {
     const form = await request.formData();
     return (form.get("email") || "").toString().trim().toLowerCase();
   }
+
   return null;
 }
 
