@@ -72,19 +72,292 @@ export async function onRequest(context) {
       </p>
     `;
 
-    await fetch("https://api.resend.com/emails",{
-      method:"POST",
-      headers:{
-        "Authorization":`Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        from: `${env.BRAIN_FROM_NAME} <${env.BRAIN_FROM_EMAIL}>`,
-        to:[email],
-        subject:"🧠 Welcome to Daily Brain",
-        html
-      })
-    });
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
+   await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    from: "Daily Brain <hello@everydaytools.uk>",
+    to: [email],
+    subject: "Welcome to Daily Brain 🧠",
+    html: `
+      <h2>Welcome to Daily Brain</h2>
+      <p>You are now subscribed.</p>
+
+      <p>Play today's puzzle:</p>
+
+      <a href="https://everydaytools.uk/tools/brain/">
+      Open Daily Brain
+      </a>
+    `
+  })
+});
 
   } catch (err) {
 
