@@ -1,8 +1,7 @@
 // /functions/api/currency-unsubscribe.js
-import { unsubscribeByEmail } from "../../../utils/digest-lib.js";
 
 export async function onRequest(context) {
-  const { request, env } = context;
+  const { request } = context;
   const url = new URL(request.url);
   const email = (url.searchParams.get("email") || "").trim().toLowerCase();
 
@@ -10,7 +9,10 @@ export async function onRequest(context) {
     return new Response("Missing email.", { status: 400 });
   }
 
-  await unsubscribeByEmail(env, email);
+  // forward unsubscribe request to Currency Worker
+  await fetch(
+    `https://currency-digest.ahmadzoury.workers.dev/unsubscribe?email=${encodeURIComponent(email)}`
+  );
 
   const html = `
     <!doctype html>
@@ -31,5 +33,8 @@ export async function onRequest(context) {
       </body>
     </html>
   `;
-  return new Response(html, { headers: { "Content-Type": "text/html" } });
+
+  return new Response(html, {
+    headers: { "Content-Type": "text/html" }
+  });
 }
