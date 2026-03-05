@@ -1,49 +1,42 @@
-export async function onRequest(context) {
-  const { request, env } = context;
+export async function onRequestPost({ request, env }) {
 
   try {
-    let email = "";
 
-    const ct = request.headers.get("content-type") || "";
+    const body = await request.json().catch(()=>null);
 
-    if (ct.includes("application/json")) {
-      const body = await request.json();
-      email = (body.email || "").trim().toLowerCase();
-    } else if (ct.includes("application/x-www-form-urlencoded")) {
-      const form = await request.formData();
-      email = (form.get("email") || "").toString().trim().toLowerCase();
-    }
-
-    if (!email) {
+    if (!body || !body.email) {
       return new Response(JSON.stringify({
-        ok: false,
-        error: "Missing email"
-      }), {
-        headers: { "Content-Type": "application/json" }
+        ok:false,
+        error:"Missing email"
+      }),{
+        headers:{ "Content-Type":"application/json" }
       });
     }
 
-    await env.DIGEST_DB.prepare(
-      `INSERT INTO brain_subscribers (email, created_at)
-       VALUES (?, ?)
-       ON CONFLICT(email) DO NOTHING`
+    const email = body.email.trim().toLowerCase();
+
+    await env.BRAIN_DB.prepare(
+      `INSERT OR REPLACE INTO brain_subscribers (email, created_at)
+       VALUES (?, datetime('now'))`
     )
-      .bind(email, new Date().toISOString())
-      .run();
+    .bind(email)
+    .run();
 
     return new Response(JSON.stringify({
-      ok: true,
-      message: "Subscribed"
-    }), {
-      headers: { "Content-Type": "application/json" }
+      ok:true
+    }),{
+      headers:{ "Content-Type":"application/json" }
     });
 
-  } catch (err) {
+  } catch(e){
+
     return new Response(JSON.stringify({
-      ok: false,
-      error: err.message
-    }), {
-      headers: { "Content-Type": "application/json" }
+      ok:false,
+      error:e.message
+    }),{
+      headers:{ "Content-Type":"application/json" }
     });
+
   }
+
 }
