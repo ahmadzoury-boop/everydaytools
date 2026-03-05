@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -11,8 +12,8 @@
 <body>
   <main class="brain-page">
 
-
 <!-- HEADER -->
+
 <header class="brain-hero">
   <h1>Daily Brain</h1>
 
@@ -20,10 +21,12 @@
     One short challenge a day on EverydayTools.uk
   </div>
 
-  <!-- 🔥 Streak badge (updated by JS) -->
+  <!-- Streak badge -->
+
   <div id="brain-streak" class="brain-streak-badge"></div>
 
-  <!-- Date selector + prev/next controls -->
+  <!-- Date selector -->
+
   <div class="brain-filterbar">
     <label class="brain-filter-label" for="dateSelect">
       Pick a date:
@@ -35,99 +38,163 @@
   </div>
 </header>
 
-    <!-- DIFFICULTY CARD (kept for design consistency) -->
-    <section class="brain-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-        <div>
-          <strong>Difficulty</strong>
-        </div>
-        <div style="font-size:13px;color:var(--muted);">
-          Resets in <span id="resetTime">00:00:00</span> (UTC)
-        </div>
-      </div>
+<!-- DIFFICULTY CARD -->
 
-      <div style="margin-top:8px;color:var(--muted);font-size:13px;">
-        🔥 Your streak increases when you complete Easy + Medium on the same day.
-      </div>
-    </section>
+<section class="brain-card">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+    <div>
+      <strong>Difficulty</strong>
+    </div>
+    <div style="font-size:13px;color:var(--muted);">
+      Resets in <span id="resetTime">00:00:00</span> (UTC)
+    </div>
+  </div>
 
-    <!-- QUESTIONS (CATALOG MODE ONLY) -->
-    <section class="brain-card">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">
-        Date: <span id="dayKey"></span>
-      </div>
+  <div style="margin-top:8px;color:var(--muted);font-size:13px;">
+    🔥 Your streak increases when you complete Easy + Medium on the same day.
+  </div>
+</section>
 
-      <!-- brain.js injects q-card blocks here -->
-      <div id="questions"></div>
+<!-- QUESTIONS -->
 
-      <div id="resultBox" style="margin-top:10px;font-size:13px;"></div>
-    </section>
+<section class="brain-card">
+  <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">
+    Date: <span id="dayKey"></span>
+  </div>
 
-    <!-- SUBSCRIBE -->
-    <section id="subscribe" class="brain-card">
-      <div style="font-weight:700;margin-bottom:6px;">
-        📩 Email Subscription
-      </div>
+  <!-- brain.js injects questions here -->
 
-      <div style="font-size:13px;color:var(--muted);">
-        Get Daily Brain puzzles by email (you can unsubscribe anytime).
-      </div>
+  <div id="questions"></div>
 
-      <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-        <input
-          id="subscribeEmail"
-          type="email"
-          placeholder="Enter your email"
-          autocomplete="email"
-          required
-          style="
-            flex:1;
-            min-width:220px;
-            padding:12px 14px;
-            border-radius:12px;
-            border:1px solid rgba(255,255,255,0.14);
-            background: rgba(0,0,0,0.18);
-            color: var(--fg);
-            outline: none;
-          "
-        />
+  <div id="resultBox" style="margin-top:10px;font-size:13px;"></div>
+</section>
 
-        <button id="subscribeBtn" type="submit" style="min-width:140px;">
-          Subscribe
-        </button>
-      </form>
+<!-- SUBSCRIBE -->
 
-      <div id="subscribeMsg" style="margin-top:10px;font-size:13px;color:var(--muted);"></div>
-    </section>
+<section id="subscribe" class="brain-card">
 
-    <!-- RESULT / LEADERBOARD -->
-    <section id="result" class="brain-card">
-      <div style="font-weight:700;margin-bottom:6px;">
-        Today's Result
-      </div>
+  <div style="font-weight:700;margin-bottom:6px;">
+    📩 Email Subscription
+  </div>
 
-      <div style="font-size:14px;margin-bottom:8px;">
-        Score: <strong id="dayScore">0</strong>
-      </div>
+  <div style="font-size:13px;color:var(--muted);">
+    Get Daily Brain puzzles by email (you can unsubscribe anytime).
+  </div>
 
-      <div style="font-weight:700;margin-top:10px;">
-        🏆 Your Best Days
-      </div>
-      <table>
-        <tbody id="bestDaysBody"></tbody>
-      </table>
+  <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
 
-      <div style="font-weight:700;margin-top:14px;">
-        🌍 Global Leaderboard
-      </div>
-      <table>
-        <tbody id="leaderboardBody"></tbody>
-      </table>
-    </section>
+```
+<input
+  id="subscribeEmail"
+  type="email"
+  placeholder="Enter your email"
+  autocomplete="email"
+  required
+  style="
+    flex:1;
+    min-width:220px;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.14);
+    background: rgba(0,0,0,0.18);
+    color: var(--fg);
+    outline: none;
+  "
+/>
+
+<button id="subscribeBtn" type="submit" style="min-width:140px;">
+  Subscribe
+</button>
+```
+
+  </form>
+
+  <div id="subscribeMsg" style="margin-top:10px;font-size:13px;color:var(--muted);"></div>
+
+</section>
+
+<!-- RESULT / LEADERBOARD -->
+
+<section id="result" class="brain-card">
+
+  <div style="font-weight:700;margin-bottom:6px;">
+    Today's Result
+  </div>
+
+  <div style="font-size:14px;margin-bottom:8px;">
+    Score: <strong id="dayScore">0</strong>
+  </div>
+
+  <div style="font-weight:700;margin-top:10px;">
+    🏆 Your Best Days
+  </div>
+  <table>
+    <tbody id="bestDaysBody"></tbody>
+  </table>
+
+  <div style="font-weight:700;margin-top:14px;">
+    🌍 Global Leaderboard
+  </div>
+  <table>
+    <tbody id="leaderboardBody"></tbody>
+  </table>
+
+</section>
 
   </main>
 
-  <!-- Brain JS -->
+  <!-- Brain logic -->
+
   <script src="./brain.js?v=20260213-1"></script>
+
+  <!-- Subscription script -->
+
+  <script>
+
+  document.getElementById("subscribeForm").addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const email = document.getElementById("subscribeEmail").value.trim();
+    const msg = document.getElementById("subscribeMsg");
+
+    if(!email){
+      msg.textContent = "Please enter an email.";
+      return;
+    }
+
+    msg.textContent = "Subscribing...";
+
+    try{
+
+      const res = await fetch("/api/brain-subscribe",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          email: email
+        })
+      });
+
+      const data = await res.json();
+
+      if(data.ok){
+        msg.textContent = "✅ Subscribed successfully!";
+        document.getElementById("subscribeEmail").value = "";
+      }else{
+        msg.textContent = "❌ " + (data.error || "Subscription failed");
+      }
+
+    }catch(err){
+
+      msg.textContent = "❌ Network error";
+
+    }
+
+  });
+
+  </script>
+
 </body>
 </html>
