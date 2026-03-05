@@ -1,13 +1,103 @@
 export async function onRequest(context) {
 
-  return new Response(
-    JSON.stringify({
-      message: "NEW FUNCTION RUNNING",
-      time: new Date().toISOString()
-    }),
-    {
-      headers: { "Content-Type": "application/json" }
-    }
-  );
+  const { request, env } = context;
+  const url = new URL(request.url);
+
+  let email = "";
+
+  // GET support
+  if (request.method === "GET") {
+    email = (url.searchParams.get("email") || "").trim().toLowerCase();
+  }
+
+  // POST support
+  if (request.method === "POST") {
+    try {
+      const body = await request.json();
+      email = (body.email || "").trim().toLowerCase();
+    } catch {}
+  }
+
+  if (!email) {
+    return Response.json({
+      ok:false,
+      error:"Missing email"
+    });
+  }
+
+  /* --------------------------
+     Save subscriber
+  -------------------------- */
+
+  try {
+
+    await env.BRAIN_DB.prepare(`
+      INSERT INTO brain_subscribers (email, created_at)
+      VALUES (?, datetime('now'))
+      ON CONFLICT(email) DO NOTHING
+    `)
+    .bind(email)
+    .run();
+
+  } catch (err) {
+
+    return Response.json({
+      ok:false,
+      error:String(err)
+    });
+
+  }
+
+  /* --------------------------
+     Send email via Resend
+  -------------------------- */
+
+  try {
+
+    const payload = {
+      from: "Daily Brain <onboarding@resend.dev>",
+      to: [email],
+      subject: "🧠 Welcome to Daily Brain",
+      html: `
+        <h2>🧠 Welcome to Daily Brain</h2>
+
+        <p>You successfully subscribed.</p>
+
+        <p>
+        Solve today's puzzle here:
+        </p>
+
+        <p>
+        <a href="https://everydaytools.uk/tools/brain">
+        Open Daily Brain
+        </a>
+        </p>
+
+        <hr>
+
+        <p style="font-size:12px;color:#888">
+        EverydayTools.uk
+        </p>
+      `
+    };
+
+    await fetch("https://api.resend.com/emails",{
+      method:"POST",
+      headers:{
+        "Authorization":`Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(payload)
+    });
+
+  } catch(err){
+
+    console.log("Email error:",err);
+
+  }
+
+  return Response.json({
+    ok:true
+  });
 
 }
