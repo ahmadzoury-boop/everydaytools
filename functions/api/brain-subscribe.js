@@ -1,24 +1,40 @@
-export async function onRequestPost(context) {
+export async function onRequest(context) {
 
   const { request, env } = context;
+  const url = new URL(request.url);
 
-  let body = {};
+  let email = "";
 
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ ok:false, error:"Invalid request" });
+  /* -------------------------
+     GET ?email=
+  ------------------------- */
+  if (request.method === "GET") {
+    email = (url.searchParams.get("email") || "").trim().toLowerCase();
   }
 
-  const email = (body.email || "").trim().toLowerCase();
+  /* -------------------------
+     POST JSON
+  ------------------------- */
+  if (request.method === "POST") {
+    try {
+      const body = await request.json();
+      email = (body.email || "").trim().toLowerCase();
+    } catch {}
+  }
 
   if (!email) {
-    return Response.json({ ok:false, error:"Missing email" });
+    return Response.json({
+      ok:false,
+      error:"Missing email"
+    });
   }
+
+  /* -------------------------
+     SAVE SUBSCRIBER
+  ------------------------- */
 
   try {
 
-    // Save subscriber
     await env.BRAIN_DB.prepare(`
       INSERT INTO brain_subscribers (email, created_at)
       VALUES (?, datetime('now'))
@@ -36,28 +52,24 @@ export async function onRequestPost(context) {
 
   }
 
-  /* =========================
-     SEND WELCOME EMAIL
-  ========================= */
+  /* -------------------------
+     SEND EMAIL (Resend)
+  ------------------------- */
 
   try {
 
     const html = `
       <h2>🧠 Welcome to Daily Brain</h2>
 
-      <p>You are now subscribed to Daily Brain on EverydayTools.uk.</p>
-
-      <p>Every day you will receive a short brain puzzle.</p>
+      <p>You are now subscribed to Daily Brain.</p>
 
       <p>
-      Open today’s puzzle here:
+      Start today's puzzle:
       <br><br>
       <a href="https://everydaytools.uk/tools/brain/">
-      Start today's puzzle
+      Open Daily Brain
       </a>
       </p>
-
-      <p>Good luck!</p>
     `;
 
     await fetch("https://api.resend.com/emails",{
@@ -74,8 +86,10 @@ export async function onRequestPost(context) {
       })
     });
 
-  } catch (e) {
-    console.log("Email send failed:", e);
+  } catch (err) {
+
+    console.log("Email error:",err);
+
   }
 
   return Response.json({
