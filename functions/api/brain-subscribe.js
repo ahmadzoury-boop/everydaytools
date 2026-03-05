@@ -5,12 +5,12 @@ export async function onRequest(context) {
 
   let email = "";
 
-  // GET support
+  // Support GET requests
   if (request.method === "GET") {
     email = (url.searchParams.get("email") || "").trim().toLowerCase();
   }
 
-  // POST support
+  // Support POST requests
   if (request.method === "POST") {
     try {
       const body = await request.json();
@@ -25,9 +25,9 @@ export async function onRequest(context) {
     });
   }
 
-  /* ------------------------------
-     SAVE SUBSCRIBER TO D1
-  ------------------------------ */
+  /* --------------------------
+     Save subscriber to D1
+  -------------------------- */
 
   try {
 
@@ -48,19 +48,19 @@ export async function onRequest(context) {
 
   }
 
-  /* ------------------------------
-     SEND EMAIL WITH RESEND
-  ------------------------------ */
+  /* --------------------------
+     Send email using Resend
+  -------------------------- */
 
   try {
 
     const html = `
       <h2>🧠 Welcome to Daily Brain</h2>
 
-      <p>You are now subscribed to the Daily Brain puzzles.</p>
+      <p>You successfully subscribed.</p>
 
       <p>
-      Solve today's challenge here:
+      Solve today's puzzle:
       </p>
 
       <p>
