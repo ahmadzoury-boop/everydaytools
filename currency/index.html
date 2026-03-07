@@ -11,7 +11,7 @@
 
 <style>
 body{
-font-family: system-ui, Arial;
+font-family:system-ui,Arial;
 background:#f3f4f6;
 margin:0;
 padding:0;
@@ -73,16 +73,15 @@ background:#2563eb;
 <script>
 
 const path = window.location.pathname
-
 let slug = path.split("/")[2]
 
 let from = "USD"
 let to = "EUR"
 
 if(slug && slug.includes("-to-")){
-[from,to] = slug.split("-to-")
-from = from.toUpperCase()
-to = to.toUpperCase()
+  [from,to] = slug.split("-to-")
+  from = from.toUpperCase()
+  to = to.toUpperCase()
 }
 
 document.getElementById("title").innerText =
@@ -93,6 +92,7 @@ from + " to " + to + " Exchange Rate | ToolStack"
 
 document.getElementById("converterLink").href =
 "/tools/finance/currency-converter?from="+from+"&to="+to
+
 
 async function loadRate(){
 
@@ -112,8 +112,8 @@ return
 
 const rate = data.rates[to]
 
-document.getElementById("loading").innerText =
-"1 " + from + " = " + rate + " " + to
+document.getElementById("loading").style.display = "none"
+
 document.getElementById("rate").innerText =
 "1 " + from + " = " + rate + " " + to
 
