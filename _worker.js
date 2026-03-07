@@ -1,11 +1,12 @@
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
 
     const url = new URL(request.url)
 
     if (url.pathname.startsWith("/currency/")) {
 
-      return fetch(new URL("/currency/index.html", request.url))
+      url.pathname = "/currency/index.html"
+      return fetch(url.toString(), request)
 
     }
 
