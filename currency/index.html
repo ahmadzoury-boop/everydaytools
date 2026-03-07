@@ -112,8 +112,8 @@ return
 
 const rate = data.rates[to]
 
-document.getElementById("loading").style.display="none"
-
+document.getElementById("loading").innerText =
+"1 " + from + " = " + rate + " " + to
 document.getElementById("rate").innerText =
 "1 " + from + " = " + rate + " " + to
 
