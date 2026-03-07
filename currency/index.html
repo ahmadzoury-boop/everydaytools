@@ -73,8 +73,8 @@ const path = window.location.pathname
 const slug = path.split("/")[2]
 
 if(!slug){
-document.getElementById("title").innerText = "Currency Converter"
-throw "no pair"
+from = "USD"
+to = "EUR"
 }
 
 let [from,to] = slug.split("-to-")
