@@ -3,49 +3,53 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Currency Exchange Rate</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">Currency Converter</title>
+
+<link rel="stylesheet" href="/assets/css/style.css">
 
 <style>
-
 body{
-font-family:system-ui;
-background:#f4f6fb;
-padding:40px;
+font-family: system-ui, Arial;
+background:#f3f4f6;
+margin:0;
+padding:0;
 }
 
 .container{
-max-width:620px;
-margin:auto;
+max-width:500px;
+margin:60px auto;
 background:white;
 padding:30px;
 border-radius:12px;
-box-shadow:0 8px 24px rgba(0,0,0,0.08);
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:center;
 }
 
 h1{
-margin-top:0;
-font-size:28px;
+margin-bottom:20px;
 }
 
 .rate{
-font-size:34px;
+font-size:28px;
 font-weight:700;
-color:#2563eb;
 margin:20px 0;
 }
 
 button{
-background:#2563eb;
-color:white;
+background:#3b82f6;
 border:none;
+color:white;
 padding:12px 18px;
 border-radius:8px;
-font-weight:600;
 cursor:pointer;
+font-size:16px;
 }
 
+button:hover{
+background:#2563eb;
+}
 </style>
 
 </head>
@@ -54,11 +58,11 @@ cursor:pointer;
 
 <div class="container">
 
-<h1 id="title">Currency</h1>
+<h1 id="title">Currency Converter</h1>
 
-<div id="rate" class="rate">
-Loading...
-</div>
+<div id="loading">Loading...</div>
+
+<div class="rate" id="rate"></div>
 
 <a id="converterLink">
 <button>Open Converter</button>
@@ -70,25 +74,29 @@ Loading...
 
 const path = window.location.pathname
 
-const slug = path.split("/")[2]
+let slug = path.split("/")[2]
 
-if(!slug){
-from = "USD"
-to = "EUR"
-}
+let from = "USD"
+let to = "EUR"
 
-let [from,to] = slug.split("-to-")
-
+if(slug && slug.includes("-to-")){
+[from,to] = slug.split("-to-")
 from = from.toUpperCase()
 to = to.toUpperCase()
+}
 
 document.getElementById("title").innerText =
 from + " to " + to + " Exchange Rate"
+
+document.getElementById("pageTitle").innerText =
+from + " to " + to + " Exchange Rate | ToolStack"
 
 document.getElementById("converterLink").href =
 "/tools/finance/currency-converter?from="+from+"&to="+to
 
 async function loadRate(){
+
+try{
 
 const res = await fetch(
 "https://api.frankfurter.app/latest?from="+from+"&to="+to
@@ -96,10 +104,27 @@ const res = await fetch(
 
 const data = await res.json()
 
+if(!data.rates || !data.rates[to]){
+document.getElementById("loading").innerText =
+"Currency pair not available"
+return
+}
+
 const rate = data.rates[to]
 
+document.getElementById("loading").style.display="none"
+
 document.getElementById("rate").innerText =
-"1 "+from+" = "+rate+" "+to
+"1 " + from + " = " + rate + " " + to
+
+}catch(err){
+
+console.error(err)
+
+document.getElementById("loading").innerText =
+"Failed to load exchange rate"
+
+}
 
 }
 
