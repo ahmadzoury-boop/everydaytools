@@ -1,1 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
+<meta charset="UTF-8">
+<title>Currency Exchange Rate</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:system-ui;
+background:#f4f6fb;
+padding:40px;
+}
+
+.container{
+max-width:620px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 8px 24px rgba(0,0,0,0.08);
+}
+
+h1{
+margin-top:0;
+font-size:28px;
+}
+
+.rate{
+font-size:34px;
+font-weight:700;
+color:#2563eb;
+margin:20px 0;
+}
+
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:8px;
+font-weight:600;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1 id="title">Currency</h1>
+
+<div id="rate" class="rate">
+Loading...
+</div>
+
+<a id="converterLink">
+<button>Open Converter</button>
+</a>
+
+</div>
+
+<script>
+
+const path = window.location.pathname
+
+const slug = path.split("/")[2]
+
+if(!slug){
+document.getElementById("title").innerText = "Currency Converter"
+throw "no pair"
+}
+
+let [from,to] = slug.split("-to-")
+
+from = from.toUpperCase()
+to = to.toUpperCase()
+
+document.getElementById("title").innerText =
+from + " to " + to + " Exchange Rate"
+
+document.getElementById("converterLink").href =
+"/tools/finance/currency-converter?from="+from+"&to="+to
+
+async function loadRate(){
+
+const res = await fetch(
+"https://api.frankfurter.app/latest?from="+from+"&to="+to
+)
+
+const data = await res.json()
+
+const rate = data.rates[to]
+
+document.getElementById("rate").innerText =
+"1 "+from+" = "+rate+" "+to
+
+}
+
+loadRate()
+
+</script>
+
+</body>
+</html>
