@@ -1,1 +1,1 @@
-/currency/:pair   /currency/index.html   200
+/currency/*  /currency/index.html  200
