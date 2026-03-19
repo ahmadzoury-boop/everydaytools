@@ -285,91 +285,4291 @@ document.addEventListener("DOMContentLoaded",loadStreakUI)
    EMAIL SUBSCRIBE
 ========================================================= */
 
-const subscribeForm=document.getElementById("subscribeForm")
-const subscribeEmail=document.getElementById("subscribeEmail")
-const subscribeMsg=document.getElementById("subscribeMsg")
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
 
-if(subscribeForm){
+if (subscribeForm) {
 
-subscribeForm.addEventListener("submit",async e=>{
+  subscribeForm.addEventListener("submit", async e => {
 
-e.preventDefault()
+    e.preventDefault()
 
-const email=subscribeEmail.value.trim()
+    const email = subscribeEmail.value.trim()
 
-if(!email || !email.includes("@")){
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
 
-subscribeMsg.textContent="❌ Please enter a valid email"
-return
+    subscribeMsg.textContent = "Subscribing..."
 
-}
+    try {
 
-subscribeMsg.textContent="Subscribing..."
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
 
-try{
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
 
-const res=await fetch("/api/brain-subscribe",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-const selectedLevels = Array.from(
-  document.querySelectorAll('input[name="level"]:checked')
-).map(el => el.value);
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
 
-if(selectedLevels.length === 0){
-  selectedLevels.push("medium","hard");
-}
+      let data
 
-body:JSON.stringify({
-  email: email,
-  levels: selectedLevels
-})
-const selectedLevels = Array.from(
-  document.querySelectorAll('input[name="level"]:checked')
-).map(el => el.value);
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
 
-if(selectedLevels.length === 0){
-  selectedLevels.push("medium","hard");
-}
+      if (data.ok) {
 
-body:JSON.stringify({
-  email: email,
-  levels: selectedLevels
-})
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
 
-let data
+      } else {
 
-try{
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
 
-data=await res.json()
+      }
 
-}catch{
+    } catch (err) {
 
-throw new Error("Invalid response")
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
 
-}
+    }
 
-if(data.ok){
-
-subscribeMsg.textContent="✅ Subscribed successfully!"
-
-localStorage.setItem("dailybrain_email",email)
-
-subscribeEmail.value=""
-
-}else{
-
-subscribeMsg.textContent="❌ "+(data.error||"Subscription failed")
+  })
 
 }
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
 
-}catch(err){
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
 
-console.error(err)
+if (subscribeForm) {
 
-subscribeMsg.textContent="❌ Network error"
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
 
 }
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
 
-})
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
+
+}
+/* =========================================================
+   EMAIL SUBSCRIBE
+========================================================= */
+
+const subscribeForm = document.getElementById("subscribeForm")
+const subscribeEmail = document.getElementById("subscribeEmail")
+const subscribeMsg = document.getElementById("subscribeMsg")
+
+if (subscribeForm) {
+
+  subscribeForm.addEventListener("submit", async e => {
+
+    e.preventDefault()
+
+    const email = subscribeEmail.value.trim()
+
+    if (!email || !email.includes("@")) {
+      subscribeMsg.textContent = "❌ Please enter a valid email"
+      return
+    }
+
+    subscribeMsg.textContent = "Subscribing..."
+
+    try {
+
+      // ✅ GET LEVELS (correct place)
+      const selectedLevels = Array.from(
+        document.querySelectorAll('input[name="level"]:checked')
+      ).map(el => el.value)
+
+      if (selectedLevels.length === 0) {
+        selectedLevels.push("medium", "hard")
+      }
+
+      // ✅ FETCH (clean syntax)
+      const res = await fetch("/api/brain-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          levels: selectedLevels
+        })
+      })
+
+      let data
+
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error("Invalid response")
+      }
+
+      if (data.ok) {
+
+        subscribeMsg.textContent = "✅ Subscribed successfully!"
+        localStorage.setItem("dailybrain_email", email)
+        subscribeEmail.value = ""
+
+      } else {
+
+        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed")
+
+      }
+
+    } catch (err) {
+
+      console.error(err)
+      subscribeMsg.textContent = "❌ Network error"
+
+    }
+
+  })
 
 }
