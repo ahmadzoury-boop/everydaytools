@@ -311,7 +311,29 @@ try{
 const res=await fetch("/api/brain-subscribe",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({email})
+const selectedLevels = Array.from(
+  document.querySelectorAll('input[name="level"]:checked')
+).map(el => el.value);
+
+if(selectedLevels.length === 0){
+  selectedLevels.push("medium","hard");
+}
+
+body:JSON.stringify({
+  email: email,
+  levels: selectedLevels
+})
+const selectedLevels = Array.from(
+  document.querySelectorAll('input[name="level"]:checked')
+).map(el => el.value);
+
+if(selectedLevels.length === 0){
+  selectedLevels.push("medium","hard");
+}
+
+body:JSON.stringify({
+  email: email,
+  levels: selectedLevels
 })
 
 let data
