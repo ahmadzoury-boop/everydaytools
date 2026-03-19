@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -12,8 +11,6 @@
 <body>
   <main class="brain-page">
 
-<!-- HEADER -->
-
 <header class="brain-hero">
   <h1>Daily Brain</h1>
 
@@ -21,16 +18,10 @@
     One short challenge a day on EverydayTools.uk
   </div>
 
-  <!-- Streak badge -->
-
   <div id="brain-streak" class="brain-streak-badge"></div>
 
-  <!-- Date selector -->
-
   <div class="brain-filterbar">
-    <label class="brain-filter-label" for="dateSelect">
-      Pick a date:
-    </label>
+    <label class="brain-filter-label" for="dateSelect">Pick a date:</label>
     <select id="dateSelect"></select>
     <button id="btnPrevDay" type="button">◀ Prev</button>
     <button id="btnNextDay" type="button">Next ▶</button>
@@ -38,13 +29,9 @@
   </div>
 </header>
 
-<!-- DIFFICULTY CARD -->
-
 <section class="brain-card">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-    <div>
-      <strong>Difficulty</strong>
-    </div>
+    <strong>Difficulty</strong>
     <div style="font-size:13px;color:var(--muted);">
       Resets in <span id="resetTime">00:00:00</span> (UTC)
     </div>
@@ -55,22 +42,16 @@
   </div>
 </section>
 
-<!-- QUESTIONS -->
-
 <section class="brain-card">
   <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">
     Date: <span id="dayKey"></span>
   </div>
 
-  <!-- brain.js injects questions here -->
-
   <div id="questions"></div>
-
   <div id="resultBox" style="margin-top:10px;font-size:13px;"></div>
 </section>
 
-<!-- SUBSCRIBE -->
-
+<!-- ✅ FIXED SUBSCRIBE SECTION -->
 <section id="subscribe" class="brain-card">
 
   <div style="font-weight:700;margin-bottom:6px;">
@@ -81,1258 +62,78 @@
     Get Daily Brain puzzles by email (you can unsubscribe anytime).
   </div>
 
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
-
-`<form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
-<<form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
-/<form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
-
-<<form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
-<<form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
-`<form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
-
- <form id="subscribeForm" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;flex-direction:column;">
-
-  <!-- LEVELS -->
-  <div style="display:flex;gap:15px;flex-wrap:wrap;margin-bottom:5px;font-size:14px;">
-    
-    <label>
-      <input type="checkbox" name="level" value="easy">
-      Easy
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="medium" checked>
-      Medium
-    </label>
-
-    <label>
-      <input type="checkbox" name="level" value="hard" checked>
-      Hard
-    </label>
-
-  </div>
-
-  <!-- EMAIL + BUTTON -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    
-    <input
-      id="subscribeEmail"
-      type="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-      required
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px 14px;
-        border-radius:12px;
-        border:1px solid rgba(255,255,255,0.14);
-        background: rgba(0,0,0,0.18);
-        color: var(--fg);
-        outline: none;
-      "
-    />
-
-    <button id="subscribeBtn" type="submit" style="min-width:140px;">
-      Subscribe
-    </button>
-
-  </div>
-
-</form>
+  <form id="subscribeForm" style="margin-top:12px;display:flex;flex-direction:column;gap:10px;">
+
+    <!-- LEVELS -->
+    <div style="display:flex;gap:15px;flex-wrap:wrap;font-size:14px;">
+      <label><input type="checkbox" name="level" value="easy"> Easy</label>
+      <label><input type="checkbox" name="level" value="medium" checked> Medium</label>
+      <label><input type="checkbox" name="level" value="hard" checked> Hard</label>
+    </div>
+
+    <!-- INPUT + BUTTON -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <input
+        id="subscribeEmail"
+        type="email"
+        placeholder="Enter your email"
+        required
+        style="
+          flex:1;
+          min-width:220px;
+          padding:12px 14px;
+          border-radius:12px;
+          border:1px solid rgba(255,255,255,0.14);
+          background: rgba(0,0,0,0.18);
+          color: var(--fg);
+        "
+      />
+
+      <button id="subscribeBtn" type="submit" style="min-width:140px;">
+        Subscribe
+      </button>
+    </div>
+
+  </form>
 
   <div id="subscribeMsg" style="margin-top:10px;font-size:13px;color:var(--muted);"></div>
 
 </section>
 
-<!-- RESULT / LEADERBOARD -->
-
 <section id="result" class="brain-card">
-
-  <div style="font-weight:700;margin-bottom:6px;">
-    Today's Result
-  </div>
+  <div style="font-weight:700;margin-bottom:6px;">Today's Result</div>
 
   <div style="font-size:14px;margin-bottom:8px;">
     Score: <strong id="dayScore">0</strong>
   </div>
 
-  <div style="font-weight:700;margin-top:10px;">
-    🏆 Your Best Days
-  </div>
-  <table>
-    <tbody id="bestDaysBody"></tbody>
-  </table>
+  <div style="font-weight:700;margin-top:10px;">🏆 Your Best Days</div>
+  <table><tbody id="bestDaysBody"></tbody></table>
 
-  <div style="font-weight:700;margin-top:14px;">
-    🌍 Global Leaderboard
-  </div>
-  <table>
-    <tbody id="leaderboardBody"></tbody>
-  </table>
-
+  <div style="font-weight:700;margin-top:14px;">🌍 Global Leaderboard</div>
+  <table><tbody id="leaderboardBody"></tbody></table>
 </section>
 
   </main>
 
-  <!-- Brain logic -->
-
   <script src="./brain.js?v=20260213-1"></script>
 
-  <!-- Subscription script -->
-
+  <!-- ✅ FIXED SCRIPT -->
   <script>
-
   document.getElementById("subscribeForm").addEventListener("submit", async function(e){
 
     e.preventDefault();
 
     const email = document.getElementById("subscribeEmail").value.trim();
     const msg = document.getElementById("subscribeMsg");
+
+    const selectedLevels = Array.from(
+      document.querySelectorAll('input[name="level"]:checked')
+    ).map(el => el.value);
+
+    if(selectedLevels.length === 0){
+      selectedLevels.push("medium","hard");
+    }
 
     if(!email){
       msg.textContent = "Please enter an email.";
@@ -1345,11 +146,10 @@
 
       const res = await fetch("/api/brain-subscribe",{
         method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
+        headers:{ "Content-Type":"application/json" },
         body:JSON.stringify({
-          email: email
+          email: email,
+          levels: selectedLevels
         })
       });
 
@@ -1363,13 +163,10 @@
       }
 
     }catch(err){
-
       msg.textContent = "❌ Network error";
-
     }
 
   });
-
   </script>
 
 </body>
