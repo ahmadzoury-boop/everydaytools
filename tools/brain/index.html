@@ -119,8 +119,15 @@
   <script src="./brain.js?v=20260213-1"></script>
 
   <!-- ✅ FIXED SCRIPT -->
-  <script>
-  document.getElementById("subscribeForm").addEventListener("submit", async function(e){
+ 
+ <script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  const form = document.getElementById("subscribeForm");
+
+  if(!form) return;
+
+  form.addEventListener("submit", async function(e){
 
     e.preventDefault();
 
@@ -167,7 +174,9 @@
     }
 
   });
-  </script>
+
+});
+</script>
 
 </body>
 </html>
