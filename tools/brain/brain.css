@@ -295,3 +295,20 @@ body{
     font-size: 24px;
   }
 }
+/* 🔥 PUZZLE DISPLAY FIX */
+.brain-puzzle {
+  font-size: 28px;
+  line-height: 1.6;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 2px;
+  word-spacing: 6px;
+  margin: 12px 0;
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols', Arial, sans-serif;
+}
+
+@media (max-width: 600px) {
+  .brain-puzzle {
+    font-size: 24px;
+  }
+}
