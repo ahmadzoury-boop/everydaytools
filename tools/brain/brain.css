@@ -276,3 +276,22 @@ body{
   border-radius: 999px;
   display: inline-block;
 }
+/* 🔥 Puzzle text styling */
+.brain-puzzle {
+  font-size: 28px;
+  line-height: 1.6;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 2px;
+  margin: 12px 0;
+
+  /* Better symbol rendering */
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols', Arial, sans-serif;
+}
+
+/* Mobile optimization */
+@media (max-width: 600px) {
+  .brain-puzzle {
+    font-size: 24px;
+  }
+}
