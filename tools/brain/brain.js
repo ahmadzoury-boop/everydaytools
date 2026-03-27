@@ -258,7 +258,7 @@ function makeCard(q, group, index, dayKey) {
   const shapeBar = document.createElement("div");
   shapeBar.style.marginTop = "8px";
 
-  const shapes = ["▲", "■", "○", "⬛", "⬜", "△", "□", "⬆", "⬇"];
+const shapes = ["▲", "■", "○", "⬛", "⬜", "△", "□", "⬆", "⬇", "→", "←"];
 
   shapes.forEach((shape) => {
     const b = document.createElement("button");
