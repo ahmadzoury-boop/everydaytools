@@ -243,10 +243,48 @@ async function render(dayKey = currentSelectedDay) {
 }
 
 /* ================= INIT ================= */
-
 document.addEventListener("DOMContentLoaded", () => {
   elQuestions = document.getElementById("questions");
+  elResultBox = document.getElementById("resultBox");
+  elDayKey = document.getElementById("dayKey");
   elDayScore = document.getElementById("dayScore");
+  elDateSelect = document.getElementById("dateSelect");
+  elPrevDay = document.getElementById("btnPrevDay");
+  elNextDay = document.getElementById("btnNextDay");
+  elToday = document.getElementById("btnToday");
+  elResetTime = document.getElementById("resetTime");
 
-  render();
+  // ✅ rebuild date dropdown
+  buildDateOptions();
+
+  // ✅ restore timer
+  startResetTimer();
+
+  // ✅ restore streak
+  loadStreakUI();
+
+  // ✅ restore subscription
+  initSubscribe();
+
+  // ✅ DATE EVENTS (THIS WAS MISSING)
+  elDateSelect.addEventListener("change", () => {
+    render(elDateSelect.value);
+  });
+
+  elPrevDay.addEventListener("click", () => {
+    currentSelectedDay = addDays(currentSelectedDay, -1);
+    render(currentSelectedDay);
+  });
+
+  elNextDay.addEventListener("click", () => {
+    currentSelectedDay = addDays(currentSelectedDay, 1);
+    render(currentSelectedDay);
+  });
+
+  elToday.addEventListener("click", () => {
+    currentSelectedDay = getTodayUTC();
+    render(currentSelectedDay);
+  });
+
+  render(currentSelectedDay);
 });
