@@ -201,10 +201,18 @@ wrap.innerHTML = `
   <strong>${escapeHtml(group)}</strong>
   <div class="brain-puzzle">${escapeHtml(q.q)}</div>
 `;
+wrap.appendChild(input);
+wrap.appendChild(btn);
 
-  wrap.appendChild(input);
-  wrap.appendChild(btn);
-  wrap.appendChild(feedback);
+// ✅ ADD THIS HINT
+const helper = document.createElement("div");
+helper.style.fontSize = "12px";
+helper.style.opacity = "0.7";
+helper.style.marginTop = "6px";
+helper.textContent = "Answer using number, word, or symbol";
+wrap.appendChild(helper);
+
+wrap.appendChild(feedback);
 
   return wrap;
 }
