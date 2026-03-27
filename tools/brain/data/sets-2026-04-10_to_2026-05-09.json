@@ -1,0 +1,120 @@
+,
+"2026-04-15": {
+  "easy": [
+    { "q": "▲ ▲ ■ ▲ ▲ ■ ▲ ▲ ?", "a": "■", "hint": "Repeating pattern", "explanation": "Two triangles then a square repeats." }
+  ],
+  "medium": [
+    { "q": "→ ↓ ← ↑ ?", "a": "→", "hint": "Direction cycle", "explanation": "Clockwise rotation repeats." }
+  ],
+  "hard": [
+    { "q": "If all BLOBS are GLOBS and some GLOBS are ZIBS, are some BLOBS definitely ZIBS?", "a": "No", "hint": "Logic certainty", "explanation": "Not guaranteed overlap." }
+  ]
+},
+
+"2026-04-16": {
+  "easy": [
+    { "q": "○ ○ ○ □ ○ — which is different?", "a": "□", "hint": "Shape difference", "explanation": "Only square." }
+  ],
+  "medium": [
+    { "q": "A1, B2, C3, ?", "a": "D4", "hint": "Alphabet + numbers", "explanation": "Letter and number increase together." }
+  ],
+  "hard": [
+    { "q": "You have 2 ropes that burn in 60 mins unevenly. Measure 45 mins.", "a": "Burn both ends + second rope timing", "hint": "Double burn speed", "explanation": "Classic rope puzzle." }
+  ]
+},
+
+"2026-04-17": {
+  "easy": [
+    { "q": "△ + □ = ?", "a": "7", "hint": "Count sides", "explanation": "3 + 4 = 7 sides." }
+  ],
+  "medium": [
+    { "q": "◐ ◓ ◑ ◒ ?", "a": "◐", "hint": "Rotation", "explanation": "Quarter rotation cycle." }
+  ],
+  "hard": [
+    { "q": "A man looks at a photo and says: 'Brothers and sisters I have none, but this man's father is my father's son.' Who is it?", "a": "His son", "hint": "Family logic", "explanation": "Father's son = himself." }
+  ]
+},
+
+"2026-04-18": {
+  "easy": [
+    { "q": "⬜ ⬛ ⬜ ⬛ ⬜ ?", "a": "⬛", "hint": "Alternating", "explanation": "Pattern alternates." }
+  ],
+  "medium": [
+    { "q": "If yesterday was tomorrow, today would be Friday. What day is today?", "a": "Wednesday", "hint": "Shift days", "explanation": "Logical shift gives Wednesday." }
+  ],
+  "hard": [
+    { "q": "You have 8 balls, one heavier. Find it in 2 weighings.", "a": "Split 3-3-2 method", "hint": "Divide smart", "explanation": "Use elimination groups." }
+  ]
+},
+
+"2026-04-19": {
+  "easy": [
+    { "q": "▲ ■ ▲ ■ ▲ ?", "a": "■", "hint": "Alternating", "explanation": "Triangle then square." }
+  ],
+  "medium": [
+    { "q": "What comes next: 1, 11, 21, 1211, ?", "a": "111221", "hint": "Describe digits", "explanation": "Look-and-say sequence." }
+  ],
+  "hard": [
+    { "q": "You are in a dark room with 3 hats. 2 red, 1 blue. You see others but not yours. Both say they don’t know. What is yours?", "a": "Red", "hint": "Elimination", "explanation": "If one saw blue they'd know." }
+  ]
+},
+
+"2026-04-20": {
+  "easy": [
+    { "q": "■ ■ ▲ ■ ■ ▲ ■ ■ ?", "a": "▲", "hint": "Repeating", "explanation": "Two squares then triangle." }
+  ],
+  "medium": [
+    { "q": "3, 9, 27, ?", "a": "81", "hint": "Multiply", "explanation": "×3 each time." }
+  ],
+  "hard": [
+    { "q": "There are 5 houses in 5 colors. Each has different pets, drinks, etc. Who owns the fish?", "a": "German", "hint": "Einstein riddle", "explanation": "Classic logic puzzle." }
+  ]
+},
+
+"2026-04-21": {
+  "easy": [
+    { "q": "⬆ ⬇ ⬆ ⬇ ⬆ ?", "a": "⬇", "hint": "Alternating", "explanation": "Up/down pattern." }
+  ],
+  "medium": [
+    { "q": "If 2’s company and 3’s a crowd, what are 4 and 5?", "a": "9", "hint": "Wordplay", "explanation": "4+5=9." }
+  ],
+  "hard": [
+    { "q": "You must cross a bridge at night with 1 torch. Times: 1,2,7,10 min. Fastest way?", "a": "17 minutes", "hint": "Send fastest back", "explanation": "Optimal pairing strategy." }
+  ]
+},
+
+"2026-04-22": {
+  "easy": [
+    { "q": "○ □ ○ □ ○ ?", "a": "□", "hint": "Alternating", "explanation": "Circle/square repeat." }
+  ],
+  "medium": [
+    { "q": "What 3 numbers give same result when added and multiplied?", "a": "1,2,3", "hint": "Try small numbers", "explanation": "1+2+3 = 1×2×3 = 6." }
+  ],
+  "hard": [
+    { "q": "A prisoner must choose 1 of 3 doors: fire, lions, or assassins. Which is safest?", "a": "Lions", "hint": "Time passed", "explanation": "They would be dead." }
+  ]
+},
+
+"2026-04-23": {
+  "easy": [
+    { "q": "▲ ▲ ▲ ■ ▲ ▲ ▲ ?", "a": "■", "hint": "Pattern break", "explanation": "Every 4th is square." }
+  ],
+  "medium": [
+    { "q": "What comes next: Monday, Wednesday, Friday, ?", "a": "Sunday", "hint": "Skip days", "explanation": "Every second day." }
+  ],
+  "hard": [
+    { "q": "You have a 3L and 5L jug. Measure exactly 4L.", "a": "Fill 5, pour into 3, repeat", "hint": "Transfer method", "explanation": "Classic jug puzzle." }
+  ]
+},
+
+"2026-04-24": {
+  "easy": [
+    { "q": "⬛ ⬛ ⬜ ⬛ ⬛ ⬜ ⬛ ?", "a": "⬛", "hint": "Repeating", "explanation": "Two black then white." }
+  ],
+  "medium": [
+    { "q": "What comes next: 10, 20, 30, ?", "a": "40", "hint": "Add 10", "explanation": "Simple increase." }
+  ],
+  "hard": [
+    { "q": "If you flip a fair coin 10 times and get 10 heads, what’s next?", "a": "50% chance head", "hint": "Independence", "explanation": "Each flip is independent." }
+  ]
+}s
