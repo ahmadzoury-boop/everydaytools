@@ -278,12 +278,12 @@ body{
 }
 /* 🔥 Puzzle text styling */
 .brain-puzzle {
-  font-size: 28px;
+  font-size: 28px;       /* BIGGER shapes */
+  letter-spacing: 6px;   /* spacing between symbols */
   line-height: 1.6;
-  font-weight: 600;
+  margin: 10px 0;
   text-align: center;
-  letter-spacing: 2px;
-  margin: 12px 0;
+}
 
   /* Better symbol rendering */
   font-family: 'Segoe UI Symbol', 'Noto Sans Symbols', Arial, sans-serif;
