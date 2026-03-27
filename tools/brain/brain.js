@@ -9,6 +9,7 @@ const DATA_RANGES = [
   { from: "2026-01-12", to: "2026-02-10", file: "sets-2026-01-12_to_2026-02-10.json" },
   { from: "2026-02-11", to: "2026-03-10", file: "sets-2026-02-11_to_2026-03-10.json" },
   { from: "2026-03-11", to: "2026-04-09", file: "sets-2026-03-11_to_2026-04-09.json" },
+  { from: "2026-04-10", to: "2026-05-09", file: "sets-2026-04-10_to_2026-05-09.json" },
 ];
 
 const __SETS_CACHE = new Map();
