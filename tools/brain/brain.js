@@ -184,7 +184,9 @@ function makeCard(q, group, index, dayKey) {
 
   btn.onclick = () => {
     const val = normalizeAnswer(input.value);
-    const ok = val === normalizeAnswer(expected);
+    const ok = Array.isArray(expected)
+  ? expected.map(normalizeAnswer).includes(val)
+  : val === normalizeAnswer(expected);
 
     const rec = getDayStore(dayKey);
     rec.answers[answerKey] = { correct: ok };
