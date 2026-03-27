@@ -203,6 +203,28 @@ wrap.innerHTML = `
 `;
 wrap.appendChild(input);
 wrap.appendChild(btn);
+// ✅ Clickable shapes bar
+const shapeBar = document.createElement("div");
+shapeBar.style.marginTop = "8px";
+
+const shapes = ["▲","■","○","⬛","⬜","△","□","⬆","⬇"];
+
+shapes.forEach(shape => {
+  const b = document.createElement("button");
+  b.textContent = shape;
+  b.style.margin = "3px";
+  b.style.padding = "6px 10px";
+  b.style.cursor = "pointer";
+
+  b.onclick = () => {
+    input.value += shape;
+    input.focus();
+  };
+
+  shapeBar.appendChild(b);
+});
+
+wrap.appendChild(shapeBar);
 
 // ✅ ADD THIS HINT
 const helper = document.createElement("div");
