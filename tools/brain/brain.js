@@ -194,11 +194,10 @@ function makeCard(q, group, index, dayKey) {
     feedback.textContent = ok ? "✅ Correct" : "❌ Try again";
     updatePanels(dayKey);
   };
-
-  wrap.innerHTML = `
-    <strong>${escapeHtml(group)}</strong>
-    <p>${escapeHtml(q.q)}</p>
-  `;
+wrap.innerHTML = `
+  <strong>${escapeHtml(group)}</strong>
+  <div class="brain-puzzle">${escapeHtml(q.q)}</div>
+`;
 
   wrap.appendChild(input);
   wrap.appendChild(btn);
