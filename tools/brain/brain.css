@@ -278,15 +278,21 @@ body{
 }
 /* 🔥 Puzzle text styling */
 .brain-puzzle {
-  font-size: 28px;       /* BIGGER shapes */
-  letter-spacing: 6px;   /* spacing between symbols */
+  font-size: 28px;
+  letter-spacing: 6px;
   line-height: 1.6;
   margin: 10px 0;
   text-align: center;
+
+  /* ✅ FIXED: inside the class */
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols', Arial, sans-serif;
 }
 
-  /* Better symbol rendering */
-  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols', Arial, sans-serif;
+@media (max-width: 600px) {
+  .brain-puzzle {
+    font-size: 22px;
+    letter-spacing: 4px;
+  }
 }
 
 /* Mobile optimization */
