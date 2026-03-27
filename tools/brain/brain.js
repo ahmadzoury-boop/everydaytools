@@ -15,6 +15,8 @@ const DATA_RANGES = [
 const __SETS_CACHE = new Map();
 const STORE_KEY = "et_brain_v2";
 
+/* ================= HELPERS ================= */
+
 function dateInRange(date, from, to) {
   return date >= from && date <= to;
 }
@@ -29,9 +31,7 @@ function addDays(isoDate, days) {
 function daysBetween(a, b) {
   const [ya, ma, da] = a.split("-").map(Number);
   const [yb, mb, db] = b.split("-").map(Number);
-  const A = Date.UTC(ya, ma - 1, da);
-  const B = Date.UTC(yb, mb - 1, db);
-  return Math.floor((B - A) / 86400000);
+  return Math.floor((Date.UTC(yb, mb - 1, db) - Date.UTC(ya, ma - 1, da)) / 86400000);
 }
 
 function getGlobalSpan() {
@@ -59,19 +59,14 @@ function mapDateToCycle(requestedDayKey) {
   return { effective: addDays(end, -idxBack), cycled: true };
 }
 
-function pickFileForDate(effectiveDayKey) {
-  for (const r of DATA_RANGES) {
-    if (dateInRange(effectiveDayKey, r.from, r.to)) {
-      return { url: DATA_BASE + r.file, range: r };
-    }
-  }
-  return null;
+function pickFileForDate(day) {
+  return DATA_RANGES.find(r => dateInRange(day, r.from, r.to));
 }
 
 async function fetchSetsFile(url) {
   if (__SETS_CACHE.has(url)) return __SETS_CACHE.get(url);
 
-  const p = fetch(url, { cache: "no-store" }).then((r) => {
+  const p = fetch(url, { cache: "no-store" }).then(r => {
     if (!r.ok) throw new Error(`Failed loading sets: ${r.status}`);
     return r.json();
   });
@@ -82,32 +77,21 @@ async function fetchSetsFile(url) {
 
 async function loadSetsForDay(requestedDayKey) {
   const { effective, cycled } = mapDateToCycle(requestedDayKey);
-  const pick = pickFileForDate(effective);
+  const range = pickFileForDate(effective);
 
-  if (!pick) {
-    throw new Error("No data file found for mapped date");
-  }
+  if (!range) throw new Error("No data file found");
 
-  const sets = await fetchSetsFile(pick.url);
+  const sets = await fetchSetsFile(DATA_BASE + range.file);
   const day = sets[effective] || Object.values(sets)[0];
 
-  if (!day) {
-    throw new Error("No puzzle data found in sets file");
-  }
-
-  return { sets, dayKey: effective, requestedDayKey, cycled, day };
+  return { day, dayKey: effective, cycled };
 }
 
-/* =========================================================
-   STORAGE
-========================================================= */
+/* ================= STORAGE ================= */
 
 function readStore() {
-  try {
-    return JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
-  } catch {
-    return {};
-  }
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); }
+  catch { return {}; }
 }
 
 function writeStore(s) {
@@ -117,16 +101,12 @@ function writeStore(s) {
 let store = readStore();
 
 function getDayStore(key) {
-  if (!store.days) store.days = {};
-  if (!store.days[key]) {
-    store.days[key] = { score: 0, answers: {} };
-  }
+  store.days ||= {};
+  store.days[key] ||= { score: 0, answers: {} };
   return store.days[key];
 }
 
-/* =========================================================
-   HELPERS
-========================================================= */
+/* ================= UTIL ================= */
 
 function normalizeAnswer(s) {
   return String(s || "").trim().toLowerCase();
@@ -140,34 +120,18 @@ function escapeHtml(str) {
   return String(str ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(">", "&gt;");
 }
 
-/* =========================================================
-   DOM
-========================================================= */
+/* ================= DOM ================= */
 
-let elQuestions;
-let elResultBox;
-let elDayKey;
-let elDayScore;
-let elDateSelect;
-let elPrevDay;
-let elNextDay;
-let elToday;
-let elResetTime;
-
+let elQuestions, elResultBox, elDayKey, elDayScore, elDateSelect;
 let currentSelectedDay = getTodayUTC();
 
-/* =========================================================
-   QUESTIONS
-========================================================= */
+/* ================= CARD ================= */
 
 function makeCard(q, group, index, dayKey) {
   const expected = q.a;
-
   const wrap = document.createElement("div");
   wrap.className = "q-card";
 
@@ -177,311 +141,112 @@ function makeCard(q, group, index, dayKey) {
 
   input.placeholder = "Your answer";
   btn.textContent = "Check";
-  feedback.style.marginTop = "8px";
-  feedback.style.fontSize = "13px";
 
   const answerKey = `${group}_${index}`;
+  let attempts = 0;
 
   btn.onclick = () => {
     const val = normalizeAnswer(input.value);
     const ok = Array.isArray(expected)
-  ? expected.map(normalizeAnswer).includes(val)
-  : val === normalizeAnswer(expected);
+      ? expected.map(normalizeAnswer).includes(val)
+      : val === normalizeAnswer(expected);
 
     const rec = getDayStore(dayKey);
-    rec.answers[answerKey] = { correct: ok };
-    rec.score = Object.values(rec.answers).filter((x) => x.correct).length;
 
-    writeStore(store);
+    if (ok) {
+      rec.answers[answerKey] = { correct: true };
+      rec.score = Object.values(rec.answers).filter(x => x.correct).length;
+      writeStore(store);
 
-    feedback.textContent = ok ? "✅ Correct" : "❌ Try again";
+      feedback.textContent = "✅ Correct";
+      feedback.style.color = "#4ade80";
+    } else {
+      attempts++;
+
+      if (attempts === 1) {
+        feedback.textContent = "❌ Try again — think about the pattern";
+      } else if (attempts === 2) {
+        feedback.textContent = "💡 Hint: " + (q.hint || "");
+      } else {
+        if (!wrap.querySelector(".reveal-btn")) {
+          const reveal = document.createElement("button");
+          reveal.textContent = "Reveal Answer";
+          reveal.className = "reveal-btn";
+
+          reveal.onclick = () => {
+            const ans = Array.isArray(expected) ? expected[0] : expected;
+            feedback.innerHTML = `✅ ${escapeHtml(ans)}<br><small>${escapeHtml(q.explanation || "")}</small>`;
+            input.disabled = true;
+            btn.disabled = true;
+          };
+
+          wrap.appendChild(reveal);
+        }
+      }
+    }
+
     updatePanels(dayKey);
   };
-wrap.innerHTML = `
-  <strong>${escapeHtml(group)}</strong>
-  <div class="brain-puzzle">${escapeHtml(q.q)}</div>
-`;
-wrap.appendChild(input);
-wrap.appendChild(btn);
-// ✅ Clickable shapes bar
-const shapeBar = document.createElement("div");
-shapeBar.style.marginTop = "8px";
 
-const shapes = ["▲","■","○","⬛","⬜","△","□","⬆","⬇"];
+  wrap.innerHTML = `
+    <strong>${group}</strong>
+    <div class="brain-puzzle">${q.q}</div>
+  `;
 
-shapes.forEach(shape => {
-  const b = document.createElement("button");
-  b.textContent = shape;
-  b.style.margin = "3px";
-  b.style.padding = "6px 10px";
-  b.style.cursor = "pointer";
+  wrap.appendChild(input);
+  wrap.appendChild(btn);
 
-  b.onclick = () => {
-    input.value += shape;
-    input.focus();
-  };
+  // shapes
+  const bar = document.createElement("div");
+  ["▲","■","○","△","□"].forEach(s => {
+    const b = document.createElement("button");
+    b.textContent = s;
+    b.onclick = () => input.value += s;
+    bar.appendChild(b);
+  });
 
-  shapeBar.appendChild(b);
-});
+  wrap.appendChild(bar);
 
-wrap.appendChild(shapeBar);
+  // helper
+  const helper = document.createElement("div");
+  helper.textContent = "Answer using number, word, or symbol";
+  helper.style.opacity = "0.7";
+  helper.style.fontSize = "12px";
+  wrap.appendChild(helper);
 
-// ✅ ADD THIS HINT
-const helper = document.createElement("div");
-helper.style.fontSize = "12px";
-helper.style.opacity = "0.7";
-helper.style.marginTop = "6px";
-helper.textContent = "Answer using number, word, or symbol";
-wrap.appendChild(helper);
-
-wrap.appendChild(feedback);
+  wrap.appendChild(feedback);
 
   return wrap;
 }
 
-/* =========================================================
-   PANELS
-========================================================= */
+/* ================= UI ================= */
 
 function updatePanels(dayKey) {
   const rec = getDayStore(dayKey);
   elDayScore.textContent = rec.score || 0;
 }
 
-/* =========================================================
-   DATE UI
-========================================================= */
+async function render(dayKey = currentSelectedDay) {
+  elQuestions.innerHTML = "Loading...";
 
-function buildDateOptions() {
-  const { start, end } = getGlobalSpan();
-  const totalDays = daysBetween(start, end);
+  const { day, dayKey: key } = await loadSetsForDay(dayKey);
 
-  elDateSelect.innerHTML = "";
-
-  for (let i = 0; i <= totalDays; i++) {
-    const day = addDays(start, i);
-    const opt = document.createElement("option");
-    opt.value = day;
-    opt.textContent = day;
-    elDateSelect.appendChild(opt);
-  }
-}
-
-function syncDateSelectDisplay(requestedDayKey) {
-  const mapped = mapDateToCycle(requestedDayKey);
-  elDateSelect.value = mapped.effective;
-}
-
-function startResetTimer() {
-  function tick() {
-    const now = new Date();
-    const nextUTC = Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate() + 1,
-      0, 0, 0
-    );
-
-    const diff = Math.max(0, nextUTC - now.getTime());
-    const hrs = String(Math.floor(diff / 3600000)).padStart(2, "0");
-    const mins = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-    const secs = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-
-    if (elResetTime) {
-      elResetTime.textContent = `${hrs}:${mins}:${secs}`;
-    }
-  }
-
-  tick();
-  setInterval(tick, 1000);
-}
-
-/* =========================================================
-   MAIN RENDER
-========================================================= */
-
-async function render(requestedDayKey = currentSelectedDay) {
-  currentSelectedDay = requestedDayKey;
-
-  elResultBox.textContent = "Loading...";
   elQuestions.innerHTML = "";
-  elDayKey.textContent = "";
 
-  try {
-    const loaded = await loadSetsForDay(requestedDayKey);
-
-    elDayKey.textContent = loaded.dayKey;
-    syncDateSelectDisplay(requestedDayKey);
-
-    const day = loaded.day;
-    let count = 0;
-
-    elQuestions.innerHTML = "";
-
-    if (day.easy && Array.isArray(day.easy)) {
-      day.easy.forEach((q, i) => {
-        elQuestions.appendChild(makeCard(q, "easy", i, loaded.dayKey));
-        count++;
-      });
-    }
-
-    if (day.medium && Array.isArray(day.medium)) {
-      day.medium.forEach((q, i) => {
-        elQuestions.appendChild(makeCard(q, "medium", i, loaded.dayKey));
-        count++;
-      });
-    }
-
-    if (day.hard && Array.isArray(day.hard)) {
-      day.hard.forEach((q, i) => {
-        elQuestions.appendChild(makeCard(q, "hard", i, loaded.dayKey));
-        count++;
-      });
-    }
-
-    if (count === 0) {
-      elQuestions.innerHTML = `<div style="font-size:13px;color:var(--muted);">No puzzles found for this day.</div>`;
-    }
-
-    elResultBox.textContent = loaded.cycled
-      ? `Showing recycled puzzles for ${loaded.dayKey}.`
-      : "";
-
-    updatePanels(loaded.dayKey);
-  } catch (err) {
-    console.error(err);
-    elDayKey.textContent = "Error";
-    elQuestions.innerHTML = `<div style="font-size:13px;color:#ffb4b4;">Failed to load puzzles.</div>`;
-    elResultBox.textContent = err.message || "Unknown error";
-  }
-}
-
-/* =========================================================
-   STREAK
-========================================================= */
-
-async function loadStreakUI() {
-  const email = localStorage.getItem("dailybrain_email");
-  if (!email) return;
-
-  try {
-    const res = await fetch(
-      "https://brain-digest.ahmadzoury.workers.dev/streak?email=" +
-      encodeURIComponent(email)
-    );
-
-    const data = await res.json();
-    const el = document.getElementById("brain-streak");
-    if (!el) return;
-
-    if (data.current_streak > 0) {
-      el.textContent = `🔥 Streak ${data.current_streak}`;
-    } else {
-      el.textContent = "";
-    }
-  } catch {}
-}
-
-/* =========================================================
-   EMAIL SUBSCRIBE
-========================================================= */
-
-function initSubscribe() {
-  const subscribeForm = document.getElementById("subscribeForm");
-  const subscribeEmail = document.getElementById("subscribeEmail");
-  const subscribeMsg = document.getElementById("subscribeMsg");
-
-  if (!subscribeForm || !subscribeEmail || !subscribeMsg) return;
-
-  subscribeForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = subscribeEmail.value.trim();
-
-    if (!email || !email.includes("@")) {
-      subscribeMsg.textContent = "❌ Please enter a valid email";
-      return;
-    }
-
-    subscribeMsg.textContent = "Subscribing...";
-
-    try {
-      const selectedLevels = Array.from(
-        document.querySelectorAll('input[name="level"]:checked')
-      ).map((el) => el.value);
-
-      if (selectedLevels.length === 0) {
-        selectedLevels.push("medium", "hard");
-      }
-
-      const res = await fetch("/api/brain-subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          levels: selectedLevels,
-        }),
-      });
-
-      let data;
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error("Invalid response");
-      }
-
-      if (data.ok) {
-        subscribeMsg.textContent = "✅ Subscribed successfully!";
-        localStorage.setItem("dailybrain_email", email);
-        subscribeEmail.value = "";
-      } else {
-        subscribeMsg.textContent = "❌ " + (data.error || "Subscription failed");
-      }
-    } catch (err) {
-      console.error(err);
-      subscribeMsg.textContent = "❌ Network error";
-    }
+  ["easy","medium","hard"].forEach(group => {
+    day[group]?.forEach((q, i) => {
+      elQuestions.appendChild(makeCard(q, group, i, key));
+    });
   });
+
+  updatePanels(key);
 }
 
-/* =========================================================
-   INIT
-========================================================= */
+/* ================= INIT ================= */
 
 document.addEventListener("DOMContentLoaded", () => {
   elQuestions = document.getElementById("questions");
-  elResultBox = document.getElementById("resultBox");
-  elDayKey = document.getElementById("dayKey");
   elDayScore = document.getElementById("dayScore");
-  elDateSelect = document.getElementById("dateSelect");
-  elPrevDay = document.getElementById("btnPrevDay");
-  elNextDay = document.getElementById("btnNextDay");
-  elToday = document.getElementById("btnToday");
-  elResetTime = document.getElementById("resetTime");
 
-  buildDateOptions();
-  startResetTimer();
-  loadStreakUI();
-  initSubscribe();
-
-  elDateSelect.addEventListener("change", () => {
-    render(elDateSelect.value);
-  });
-
-  elPrevDay.addEventListener("click", () => {
-    currentSelectedDay = addDays(currentSelectedDay, -1);
-    render(currentSelectedDay);
-  });
-
-  elNextDay.addEventListener("click", () => {
-    currentSelectedDay = addDays(currentSelectedDay, 1);
-    render(currentSelectedDay);
-  });
-
-  elToday.addEventListener("click", () => {
-    currentSelectedDay = getTodayUTC();
-    render(currentSelectedDay);
-  });
-
-  render(currentSelectedDay);
+  render();
 });
