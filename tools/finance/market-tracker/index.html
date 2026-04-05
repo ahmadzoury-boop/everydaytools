@@ -1,1 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Tracker | Gold, Stocks & ETFs</title>
+  <meta name="description" content="Track live gold prices, popular stocks, and ETFs in one clean dashboard." />
+  <link rel="canonical" href="https://everydaytools.uk/tools/finance/market-tracker/" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <main class="max-w-5xl mx-auto px-4 py-8 sm:py-10">
+    <header class="mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Market Tracker</h1>
+      <p class="text-slate-400 mt-2">Live gold price with selected stocks and ETFs.</p>
+    </header>
 
+    <section class="grid gap-6">
+      <article class="bg-slate-900 rounded-2xl border border-slate-800 shadow-lg p-5 sm:p-6">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold">Gold (XAU/USD)</h2>
+            <p id="goldPrice" class="text-3xl sm:text-4xl font-bold mt-2">$--.--</p>
+            <p id="goldChange" class="text-sm mt-1 text-slate-300">--</p>
+            <p id="goldUpdated" class="text-xs mt-2 text-slate-400">Updated: --:--:--</p>
+            <p id="goldError" class="text-sm text-rose-400 mt-2 hidden">Failed to load data</p>
+          </div>
+        </div>
+        <div class="mt-5">
+          <canvas id="goldChart" height="90"></canvas>
+        </div>
+      </article>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <article class="bg-slate-900 rounded-2xl border border-slate-800 shadow-lg p-5 sm:p-6">
+          <h2 class="text-lg font-semibold mb-4">Stocks</h2>
+          <div id="stocksList" class="space-y-3"></div>
+          <p id="stocksError" class="text-sm text-rose-400 mt-4 hidden">Failed to load data</p>
+        </article>
+
+        <article class="bg-slate-900 rounded-2xl border border-slate-800 shadow-lg p-5 sm:p-6">
+          <h2 class="text-lg font-semibold mb-4">ETFs</h2>
+          <div id="etfsList" class="space-y-3"></div>
+          <p id="etfsError" class="text-sm text-rose-400 mt-4 hidden">Failed to load data</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_KEY = bozVokwYzFEfXoElw2eCEMQMpEFa0qPO;
+    const API_BASE = "https://financialmodelingprep.com/api/v3";
+
+    const STOCKS = ["AAPL", "TSLA", "NVDA", "AMZN", "MSFT"];
+    const ETFS = ["SPY", "QQQ", "VTI", "VOO", "ARKK"];
+
+    const SYMBOL_NAMES = {
+      AAPL: "Apple",
+      TSLA: "Tesla",
+      NVDA: "NVIDIA",
+      AMZN: "Amazon",
+      MSFT: "Microsoft",
+      SPY: "S&P 500 ETF",
+      QQQ: "Nasdaq ETF",
+      VTI: "Total Market ETF",
+      VOO: "Vanguard S&P 500",
+      ARKK: "ARK Innovation"
+    };
+
+    let isFetchingGold = false;
+    let isFetchingStocks = false;
+    let isFetchingEtfs = false;
+
+    const goldPriceEl = document.getElementById("goldPrice");
+    const goldChangeEl = document.getElementById("goldChange");
+    const goldUpdatedEl = document.getElementById("goldUpdated");
+    const goldErrorEl = document.getElementById("goldError");
+
+    const stocksListEl = document.getElementById("stocksList");
+    const etfsListEl = document.getElementById("etfsList");
+    const stocksErrorEl = document.getElementById("stocksError");
+    const etfsErrorEl = document.getElementById("etfsError");
+
+    const goldChartCtx = document.getElementById("goldChart");
+    const goldChartData = {
+      labels: [],
+      datasets: [{
+        label: "Gold Price",
+        data: [],
+        borderColor: "#f59e0b",
+        backgroundColor: "rgba(245, 158, 11, 0.15)",
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.25,
+        fill: true
+      }]
+    };
+
+    const goldChart = new Chart(goldChartCtx, {
+      type: "line",
+      data: goldChartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            ticks: { color: "#94a3b8", maxTicksLimit: 6 },
+            grid: { color: "rgba(148, 163, 184, 0.15)" }
+          },
+          y: {
+            ticks: { color: "#94a3b8" },
+            grid: { color: "rgba(148, 163, 184, 0.15)" }
+          }
+        }
+      }
+    });
+
+    function formatMoney(value) {
+      return Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function formatChangePercent(change) {
+      const numeric = Number(change || 0);
+      const arrow = numeric >= 0 ? "▲" : "▼";
+      const absVal = Math.abs(numeric).toFixed(2);
+      return `${arrow} ${absVal}%`;
+    }
+
+    function setUpdatedTime() {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], { hour12: false });
+      goldUpdatedEl.textContent = `Updated: ${time}`;
+    }
+
+    function rowTemplate(symbol, quote) {
+      const percent = quote?.changesPercentage ?? 0;
+      const isPositive = Number(percent) >= 0;
+      const colorClass = isPositive ? "text-emerald-400" : "text-rose-400";
+      const name = SYMBOL_NAMES[symbol] || symbol;
+      return `
+        <div class="rounded-xl border border-slate-800 p-3 sm:p-4 flex items-center justify-between gap-3 bg-slate-950/40">
+          <div>
+            <p class="text-sm text-slate-300">${name}</p>
+            <p class="font-semibold">${symbol}</p>
+          </div>
+          <div class="text-right">
+            <p class="font-semibold">$${formatMoney(quote?.price ?? 0)}</p>
+            <p class="text-sm ${colorClass}">${formatChangePercent(percent)}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+      return response.json();
+    }
+
+    async function fetchGold() {
+      if (isFetchingGold) return;
+      isFetchingGold = true;
+      try {
+        const quoteUrl = `${API_BASE}/quote/XAUUSD?apikey=${API_KEY}`;
+        const quoteData = await fetchJson(quoteUrl);
+        const quote = quoteData?.[0];
+        if (!quote || quote.price == null) throw new Error("Gold quote missing");
+
+        const price = Number(quote.price);
+        const change = Number(quote.changesPercentage ?? 0);
+        const changeClass = change >= 0 ? "text-emerald-400" : "text-rose-400";
+
+        goldPriceEl.textContent = `$${formatMoney(price)}`;
+        goldChangeEl.className = `text-sm mt-1 ${changeClass}`;
+        goldChangeEl.textContent = formatChangePercent(change);
+
+        const label = new Date().toLocaleTimeString([], { hour12: false });
+        goldChartData.labels.push(label);
+        goldChartData.datasets[0].data.push(price);
+
+        if (goldChartData.labels.length > 20) {
+          goldChartData.labels.shift();
+          goldChartData.datasets[0].data.shift();
+        }
+
+        goldChart.update('none');
+        setUpdatedTime();
+        goldErrorEl.classList.add("hidden");
+      } catch (error) {
+        console.error("Gold fetch error:", error);
+        goldErrorEl.textContent = "Failed to load data";
+        goldErrorEl.classList.remove("hidden");
+      } finally {
+        isFetchingGold = false;
+      }
+    }
+
+    async function fetchSymbolGroup(symbols, container, errorEl, lockName) {
+      if (lockName === "stocks" && isFetchingStocks) return;
+      if (lockName === "etfs" && isFetchingEtfs) return;
+
+      if (lockName === "stocks") isFetchingStocks = true;
+      if (lockName === "etfs") isFetchingEtfs = true;
+
+      try {
+        const url = `${API_BASE}/quote/${symbols.join(",")}?apikey=${API_KEY}`;
+        const data = await fetchJson(url);
+        if (!Array.isArray(data) || data.length === 0) throw new Error("Quotes missing");
+
+        const bySymbol = Object.fromEntries(data.map(item => [item.symbol, item]));
+        container.innerHTML = symbols.map(symbol => rowTemplate(symbol, bySymbol[symbol])).join("");
+        errorEl.classList.add("hidden");
+      } catch (error) {
+        console.error(`${lockName} fetch error:`, error);
+        errorEl.textContent = "Failed to load data";
+        errorEl.classList.remove("hidden");
+      } finally {
+        if (lockName === "stocks") isFetchingStocks = false;
+        if (lockName === "etfs") isFetchingEtfs = false;
+      }
+    }
+
+    function initSkeletonRows() {
+      stocksListEl.innerHTML = STOCKS.map(symbol => rowTemplate(symbol, { price: 0, changesPercentage: 0 })).join("");
+      etfsListEl.innerHTML = ETFS.map(symbol => rowTemplate(symbol, { price: 0, changesPercentage: 0 })).join("");
+    }
+
+    async function refreshAll() {
+      await Promise.all([
+        fetchGold(),
+        fetchSymbolGroup(STOCKS, stocksListEl, stocksErrorEl, "stocks"),
+        fetchSymbolGroup(ETFS, etfsListEl, etfsErrorEl, "etfs")
+      ]);
+    }
+
+    initSkeletonRows();
+    refreshAll();
+    setInterval(fetchGold, 15000);
+    setInterval(() => fetchSymbolGroup(STOCKS, stocksListEl, stocksErrorEl, "stocks"), 30000);
+    setInterval(() => fetchSymbolGroup(ETFS, etfsListEl, etfsErrorEl, "etfs"), 30000);
+  </script>
+</body>
+</html>
