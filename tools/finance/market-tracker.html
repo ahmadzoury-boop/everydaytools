@@ -159,26 +159,61 @@ return `
 
 // STOCKS + ETFs (FIXED API)
 async function fetchMarket(symbols,id){
-try{
-const res = await fetch(
-`https://financialmodelingprep.com/api/v3/quote/${symbols.join(",")}?apikey=${API_KEY}`
-);
+  try{
+    // TRY FMP FIRST
+    let res = await fetch(
+      `https://financialmodelingprep.com/api/v3/quote/${symbols.join(",")}?apikey=${API_KEY}`
+    );
 
-if(!res.ok) throw new Error("API failed");
+    let data;
 
-const data = await res.json();
-const map = new Map(data.map(x=>[x.symbol,x]));
+    if(res.ok){
+      data = await res.json();
+    }else{
+      throw new Error("FMP failed");
+    }
 
-document.getElementById(id).innerHTML =
-symbols.map(s=>{
-const x = map.get(s);
+    render(data, symbols, id);
 
-return row(
-s,
-x ? x.price.toFixed(2) : "0.00",
-x ? x.changesPercentage : 0
-);
-}).join("");
+  }catch(e){
+    console.log("FMP failed → using fallback");
+
+    try{
+      // FALLBACK (FREE & WORKS IN BROWSER)
+      const res = await fetch(
+        `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(",")}`
+      );
+
+      const json = await res.json();
+      const data = json.quoteResponse.result.map(x => ({
+        symbol: x.symbol,
+        price: x.regularMarketPrice,
+        changesPercentage: x.regularMarketChangePercent
+      }));
+
+      render(data, symbols, id);
+
+    }catch(err){
+      document.getElementById(id).innerHTML =
+        `<p class="text-slate-400">Error loading</p>`;
+    }
+  }
+}
+
+function render(data, symbols, id){
+  const map = new Map(data.map(x=>[x.symbol,x]));
+
+  document.getElementById(id).innerHTML =
+    symbols.map(s=>{
+      const x = map.get(s);
+
+      return row(
+        s,
+        x ? Number(x.price).toFixed(2) : "0.00",
+        x ? Number(x.changesPercentage) : 0
+      );
+    }).join("");
+}
 
 }catch(e){
 console.error(e);
