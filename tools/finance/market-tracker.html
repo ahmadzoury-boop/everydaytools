@@ -48,7 +48,14 @@ const API_KEY = "bozVokwYzFEfXoElw2eCEMQMpEFa0qPO";
 const STOCKS = ["AAPL","TSLA","NVDA","AMZN","MSFT"];
 const ETFS = ["SPY","QQQ","VTI","VOO","ARKK"];
 
-const chartData = { labels: [], datasets: [{ label: "Gold Price", data: [], borderColor:"#f59e0b"}] };
+const chartData = { 
+  labels: [], 
+  datasets: [{ 
+    label: "Gold Price", 
+    data: [], 
+    borderColor:"#f59e0b" 
+  }] 
+};
 
 const chart = new Chart(document.getElementById("goldChart"), {
   type:"line",
@@ -70,15 +77,12 @@ function row(symbol, price, change){
 
 async function fetchGold(){
   try{
-    const res = await fetch("https://api.metals.live/v1/spot");
+    const res = await fetch("https://api.gold-api.com/price/XAU");
     if (!res.ok) throw new Error("Failed request");
 
     const data = await res.json();
-    const goldItem = Array.isArray(data)
-      ? data.find(item => item && Object.prototype.hasOwnProperty.call(item, "gold"))
-      : null;
+    const price = Number(data.price);
 
-    const price = Number(goldItem?.gold);
     if (!Number.isFinite(price)) throw new Error("Invalid gold value");
 
     document.getElementById("goldPrice").textContent = "$" + price.toFixed(2);
@@ -96,6 +100,7 @@ async function fetchGold(){
     chart.update("none");
 
   }catch(e){
+    console.error(e);
     document.getElementById("goldPrice").textContent = "Error loading";
     document.getElementById("goldUpdated").textContent =
       "Updated: " + new Date().toLocaleTimeString();
