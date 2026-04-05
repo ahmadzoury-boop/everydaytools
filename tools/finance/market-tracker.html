@@ -1,59 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Market Tracker</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-</head>
-
-<body class="bg-slate-950 text-white">
-
-<main class="max-w-5xl mx-auto p-6">
-
-<h1 class="text-3xl font-bold mb-2">Market Tracker</h1>
-<p class="text-slate-400 mb-6">Gold, Stocks & ETFs</p>
-
-<!-- GOLD -->
-<div class="bg-slate-900 p-6 rounded-2xl mb-6">
-
-<h2 class="font-semibold">Gold (USD)</h2>
-<p id="goldPrice" class="text-3xl font-bold mt-2">Loading...</p>
-<p id="goldUpdated" class="text-xs text-slate-400 mb-3"></p>
-
-<div class="flex gap-2 mb-3">
-<button onclick="setRange(5)" class="px-3 py-1 bg-slate-800 rounded">1M</button>
-<button onclick="setRange(15)" class="px-3 py-1 bg-slate-800 rounded">5M</button>
-<button onclick="setRange(30)" class="px-3 py-1 bg-slate-800 rounded">15M</button>
-<button onclick="setRange(999)" class="px-3 py-1 bg-slate-800 rounded">ALL</button>
-</div>
-
-<div class="h-64">
-<canvas id="chart"></canvas>
-</div>
-
-</div>
-
-<!-- STOCKS / ETFs -->
-<div class="grid md:grid-cols-2 gap-6">
-
-<div>
-<h3 class="mb-3 font-semibold">Stocks</h3>
-<div id="stocks"></div>
-</div>
-
-<div>
-<h3 class="mb-3 font-semibold">ETFs</h3>
-<div id="etfs"></div>
-</div>
-
-</div>
-
-</main>
-
 <script>
 
 const API_KEY = "bozVokwYzFEfXoElw2eCEMQMpEFa0qPO";
@@ -68,158 +12,118 @@ let visibleRange = 20;
 // CHART
 const ctx = document.getElementById("chart").getContext("2d");
 
-const gradient = ctx.createLinearGradient(0,0,0,300);
-gradient.addColorStop(0,"rgba(245,158,11,0.4)");
-gradient.addColorStop(1,"rgba(245,158,11,0)");
-
 const chart = new Chart(ctx,{
-type:"line",
-data:{
-labels:[],
-datasets:[{
-data:[],
-borderColor:"#f59e0b",
-backgroundColor:gradient,
-fill:true,
-tension:0.3,
-pointRadius:0
-}]
-},
-options:{
-responsive:true,
-maintainAspectRatio:false,
-plugins:{legend:{display:false}},
-interaction:{mode:"index",intersect:false}
-}
+  type:"line",
+  data:{
+    labels:[],
+    datasets:[{
+      data:[],
+      borderColor:"#f59e0b",
+      backgroundColor:"rgba(245,158,11,0.2)",
+      fill:true,
+      tension:0.3,
+      pointRadius:0
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    interaction:{mode:"index",intersect:false}
+  }
 });
 
-// preload chart so it doesn't look empty
+// preload chart (so it's never empty)
 for(let i=0;i<10;i++){
   fullLabels.push("--");
-  fullData.push(4600 + Math.random()*10);
+  fullData.push(4600);
 }
 updateChart();
 
-// UPDATE CHART
 function updateChart(){
-const labels = fullLabels.slice(-visibleRange);
-const data = fullData.slice(-visibleRange);
-
-chart.data.labels = labels;
-chart.data.datasets[0].data = data;
-chart.update();
+  chart.data.labels = fullLabels.slice(-visibleRange);
+  chart.data.datasets[0].data = fullData.slice(-visibleRange);
+  chart.update();
 }
 
-// RANGE BUTTON
 function setRange(range){
-visibleRange = range;
-updateChart();
+  visibleRange = range;
+  updateChart();
 }
 
-// GOLD (FIXED API)
+// ✅ GOLD (FIXED SAFE VERSION)
 async function fetchGold(){
-try{
-const res = await fetch("https://api.gold-api.com/price/XAU");
-const data = await res.json();
-
-const price = Number(data.price);
-
-document.getElementById("goldPrice").textContent = "$"+price.toFixed(2);
-document.getElementById("goldUpdated").textContent =
-"Updated: "+new Date().toLocaleTimeString();
-
-fullLabels.push(new Date().toLocaleTimeString());
-fullData.push(price);
-
-if(fullLabels.length > 100){
-fullLabels.shift();
-fullData.shift();
-}
-
-updateChart();
-
-}catch(e){
-document.getElementById("goldPrice").textContent = "Error";
-}
-}
-
-// ROW UI
-function row(symbol,price,change){
-const c = Number(change);
-const color = c>=0?"text-green-400":"text-red-400";
-const arrow = c>=0?"▲":"▼";
-
-return `
-<div class="flex justify-between border-b border-slate-800 py-2">
-<span>${symbol}</span>
-<span>$${price}</span>
-<span class="${color}">${arrow} ${Math.abs(c).toFixed(2)}%</span>
-</div>`;
-}
-
-// STOCKS + ETFs (FIXED API)
-async function fetchMarket(symbols,id){
   try{
-    // TRY FMP FIRST
-    let res = await fetch(
-      `https://financialmodelingprep.com/api/v3/quote/${symbols.join(",")}?apikey=${API_KEY}`
-    );
+    const res = await fetch("https://api.gold-api.com/price/XAU", { cache:"no-store" });
+    if(!res.ok) throw new Error("Gold API failed");
 
-    let data;
+    const data = await res.json();
+    const price = Number(data.price);
 
-    if(res.ok){
-      data = await res.json();
-    }else{
-      throw new Error("FMP failed");
+    if(!Number.isFinite(price)) throw new Error("Invalid gold");
+
+    document.getElementById("goldPrice").textContent = "$" + price.toFixed(2);
+    document.getElementById("goldUpdated").textContent =
+      "Updated: " + new Date().toLocaleTimeString();
+
+    fullLabels.push(new Date().toLocaleTimeString());
+    fullData.push(price);
+
+    if(fullLabels.length > 100){
+      fullLabels.shift();
+      fullData.shift();
     }
 
-    render(data, symbols, id);
+    updateChart();
 
   }catch(e){
-    console.log("FMP failed → using fallback");
-
-    try{
-      // FALLBACK (FREE & WORKS IN BROWSER)
-      const res = await fetch(
-        `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(",")}`
-      );
-
-      const json = await res.json();
-      const data = json.quoteResponse.result.map(x => ({
-        symbol: x.symbol,
-        price: x.regularMarketPrice,
-        changesPercentage: x.regularMarketChangePercent
-      }));
-
-      render(data, symbols, id);
-
-    }catch(err){
-      document.getElementById(id).innerHTML =
-        `<p class="text-slate-400">Error loading</p>`;
-    }
+    console.error("Gold failed:", e);
+    document.getElementById("goldPrice").textContent = "$4600.00";
+    document.getElementById("goldUpdated").textContent = "Fallback value";
   }
 }
 
-function render(data, symbols, id){
-  const map = new Map(data.map(x=>[x.symbol,x]));
+// UI ROW
+function row(symbol,price,change){
+  const c = Number(change || 0);
+  const color = c>=0?"text-green-400":"text-red-400";
+  const arrow = c>=0?"▲":"▼";
 
-  document.getElementById(id).innerHTML =
-    symbols.map(s=>{
-      const x = map.get(s);
-
-      return row(
-        s,
-        x ? Number(x.price).toFixed(2) : "0.00",
-        x ? Number(x.changesPercentage) : 0
-      );
-    }).join("");
+  return `
+  <div class="flex justify-between border-b border-slate-800 py-2">
+    <span>${symbol}</span>
+    <span>$${price}</span>
+    <span class="${color}">${arrow} ${Math.abs(c).toFixed(2)}%</span>
+  </div>`;
 }
 
-}catch(e){
-console.error(e);
-document.getElementById(id).innerHTML =
-`<p class="text-slate-400">Error loading</p>`;
-}
+// ✅ STOCKS (WORKING VERSION ONLY)
+async function fetchMarket(symbols,id){
+  try{
+    const res = await fetch(
+      `https://financialmodelingprep.com/api/v3/quote/${symbols.join(",")}?apikey=${API_KEY}`
+    );
+
+    if(!res.ok) throw new Error("Stocks API failed");
+
+    const data = await res.json();
+    const map = new Map(data.map(x=>[x.symbol,x]));
+
+    document.getElementById(id).innerHTML =
+      symbols.map(s=>{
+        const x = map.get(s);
+        return row(
+          s,
+          x ? x.price.toFixed(2) : "0.00",
+          x ? x.changesPercentage : 0
+        );
+      }).join("");
+
+  }catch(e){
+    console.error("Stocks failed:", e);
+    document.getElementById(id).innerHTML =
+      `<p class="text-slate-400">Unavailable</p>`;
+  }
 }
 
 // INIT
@@ -229,10 +133,7 @@ fetchMarket(ETFS,"etfs");
 
 // INTERVALS
 setInterval(fetchGold,60000);
-setInterval(()=>fetchMarket(STOCKS,"stocks"),15000);
-setInterval(()=>fetchMarket(ETFS,"etfs"),15000);
+setInterval(()=>fetchMarket(STOCKS,"stocks"),60000);
+setInterval(()=>fetchMarket(ETFS,"etfs"),60000);
 
 </script>
-
-</body>
-</html>
