@@ -48,7 +48,7 @@ const API_KEY = "bozVokwYzFEfXoElw2eCEMQMpEFa0qPO";
 const STOCKS = ["AAPL","TSLA","NVDA","AMZN","MSFT"];
 const ETFS = ["SPY","QQQ","VTI","VOO","ARKK"];
 
-const chartData = { labels: [], datasets: [{ data: [], borderColor:"#f59e0b"}] };
+const chartData = { labels: [], datasets: [{ label: "Gold Price", data: [], borderColor:"#f59e0b"}] };
 
 const chart = new Chart(document.getElementById("goldChart"), {
   type:"line",
@@ -70,18 +70,25 @@ function row(symbol, price, change){
 
 async function fetchGold(){
   try{
-    const res = await fetch("https://api.metals.live/v1/spot/gold");
-    const data = await res.json();
-    const price = data[0].price;
+    const res = await fetch("https://api.metals.live/v1/spot");
+    if (!res.ok) throw new Error("Failed request");
 
-    document.getElementById("goldPrice").textContent = "$"+price;
+    const data = await res.json();
+    const goldItem = Array.isArray(data)
+      ? data.find(item => item && Object.prototype.hasOwnProperty.call(item, "gold"))
+      : null;
+
+    const price = Number(goldItem?.gold);
+    if (!Number.isFinite(price)) throw new Error("Invalid gold value");
+
+    document.getElementById("goldPrice").textContent = "$" + price.toFixed(2);
     document.getElementById("goldUpdated").textContent =
-      "Updated: "+new Date().toLocaleTimeString();
+      "Updated: " + new Date().toLocaleTimeString();
 
     chartData.labels.push(new Date().toLocaleTimeString());
     chartData.datasets[0].data.push(price);
 
-    if(chartData.labels.length>20){
+    if(chartData.labels.length > 20){
       chartData.labels.shift();
       chartData.datasets[0].data.shift();
     }
@@ -89,7 +96,9 @@ async function fetchGold(){
     chart.update("none");
 
   }catch(e){
-    console.log(e);
+    document.getElementById("goldPrice").textContent = "Error loading";
+    document.getElementById("goldUpdated").textContent =
+      "Updated: " + new Date().toLocaleTimeString();
   }
 }
 
