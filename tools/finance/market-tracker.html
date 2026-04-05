@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Tracker | Gold, Stocks & ETFs</title>
+  <meta name="description" content="Track live gold prices, popular stocks, and ETFs in one clean dashboard." />
+  <link rel="canonical" href="https://everydaytools.uk/tools/finance/market-tracker/" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <main class="max-w-5xl mx-auto px-4 py-8 sm:py-10">
+
+    <header class="mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold">Market Tracker</h1>
+      <p class="text-slate-400 mt-2">Live gold price with selected stocks and ETFs.</p>
+    </header>
+
+    <!-- GOLD -->
+    <section class="bg-slate-900 rounded-2xl p-6 mb-6">
+      <h2 class="text-lg font-semibold">Gold (USD)</h2>
+      <p id="goldPrice" class="text-3xl font-bold mt-2">Loading...</p>
+      <p id="goldUpdated" class="text-xs text-slate-400 mt-2"></p>
+      <canvas id="goldChart" class="mt-4"></canvas>
+    </section>
+
+    <!-- STOCKS + ETFS -->
+    <div class="grid lg:grid-cols-2 gap-6">
+
+      <section>
+        <h2 class="mb-4 font-semibold">Stocks</h2>
+        <div id="stocksList"></div>
+      </section>
+
+      <section>
+        <h2 class="mb-4 font-semibold">ETFs</h2>
+        <div id="etfsList"></div>
+      </section>
+
+    </div>
+
+  </main>
+
+<script>
+const API_KEY = "bozVokwYzFEfXoElw2eCEMQMpEFa0qPO";
+
+const STOCKS = ["AAPL","TSLA","NVDA","AMZN","MSFT"];
+const ETFS = ["SPY","QQQ","VTI","VOO","ARKK"];
+
+const chartData = { labels: [], datasets: [{ data: [], borderColor:"#f59e0b"}] };
+
+const chart = new Chart(document.getElementById("goldChart"), {
+  type:"line",
+  data:chartData,
+  options:{ animation:false }
+});
+
+function row(symbol, price, change){
+  const color = change >= 0 ? "text-emerald-400" : "text-rose-400";
+  const arrow = change >= 0 ? "▲" : "▼";
+  return `
+    <div class="flex justify-between border-b border-slate-800 py-2">
+      <span>${symbol}</span>
+      <span>$${price}</span>
+      <span class="${color}">${arrow} ${change}%</span>
+    </div>
+  `;
+}
+
+async function fetchGold(){
+  try{
+    const res = await fetch("https://api.metals.live/v1/spot/gold");
+    const data = await res.json();
+    const price = data[0].price;
+
+    document.getElementById("goldPrice").textContent = "$"+price;
+    document.getElementById("goldUpdated").textContent =
+      "Updated: "+new Date().toLocaleTimeString();
+
+    chartData.labels.push(new Date().toLocaleTimeString());
+    chartData.datasets[0].data.push(price);
+
+    if(chartData.labels.length>20){
+      chartData.labels.shift();
+      chartData.datasets[0].data.shift();
+    }
+
+    chart.update("none");
+
+  }catch(e){
+    console.log(e);
+  }
+}
+
+async function fetchStocks(){
+  try{
+    const res = await fetch(`https://financialmodelingprep.com/api/v3/stock/list?apikey=${API_KEY}`);
+    const data = await res.json();
+
+    const filtered = data.filter(x => STOCKS.includes(x.symbol));
+
+    document.getElementById("stocksList").innerHTML =
+      filtered.map(x => row(x.symbol, x.price || 0, 0)).join("");
+
+  }catch(e){ console.log(e); }
+}
+
+async function fetchEtfs(){
+  try{
+    const res = await fetch(`https://financialmodelingprep.com/api/v3/stock/list?apikey=${API_KEY}`);
+    const data = await res.json();
+
+    const filtered = data.filter(x => ETFS.includes(x.symbol));
+
+    document.getElementById("etfsList").innerHTML =
+      filtered.map(x => row(x.symbol, x.price || 0, 0)).join("");
+
+  }catch(e){ console.log(e); }
+}
+
+fetchGold();
+fetchStocks();
+fetchEtfs();
+
+setInterval(fetchGold,15000);
+setInterval(fetchStocks,30000);
+setInterval(fetchEtfs,30000);
+</script>
+
+</body>
+</html>
