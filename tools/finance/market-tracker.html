@@ -1,43 +1,54 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Market Tracker | Gold, Stocks & ETFs</title>
-  <meta name="description" content="Track live gold prices, stocks, and ETFs." />
-  <link rel="canonical" href="https://everydaytools.uk/tools/finance/market-tracker/" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Market Tracker</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-<main class="max-w-5xl mx-auto px-4 py-8">
+<body class="bg-slate-950 text-white">
 
-<h1 class="text-2xl font-bold mb-2">Market Tracker</h1>
-<p class="text-slate-400 mb-6">Live gold, stocks & ETFs</p>
+<main class="max-w-5xl mx-auto p-6">
+
+<h1 class="text-3xl font-bold mb-2">Market Tracker</h1>
+<p class="text-slate-400 mb-6">Gold, Stocks & ETFs</p>
 
 <!-- GOLD -->
-<section class="bg-slate-900 rounded-2xl p-6 mb-6">
-  <h2 class="font-semibold">Gold (USD)</h2>
-  <p id="goldPrice" class="text-3xl font-bold mt-2">Loading...</p>
-  <p id="goldUpdated" class="text-xs text-slate-400"></p>
+<div class="bg-slate-900 p-6 rounded-2xl mb-6">
 
-  <div class="h-64 mt-4">
-    <canvas id="goldChart"></canvas>
-  </div>
-</section>
+<h2 class="font-semibold">Gold (USD)</h2>
+<p id="goldPrice" class="text-3xl font-bold mt-2">Loading...</p>
+<p id="goldUpdated" class="text-xs text-slate-400 mb-3"></p>
 
-<!-- STOCKS + ETFs -->
+<!-- RANGE BUTTONS -->
+<div class="flex gap-2 mb-3">
+<button onclick="setRange(5)" class="px-3 py-1 bg-slate-800 rounded">1M</button>
+<button onclick="setRange(15)" class="px-3 py-1 bg-slate-800 rounded">5M</button>
+<button onclick="setRange(30)" class="px-3 py-1 bg-slate-800 rounded">15M</button>
+<button onclick="setRange(999)" class="px-3 py-1 bg-slate-800 rounded">ALL</button>
+</div>
+
+<div class="h-64">
+<canvas id="chart"></canvas>
+</div>
+
+</div>
+
+<!-- STOCKS / ETFs -->
 <div class="grid md:grid-cols-2 gap-6">
 
 <div>
-<h2 class="mb-3 font-semibold">Stocks</h2>
-<div id="stocksList"></div>
+<h3 class="mb-3 font-semibold">Stocks</h3>
+<div id="stocks"></div>
 </div>
 
 <div>
-<h2 class="mb-3 font-semibold">ETFs</h2>
-<div id="etfsList"></div>
+<h3 class="mb-3 font-semibold">ETFs</h3>
+<div id="etfs"></div>
 </div>
 
 </div>
@@ -45,119 +56,137 @@
 </main>
 
 <script>
+
 const API_KEY = "bozVokwYzFEfXoElw2eCEMQMpEFa0qPO";
 
 const STOCKS = ["AAPL","TSLA","NVDA","AMZN","MSFT"];
 const ETFS = ["SPY","QQQ","VTI","VOO","ARKK"];
 
-const labels = [];
-const dataPoints = [];
+let fullLabels = [];
+let fullData = [];
+let visibleRange = 20;
 
-const chart = new Chart(document.getElementById("goldChart"), {
-  type: "line",
-  data: {
-    labels,
-    datasets: [{
-      label: "Gold Price",
-      data: dataPoints,
-      borderColor: "#f59e0b",
-      borderWidth: 2,
-      pointRadius: 0,
-      tension: 0.3
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      mode: "index",
-      intersect: false
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        enabled: true,
-        callbacks: {
-          label: ctx => "$" + ctx.parsed.y.toFixed(2)
-        }
-      }
-    },
-    scales: {
-      x: { ticks: { color: "#94a3b8" }},
-      y: { ticks: { color: "#94a3b8" }}
-    }
-  }
+// CHART
+const ctx = document.getElementById("chart").getContext("2d");
+
+const gradient = ctx.createLinearGradient(0,0,0,300);
+gradient.addColorStop(0,"rgba(245,158,11,0.4)");
+gradient.addColorStop(1,"rgba(245,158,11,0)");
+
+const chart = new Chart(ctx,{
+type:"line",
+data:{
+labels:[],
+datasets:[{
+data:[],
+borderColor:"#f59e0b",
+backgroundColor:gradient,
+fill:true,
+tension:0.3,
+pointRadius:0
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{legend:{display:false}},
+interaction:{mode:"index",intersect:false}
+}
 });
 
-function row(symbol, price, change){
-  const color = change >= 0 ? "text-emerald-400" : "text-rose-400";
-  const arrow = change >= 0 ? "▲" : "▼";
-  return `
-  <div class="flex justify-between border-b border-slate-800 py-2">
-    <span>${symbol}</span>
-    <span>$${price}</span>
-    <span class="${color}">${arrow} ${change}%</span>
-  </div>`;
+// UPDATE CHART VIEW
+function updateChart(){
+const labels = fullLabels.slice(-visibleRange);
+const data = fullData.slice(-visibleRange);
+
+chart.data.labels = labels;
+chart.data.datasets[0].data = data;
+chart.update();
+}
+
+// RANGE BUTTON
+function setRange(range){
+visibleRange = range;
+updateChart();
 }
 
 // GOLD
 async function fetchGold(){
-  try{
-    const res = await fetch("https://api.gold-api.com/price/XAU");
-    const data = await res.json();
-    const price = Number(data.price);
+try{
+const res = await fetch("https://api.gold-api.com/price/XAU");
+const data = await res.json();
 
-    document.getElementById("goldPrice").textContent = "$" + price.toFixed(2);
-    document.getElementById("goldUpdated").textContent =
-      "Updated: " + new Date().toLocaleTimeString();
+const price = Number(data.price);
 
-    labels.push(new Date().toLocaleTimeString());
-    dataPoints.push(price);
+document.getElementById("goldPrice").textContent = "$"+price.toFixed(2);
+document.getElementById("goldUpdated").textContent =
+"Updated: "+new Date().toLocaleTimeString();
 
-    if(labels.length > 25){
-      labels.shift();
-      dataPoints.shift();
-    }
+fullLabels.push(new Date().toLocaleTimeString());
+fullData.push(price);
 
-    chart.update();
+if(fullLabels.length > 100){
+fullLabels.shift();
+fullData.shift();
+}
 
-  }catch(e){
-    document.getElementById("goldPrice").textContent = "Error";
-  }
+updateChart();
+
+}catch(e){
+document.getElementById("goldPrice").textContent = "Error";
+}
+}
+
+// ROW UI
+function row(symbol,price,change){
+const c = Number(change);
+const color = c>=0?"text-green-400":"text-red-400";
+const arrow = c>=0?"▲":"▼";
+
+return `
+<div class="flex justify-between border-b border-slate-800 py-2">
+<span>${symbol}</span>
+<span>$${price}</span>
+<span class="${color}">${arrow} ${Math.abs(c).toFixed(2)}%</span>
+</div>`;
 }
 
 // STOCKS + ETFs
-async function fetchMarkets(){
-  try{
-    const symbols = [...STOCKS, ...ETFS].join(",");
-    const res = await fetch(
-      `https://financialmodelingprep.com/api/v3/quote/${symbols}?apikey=${API_KEY}`
-    );
-    const data = await res.json();
+async function fetchMarket(symbols,id){
+try{
+const res = await fetch(
+`https://financialmodelingprep.com/stable/quote?symbol=${symbols.join(",")}&apikey=${API_KEY}`
+);
+const data = await res.json();
 
-    const stocks = data.filter(x => STOCKS.includes(x.symbol));
-    const etfs = data.filter(x => ETFS.includes(x.symbol));
+const map = new Map(data.map(x=>[x.symbol,x]));
 
-    document.getElementById("stocksList").innerHTML =
-      stocks.map(x =>
-        row(x.symbol, x.price.toFixed(2), (x.changesPercentage || 0).toFixed(2))
-      ).join("");
+document.getElementById(id).innerHTML =
+symbols.map(s=>{
+const x = map.get(s);
+return row(
+s,
+(x?.price||0).toFixed(2),
+x?.changesPercentage||0
+);
+}).join("");
 
-    document.getElementById("etfsList").innerHTML =
-      etfs.map(x =>
-        row(x.symbol, x.price.toFixed(2), (x.changesPercentage || 0).toFixed(2))
-      ).join("");
-
-  }catch(e){
-    console.log(e);
-  }
+}catch(e){
+document.getElementById(id).innerHTML =
+`<p class="text-slate-400">Error loading</p>`;
+}
 }
 
+// INIT
 fetchGold();
-fetchMarkets();
+fetchMarket(STOCKS,"stocks");
+fetchMarket(ETFS,"etfs");
 
+// INTERVALS
 setInterval(fetchGold,60000);
-setInterval(fetchMarkets,60000);
+setInterval(()=>fetchMarket(STOCKS,"stocks"),15000);
+setInterval(()=>fetchMarket(ETFS,"etfs"),15000);
+
 </script>
 
 </body>
