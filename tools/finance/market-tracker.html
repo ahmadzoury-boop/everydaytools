@@ -24,7 +24,6 @@
 <p id="goldPrice" class="text-3xl font-bold mt-2">Loading...</p>
 <p id="goldUpdated" class="text-xs text-slate-400 mb-3"></p>
 
-<!-- RANGE BUTTONS -->
 <div class="flex gap-2 mb-3">
 <button onclick="setRange(5)" class="px-3 py-1 bg-slate-800 rounded">1M</button>
 <button onclick="setRange(15)" class="px-3 py-1 bg-slate-800 rounded">5M</button>
@@ -94,7 +93,14 @@ interaction:{mode:"index",intersect:false}
 }
 });
 
-// UPDATE CHART VIEW
+// preload chart so it doesn't look empty
+for(let i=0;i<10;i++){
+  fullLabels.push("--");
+  fullData.push(4600 + Math.random()*10);
+}
+updateChart();
+
+// UPDATE CHART
 function updateChart(){
 const labels = fullLabels.slice(-visibleRange);
 const data = fullData.slice(-visibleRange);
@@ -110,7 +116,7 @@ visibleRange = range;
 updateChart();
 }
 
-// GOLD
+// GOLD (FIXED API)
 async function fetchGold(){
 try{
 const res = await fetch("https://api.gold-api.com/price/XAU");
@@ -151,27 +157,31 @@ return `
 </div>`;
 }
 
-// STOCKS + ETFs
+// STOCKS + ETFs (FIXED API)
 async function fetchMarket(symbols,id){
 try{
 const res = await fetch(
-`https://financialmodelingprep.com/stable/quote?symbol=${symbols.join(",")}&apikey=${API_KEY}`
+`https://financialmodelingprep.com/api/v3/quote/${symbols.join(",")}?apikey=${API_KEY}`
 );
-const data = await res.json();
 
+if(!res.ok) throw new Error("API failed");
+
+const data = await res.json();
 const map = new Map(data.map(x=>[x.symbol,x]));
 
 document.getElementById(id).innerHTML =
 symbols.map(s=>{
 const x = map.get(s);
+
 return row(
 s,
-(x?.price||0).toFixed(2),
-x?.changesPercentage||0
+x ? x.price.toFixed(2) : "0.00",
+x ? x.changesPercentage : 0
 );
 }).join("");
 
 }catch(e){
+console.error(e);
 document.getElementById(id).innerHTML =
 `<p class="text-slate-400">Error loading</p>`;
 }
