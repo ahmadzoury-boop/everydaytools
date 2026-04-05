@@ -1,5 +1,7 @@
 <script>
 
+document.addEventListener("DOMContentLoaded", () => {
+
 const API_KEY = "bozVokwYzFEfXoElw2eCEMQMpEFa0qPO";
 
 const STOCKS = ["AAPL","TSLA","NVDA","AMZN","MSFT"];
@@ -9,31 +11,40 @@ let fullLabels = [];
 let fullData = [];
 let visibleRange = 20;
 
-// CHART
-const ctx = document.getElementById("chart").getContext("2d");
+// SAFE CHART INIT
+let chart;
+try {
+  const canvas = document.getElementById("chart");
+  if(!canvas) throw new Error("Canvas missing");
 
-const chart = new Chart(ctx,{
-  type:"line",
-  data:{
-    labels:[],
-    datasets:[{
-      data:[],
-      borderColor:"#f59e0b",
-      backgroundColor:"rgba(245,158,11,0.2)",
-      fill:true,
-      tension:0.3,
-      pointRadius:0
-    }]
-  },
-  options:{
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    interaction:{mode:"index",intersect:false}
-  }
-});
+  const ctx = canvas.getContext("2d");
 
-// preload chart (so it's never empty)
+  chart = new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:[],
+      datasets:[{
+        data:[],
+        borderColor:"#f59e0b",
+        backgroundColor:"rgba(245,158,11,0.2)",
+        fill:true,
+        tension:0.3,
+        pointRadius:0
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      interaction:{mode:"index",intersect:false}
+    }
+  });
+
+} catch(e){
+  console.error("Chart failed:", e);
+}
+
+// PRELOAD
 for(let i=0;i<10;i++){
   fullLabels.push("--");
   fullData.push(4600);
@@ -41,30 +52,28 @@ for(let i=0;i<10;i++){
 updateChart();
 
 function updateChart(){
+  if(!chart) return;
   chart.data.labels = fullLabels.slice(-visibleRange);
   chart.data.datasets[0].data = fullData.slice(-visibleRange);
   chart.update();
 }
 
-function setRange(range){
+window.setRange = function(range){
   visibleRange = range;
   updateChart();
-}
+};
 
-// ✅ GOLD (FIXED SAFE VERSION)
+// GOLD
 async function fetchGold(){
   try{
-    const res = await fetch("https://api.gold-api.com/price/XAU", { cache:"no-store" });
-    if(!res.ok) throw new Error("Gold API failed");
-
+    const res = await fetch("https://api.gold-api.com/price/XAU");
     const data = await res.json();
+
     const price = Number(data.price);
 
-    if(!Number.isFinite(price)) throw new Error("Invalid gold");
-
-    document.getElementById("goldPrice").textContent = "$" + price.toFixed(2);
+    document.getElementById("goldPrice").textContent = "$"+price.toFixed(2);
     document.getElementById("goldUpdated").textContent =
-      "Updated: " + new Date().toLocaleTimeString();
+      "Updated: "+new Date().toLocaleTimeString();
 
     fullLabels.push(new Date().toLocaleTimeString());
     fullData.push(price);
@@ -77,13 +86,12 @@ async function fetchGold(){
     updateChart();
 
   }catch(e){
-    console.error("Gold failed:", e);
-    document.getElementById("goldPrice").textContent = "$4600.00";
-    document.getElementById("goldUpdated").textContent = "Fallback value";
+    console.error(e);
+    document.getElementById("goldPrice").textContent = "$4600";
   }
 }
 
-// UI ROW
+// ROW
 function row(symbol,price,change){
   const c = Number(change || 0);
   const color = c>=0?"text-green-400":"text-red-400";
@@ -97,14 +105,12 @@ function row(symbol,price,change){
   </div>`;
 }
 
-// ✅ STOCKS (WORKING VERSION ONLY)
+// STOCKS
 async function fetchMarket(symbols,id){
   try{
     const res = await fetch(
       `https://financialmodelingprep.com/api/v3/quote/${symbols.join(",")}?apikey=${API_KEY}`
     );
-
-    if(!res.ok) throw new Error("Stocks API failed");
 
     const data = await res.json();
     const map = new Map(data.map(x=>[x.symbol,x]));
@@ -120,20 +126,21 @@ async function fetchMarket(symbols,id){
       }).join("");
 
   }catch(e){
-    console.error("Stocks failed:", e);
+    console.error(e);
     document.getElementById(id).innerHTML =
       `<p class="text-slate-400">Unavailable</p>`;
   }
 }
 
-// INIT
+// RUN
 fetchGold();
 fetchMarket(STOCKS,"stocks");
 fetchMarket(ETFS,"etfs");
 
-// INTERVALS
 setInterval(fetchGold,60000);
 setInterval(()=>fetchMarket(STOCKS,"stocks"),60000);
 setInterval(()=>fetchMarket(ETFS,"etfs"),60000);
+
+});
 
 </script>
