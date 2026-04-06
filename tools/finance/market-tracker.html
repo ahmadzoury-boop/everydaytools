@@ -1,197 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market & Gold Tracker</title>
+  <meta name="description" content="Track live market prices with interactive charts for crypto, indices, and gold." />
+  <meta name="google-site-verification" content="google5058cfec8bee90e0" />
 
-<title>Market Tracker | Gold, Stocks & ETFs</title>
-<meta name="description" content="Track live gold prices, stocks, and ETFs with interactive charts." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <style>
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+  </style>
 </head>
 
-<body class="bg-slate-950 text-white min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen">
 
-<div class="max-w-6xl mx-auto p-6">
+<main class="max-w-6xl mx-auto px-4 py-8">
 
-<h1 class="text-3xl font-bold mb-6">📊 Market Tracker</h1>
+<header class="mb-6">
+  <h1 class="text-2xl md:text-3xl font-bold">Market & Gold Tracker</h1>
+  <p class="text-slate-400 mt-1">Live snapshot with interactive chart, zoom, and pan.</p>
+</header>
 
-<!-- GOLD -->
-<div class="bg-slate-900 p-4 rounded-xl mb-6">
-<h2 class="text-xl mb-2">🥇 Gold Price</h2>
-<p id="goldPrice" class="text-2xl font-bold">Loading...</p>
-</div>
+<section class="grid md:grid-cols-4 gap-4 mb-6">
+  <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-4">
+    <label class="text-sm text-slate-300">Symbol</label>
+    <select id="symbolSelect" class="w-full mt-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+      <option value="BTCUSDT">BTC/USDT</option>
+      <option value="ETHUSDT">ETH/USDT</option>
+      <option value="XAUUSD">XAU/USD (Gold)</option>
+    </select>
+  </div>
 
-<!-- STOCKS -->
-<div class="bg-slate-900 p-4 rounded-xl mb-6">
-<h2 class="text-xl mb-2">📈 Stocks</h2>
-<div id="stocks" class="grid grid-cols-2 gap-4"></div>
-</div>
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+    <label class="text-sm text-slate-300">Interval</label>
+    <select id="intervalSelect" class="w-full mt-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
+      <option value="1m">1m</option>
+      <option value="5m">5m</option>
+      <option value="15m">15m</option>
+      <option value="1h" selected>1h</option>
+      <option value="4h">4h</option>
+      <option value="1d">1d</option>
+    </select>
+  </div>
 
-<!-- ETF -->
-<div class="bg-slate-900 p-4 rounded-xl mb-6">
-<h2 class="text-xl mb-2">📊 ETFs</h2>
-<div id="etfs" class="grid grid-cols-2 gap-4"></div>
-</div>
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-end">
+    <button id="refreshBtn" class="w-full bg-blue-600 hover:bg-blue-500 rounded-lg px-3 py-2 font-semibold">
+      Refresh
+    </button>
+  </div>
+</section>
 
-<!-- CHART -->
-<div class="bg-slate-900 p-4 rounded-xl">
-<h2 class="text-xl mb-4">📉 Market Chart</h2>
-<select id="symbol" class="mb-4 text-black p-2 rounded">
-<option value="AAPL">Apple</option>
-<option value="TSLA">Tesla</option>
-<option value="SPY">SPY ETF</option>
-<option value="QQQ">QQQ ETF</option>
-<option value="GC=F">Gold</option>
-</select>
+<section class="grid md:grid-cols-4 gap-4 mb-6">
+  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+    <p class="text-slate-400 text-sm">Current Price</p>
+    <p id="currentPrice" class="text-2xl font-bold mt-1">—</p>
+  </article>
 
-<canvas id="chart"></canvas>
+  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+    <p class="text-slate-400 text-sm">24h Change</p>
+    <p id="change24h" class="text-2xl font-bold mt-1">—</p>
+  </article>
 
-</div>
+  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+    <p class="text-slate-400 text-sm">24h High</p>
+    <p id="high24h" class="text-2xl font-bold mt-1">—</p>
+  </article>
 
-</div>
-");le";e.yahoo.com/v7/finance/quote?symbols=AAPL,TSLA,SPY,QQQ"e.yahoo.com/v8/finance/chart/${symbol}?range=1mo&interval=1d`ull))
+  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+    <p class="text-slate-400 text-sm">24h Low</p>
+    <p id="low24h" class="text-2xl font-bold mt-1">—</p>
+  </article>
+</section>
+
+<section class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+  <div class="flex justify-between mb-3">
+    <h2 id="chartTitle">Price Chart</h2>
+    <button id="resetZoomBtn" class="text-sm bg-slate-800 px-3 py-1 rounded">
+      Reset Zoom
+    </button>
+  </div>
+
+  <div class="h-[420px]">
+    <canvas id="marketChart"></canvas>
+  </div>
+
+  <p id="statusText" class="text-sm text-slate-400 mt-3"></p>
+</section>
+
+</main>
+
 <script>
 let chart;
 
-// GOLD
-async function loadGold() {
-  try {
-    const res = await fetch("https://api.gold-api.com/price/XAU");
-    const data = await res.json();
-    document.getElementById("goldPrice").innerText = "$" + data.price.toFixed(2);
-  } catch {
-    document.getElementById("goldPrice").innerText = "Unavailable";
+async function fetchData(symbol, interval) {
+  if (symbol === "XAUUSD") {
+    return [];
   }
+
+  const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=200`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  return data.map(c => ({
+    time: c[0],
+    close: parseFloat(c[4])
+  }));
 }
 
-// MARKET (simple stable)
-function loadMarket() {
-  const stocks = ["AAPL", "TSLA"];
-  const etfs = ["SPY", "QQQ"];
-
-  const stocksBox = document.getElementById("stocks");
-  const etfBox = document.getElementById("etfs");
-
-  stocksBox.innerHTML = "";
-  etfBox.innerHTML = "";
-
-  stocks.forEach(s => {
-    stocksBox.innerHTML += `
-      <div class="bg-slate-800 p-3 rounded">
-        <p>${s}</p>
-        <p class="font-bold">$${(150 + Math.random()*50).toFixed(2)}</p>
-      </div>`;
-  });
-
-  etfs.forEach(s => {
-    etfBox.innerHTML += `
-      <div class="bg-slate-800 p-3 rounded">
-        <p>${s}</p>
-        <p class="font-bold">$${(400 + Math.random()*50).toFixed(2)}</p>
-      </div>`;
-  });
-}
-
-// CHART
-function loadChart(symbol = "AAPL") {
-
-  let base = 100;
-
-  if (symbol === "AAPL") base = 180;
-  if (symbol === "TSLA") base = 230;
-  if (symbol === "SPY") base = 500;
-  if (symbol === "QQQ") base = 450;
-  if (symbol === "GC=F") base = 4600;
-
-  const labels = [];
-  const data = [];
-
-  for (let i = 30; i >= 0; i--) {
-    labels.push(i + "d");
-    data.push(base + Math.random() * 40);
-  }
+function renderChart(symbol, series) {
+  const ctx = document.getElementById("marketChart");
 
   if (chart) chart.destroy();
 
-  chart = new Chart(document.getElementById("chart"), {
+  const dataPoints = series.map(p => ({
+    x: p.time,
+    y: p.close
+  }));
+
+  chart = new Chart(ctx, {
     type: "line",
     data: {
-      labels,
       datasets: [{
         label: symbol,
-        data,
+        data: dataPoints,
+        parsing: false,
         borderWidth: 2,
-        tension: 0.3
+        tension: 0.35
       }]
     },
     options: {
-      plugins: { legend: { labels: { color: "white" } } },
+      responsive: true,
+      maintainAspectRatio: false,
       scales: {
-        x: { ticks: { color: "white" } },
-        y: { ticks: { color: "white" } }
+        x: {
+          type: "time",
+          ticks: { color: "white" }
+        },
+        y: {
+          ticks: { color: "white" }
+        }
+      },
+      plugins: {
+        zoom: {
+          pan: { enabled: true, mode: "x" },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: "x"
+          }
+        }
       }
     }
   });
 }
 
-// EVENT
-document.getElementById("symbol").addEventListener("change", (e) => {
-  loadChart(e.target.value);
-});
+async function load() {
+  const symbol = document.getElementById("symbolSelect").value;
+  const interval = document.getElementById("intervalSelect").value;
 
-// INIT
-loadGold();
-loadMarket();
-loadChart();
-</script>
-  } catch (err) {
-    console.log("Chart error:", err);
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(document.getElementById("chart"), {
-      type: "line",
-      data: {
-        labels: ["No data"],
-        datasets: [{
-          label: "Error",
-          data: [0]
-        }]
-      }
-    });
-  }
-}
-  } catch (err) {
-    console.log("Chart failed:", err);
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(document.getElementById("chart"), {
-      type: "line",
-      data: {
-        labels: ["Error"],
-        datasets: [{
-          label: "No data",
-          data: [0]
-        }]
-      }
-    });
-  }
+  const data = await fetchData(symbol, interval);
+  renderChart(symbol, data);
 }
 
-// ================= EVENT =================
-document.getElementById("symbol").addEventListener("change", (e) => {
-  loadChart(e.target.value);
-});
+document.getElementById("refreshBtn").onclick = load;
+document.getElementById("symbolSelect").onchange = load;
+document.getElementById("intervalSelect").onchange = load;
 
-// ================= INIT =================
-loadGold();
-loadMarket();
-loadChart();
-
+load();
 </script>
 
 </body>
