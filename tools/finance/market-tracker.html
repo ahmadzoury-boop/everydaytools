@@ -5,17 +5,9 @@
 
   <title>Live Gold Price Tracker (Gram, Ounce, 24K) + Real-Time Market Charts</title>
 
-  <!-- ✅ IMPROVED SEO -->
-  <meta name="description" content="Track live gold prices in USD including per gram, ounce, kilogram, and karats (24K, 22K, 18K). View real-time XAUUSD charts with professional TradingView data, zoom, and market insights.">
+  <meta name="description" content="Track live gold prices in USD including per gram, ounce, kilogram, and karats (24K, 22K, 18K). View real-time XAUUSD charts with professional TradingView data.">
 
   <link rel="canonical" href="https://everydaytools.uk/tools/finance/market-tracker/" />
-
-  <meta name="keywords" content="gold price today, gold price per gram, 24k gold price, XAUUSD live chart, gold market tracker, real-time gold price, crypto charts, trading chart" />
-
-  <meta property="og:title" content="Live Gold Price Tracker + Real Market Charts" />
-  <meta property="og:description" content="Check real-time gold prices and explore professional charts powered by TradingView." />
-  <meta property="og:url" content="https://everydaytools.uk/tools/finance/market-tracker/" />
-  <meta property="og:type" content="website" />
 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -28,10 +20,9 @@
   <div>
     <h1 class="text-2xl md:text-3xl font-bold">Market & Gold Tracker</h1>
 
-    <!-- ✅ IMPROVED PAGE DESCRIPTION -->
     <p class="text-slate-400 mt-2 max-w-xl">
       Track live gold prices in USD including ounce, gram, and karats (24K, 22K, 18K). 
-      Explore real-time market charts powered by professional trading data with zoom, indicators, and interactive tools.
+      Explore real-time market charts powered by professional trading data.
     </p>
   </div>
 
@@ -40,40 +31,44 @@
   </button>
 </header>
 
-<!-- GOLD SECTION -->
-<section class="bg-gradient-to-r from-yellow-500/10 to-yellow-300/5 border border-yellow-500/20"></section>
+<!-- ✅ FIXED GOLD SECTION -->
+<section class="bg-gradient-to-r from-yellow-500/10 to-yellow-300/5 border border-yellow-500/20 rounded-xl p-6 mb-6">
+
   <h2 class="text-lg font-semibold text-yellow-400 mb-4">Gold Price</h2>
 
   <div class="grid md:grid-cols-5 gap-4">
+
     <div class="bg-slate-900 p-4 rounded text-center">
       <p class="text-sm text-slate-400">Ounce</p>
-      <p id="goldOunce" class="text-xl font-bold">$—</p>
+      <p id="goldOunce">$—</p>
     </div>
 
     <div class="bg-slate-900 p-4 rounded text-center">
       <p class="text-sm text-slate-400">Gram</p>
-      <p id="goldGramHero" class="text-xl font-bold">$—</p>
+      <p id="goldGramHero">$—</p>
     </div>
 
     <div class="bg-slate-900 p-4 rounded text-center">
       <p class="text-sm text-slate-400">24K</p>
-      <p id="gold24kHero" class="text-xl font-bold">$—</p>
+      <p id="gold24kHero">$—</p>
     </div>
 
     <div class="bg-slate-900 p-4 rounded text-center">
       <p class="text-sm text-slate-400">22K</p>
-      <p id="gold22kHero" class="text-xl font-bold">$—</p>
+      <p id="gold22kHero">$—</p>
     </div>
 
     <div class="bg-slate-900 p-4 rounded text-center">
       <p class="text-sm text-slate-400">18K</p>
-      <p id="gold18kHero" class="text-xl font-bold">$—</p>
+      <p id="gold18kHero">$—</p>
     </div>
+
   </div>
+
 </section>
 
-<!-- SYMBOL SELECT -->
-<div class="mb-4">
+<!-- SYMBOL -->
+<div class="mb-2">
   <select id="symbolSelect" class="bg-slate-800 p-2 rounded">
     <option value="XAUUSD" selected>Gold</option>
     <option value="BTCUSDT">BTC</option>
@@ -81,22 +76,20 @@
   </select>
 </div>
 
-<!-- ✅ TRADINGVIEW CHART -->
+<!-- ✅ CHART TITLE (FIXED POSITION) -->
+<h2 class="text-lg font-semibold mb-3">Live Market Chart</h2>
+
+<!-- ✅ TRADINGVIEW -->
 <div class="bg-slate-900 p-4 rounded-xl">
-
-  <div class="tradingview-widget-container">
-    <div id="tradingview_chart"></div>
-  </div>
-
+  <div id="tradingview_chart"></div>
 </div>
 
 </main>
 
-<!-- TRADINGVIEW -->
+<!-- TradingView -->
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
-<h2 class="text-lg font-semibold mb-3">Live Market Chart</h2>
 new TradingView.widget({
   container_id: "tradingview_chart",
   width: "100%",
@@ -105,18 +98,16 @@ new TradingView.widget({
   interval: "60",
   timezone: "Etc/UTC",
   theme: "dark",
-toolbar_bg: "#020617", // match your background
+  toolbar_bg: "#020617",
   style: "1",
   locale: "en",
-  toolbar_bg: "#0f172a",
   enable_publishing: false,
   hide_side_toolbar: false,
-  allow_symbol_change: true,
-  studies: ["RSI@tv-basicstudies"]
+  allow_symbol_change: true
 });
 </script>
 
-<!-- GOLD PRICE FETCH -->
+<!-- GOLD -->
 <script>
 async function loadGold() {
   try {
@@ -131,22 +122,18 @@ async function loadGold() {
     document.getElementById("gold24kHero").textContent = "$" + gram.toFixed(2);
     document.getElementById("gold22kHero").textContent = "$" + (gram * 0.916).toFixed(2);
     document.getElementById("gold18kHero").textContent = "$" + (gram * 0.75).toFixed(2);
-
   } catch (e) {
-    console.error("Gold load failed", e);
+    console.error(e);
   }
 }
-
 loadGold();
 </script>
 
 <!-- THEME -->
 <script>
 let dark = true;
-
 document.getElementById("themeToggle").onclick = () => {
   dark = !dark;
-
   document.body.className = dark
     ? "bg-slate-950 text-slate-100"
     : "bg-white text-black";
