@@ -2,46 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <!-- Home -->
-  <url><loc>https://everydaytools.uk/</loc></url>
-
-  <!-- Core pages -->
-  <url><loc>https://everydaytools.uk/contact</loc></url>
-
-  <!-- Legal -->
-  <url><loc>https://everydaytools.uk/privacy</loc></url>
-  <url><loc>https://everydaytools.uk/terms</loc></url>
-
-  <!-- Tools index pages -->
-  <url><loc>https://everydaytools.uk/tools/</loc></url>
-  <url><loc>https://everydaytools.uk/tools/time/</loc></url>
-  <url><loc>https://everydaytools.uk/tools/date/</loc></url>
-  <url><loc>https://everydaytools.uk/tools/finance/</loc></url>
-  <url><loc>https://everydaytools.uk/tools/health/</loc></url>
-  <url><loc>https://everydaytools.uk/tools/text/</loc></url>
-  <url><loc>https://everydaytools.uk/tools/random/</loc></url>
-  <url><loc>https://everydaytools.uk/tools/school/</loc></url>
-
-  <!-- Individual tools (time) -->
-  <url><loc>https://everydaytools.uk/tools/time/pomodoro-timer</loc></url>
-  <url><loc>https://everydaytools.uk/tools/time/stopwatch</loc></url>
-  <url><loc>https://everydaytools.uk/tools/time/countdown</loc></url>
-  <url><loc>https://everydaytools.uk/tools/time/break-timer</loc></url>
-
-  <!-- Individual tools (finance) -->
-  <url><loc>https://everydaytools.uk/tools/finance/profit-margin</loc></url>
-  <url><loc>https://everydaytools.uk/tools/finance/vat-calculator</loc></url>
-
-  <!-- Individual tools (health) -->
-  <url><loc>https://everydaytools.uk/tools/health/bmi-calculator</loc></url>
-  <url><loc>https://everydaytools.uk/tools/health/body-fat-estimate</loc></url>
-  <url><loc>https://everydaytools.uk/tools/health/calorie-needs</loc></url>
-    <!-- Daily Brain -->
   <url>
-    <loc>https://everydaytools.uk/tools/brain</loc>
-    <lastmod>2026-01-11</lastmod>
+    <loc>https://everydaytools.uk/</loc>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>1.0</priority>
   </url>
 
+  <!-- Core pages -->
+  <url>
+    <loc>https://everydaytools.uk/contact/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Legal -->
+  <url>
+    <loc>https://everydaytools.uk/privacy/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://everydaytools.uk/terms/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Tools index -->
+  <url><loc>https://everydaytools.uk/tools/</loc><priority>0.9</priority></url>
+  <url><loc>https://everydaytools.uk/tools/time/</loc><priority>0.8</priority></url>
+  <url><loc>https://everydaytools.uk/tools/date/</loc><priority>0.8</priority></url>
+  <url><loc>https://everydaytools.uk/tools/finance/</loc><priority>0.8</priority></url>
+  <url><loc>https://everydaytools.uk/tools/health/</loc><priority>0.8</priority></url>
+  <url><loc>https://everydaytools.uk/tools/text/</loc><priority>0.8</priority></url>
+  <url><loc>https://everydaytools.uk/tools/random/</loc><priority>0.8</priority></url>
+  <url><loc>https://everydaytools.uk/tools/school/</loc><priority>0.8</priority></url>
+
+  <!-- Time tools -->
+  <url><loc>https://everydaytools.uk/tools/time/pomodoro-timer/</loc><priority>0.9</priority></url>
+  <url><loc>https://everydaytools.uk/tools/time/stopwatch/</loc><priority>0.9</priority></url>
+  <url><loc>https://everydaytools.uk/tools/time/countdown/</loc><priority>0.9</priority></url>
+  <url><loc>https://everydaytools.uk/tools/time/break-timer/</loc><priority>0.9</priority></url>
+
+  <!-- Finance -->
+  <url><loc>https://everydaytools.uk/tools/finance/profit-margin/</loc><priority>0.9</priority></url>
+  <url><loc>https://everydaytools.uk/tools/finance/vat-calculator/</loc><priority>0.9</priority></url>
+
+  <!-- ✅ MARKET TRACKER (ADDED) -->
+  <url>
+    <loc>https://everydaytools.uk/tools/finance/market-tracker/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <!-- Health -->
+  <url><loc>https://everydaytools.uk/tools/health/bmi-calculator/</loc><priority>0.9</priority></url>
+  <url><loc>https://everydaytools.uk/tools/health/body-fat-estimate/</loc><priority>0.9</priority></url>
+  <url><loc>https://everydaytools.uk/tools/health/calorie-needs/</loc><priority>0.9</priority></url>
+
+  <!-- Brain -->
+  <url>
+    <loc>https://everydaytools.uk/tools/brain/</loc>
+    <lastmod>2026-01-11</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
 
 </urlset>
