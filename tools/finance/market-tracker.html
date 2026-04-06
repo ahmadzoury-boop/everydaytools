@@ -39,12 +39,12 @@
 <!-- CHART -->
 <div class="bg-slate-900 p-4 rounded-xl">
 <h2 class="text-xl mb-4">📉 Market Chart</h2>
-
 <select id="symbol" class="mb-4 text-black p-2 rounded">
 <option value="AAPL">Apple</option>
 <option value="TSLA">Tesla</option>
 <option value="SPY">SPY ETF</option>
 <option value="QQQ">QQQ ETF</option>
+<option value="GC=F">Gold</option>
 </select>
 
 <canvas id="chart"></canvas>
@@ -71,21 +71,23 @@ async function loadGold() {
   }
 }
 
-// ================= STOCKS =================
+// ================= STOCKS =================QQQ"
 async function loadMarket() {
   const containerStocks = document.getElementById("stocks");
   const containerEtf = document.getElementById("etfs");
 
-  containerStocks.innerHTML = "";
+  containerStocks.innerHTML = "Loading...";
   containerEtf.innerHTML = "";
 
   try {
     const res = await fetch(
-      "https://query1.finance.yahoo.com/v7/finance/quote?symbols=AAPL,TSLA,SPY,QQQ"
+      "https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v7/finance/quote?symbols=AAPL,TSLA,SPY,QQQ"
     );
 
     const data = await res.json();
     const results = data.quoteResponse.result;
+
+    containerStocks.innerHTML = "";
 
     results.forEach(item => {
       const card = `
@@ -102,19 +104,18 @@ async function loadMarket() {
       }
     });
 
-  } catch {
-    containerStocks.innerHTML = "Failed to load";
+  } catch (err) {
+    console.log(err);
+    containerStocks.innerHTML = "Market blocked (CORS)";
   }
 }
 
-// ================= CHART =================
-let chart;
-
+// ================= CHART ==================1d`
 async function loadChart(symbol = "AAPL") {
 
   try {
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1mo&interval=1d`
+      `https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1mo&interval=1d`
     );
 
     const data = await res.json();
@@ -125,7 +126,6 @@ async function loadChart(symbol = "AAPL") {
     let prices = result.indicators.quote[0].close;
     let timestamps = result.timestamp;
 
-    // ✅ CLEAN NULL VALUES
     const cleanData = prices
       .map((p, i) => (p ? { price: p, time: timestamps[i] } : null))
       .filter(x => x !== null);
@@ -163,6 +163,23 @@ async function loadChart(symbol = "AAPL") {
       }
     });
 
+  } catch (err) {
+    console.log("Chart error:", err);
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: ["No data"],
+        datasets: [{
+          label: "Error",
+          data: [0]
+        }]
+      }
+    });
+  }
+}
   } catch (err) {
     console.log("Chart failed:", err);
 
