@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Market & Gold Tracker</title>
+ <title>Live Gold Price Tracker (Gram, Ounce, 24K) + Market Charts</title>
+ <meta name="description" content="Track live gold prices per gram, ounce, and karat (24K, 22K, 18K). Interactive chart with real-time market data.">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
@@ -14,12 +15,17 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen">
 
 <main class="max-w-6xl mx-auto px-4 py-8">
-
 <header class="mb-6">
   <h1 class="text-2xl md:text-3xl font-bold">Market & Gold Tracker</h1>
-  <p class="text-slate-400 mt-1">Live snapshot with interactive chart, zoom, and pan.</p>
-</header>
 
+  <p class="text-slate-400 mt-1">
+    Live snapshot with interactive chart, zoom, and pan.
+  </p>
+
+  <p class="text-slate-400 mt-4 text-sm">
+    This tool shows the live gold price in USD, including per gram, kilogram, and different karats such as 24K, 22K, and 18K. You can also view market charts for crypto assets with zoom and pan functionality.
+  </p>
+</header>
 <section class="grid md:grid-cols-4 gap-4 mb-6">
   <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-4">
     <label class="text-sm text-slate-300">Symbol</label>
