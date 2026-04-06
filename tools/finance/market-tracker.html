@@ -3,22 +3,21 @@
 <head>
   <meta charset="UTF-8" />
 
-  <title>Live Gold Price Tracker (Gram, Ounce, 24K) + Market Charts</title>
+  <title>Live Gold Price Tracker (Gram, Ounce, 24K) + Real-Time Market Charts</title>
 
-  <meta name="description" content="Track live gold prices per gram, ounce, and karat (24K, 22K, 18K). Interactive chart with real-time market data.">
+  <!-- ✅ IMPROVED SEO -->
+  <meta name="description" content="Track live gold prices in USD including per gram, ounce, kilogram, and karats (24K, 22K, 18K). View real-time XAUUSD charts with professional TradingView data, zoom, and market insights.">
+
   <link rel="canonical" href="https://everydaytools.uk/tools/finance/market-tracker/" />
 
-  <meta name="keywords" content="gold price, gold price per gram, gold 24k price, live gold chart, XAUUSD, crypto chart" />
+  <meta name="keywords" content="gold price today, gold price per gram, 24k gold price, XAUUSD live chart, gold market tracker, real-time gold price, crypto charts, trading chart" />
 
-  <meta property="og:title" content="Live Gold Price Tracker (Gram, Ounce, 24K)" />
-  <meta property="og:description" content="Track live gold prices per gram, ounce, and karat with interactive charts." />
+  <meta property="og:title" content="Live Gold Price Tracker + Real Market Charts" />
+  <meta property="og:description" content="Check real-time gold prices and explore professional charts powered by TradingView." />
   <meta property="og:url" content="https://everydaytools.uk/tools/finance/market-tracker/" />
   <meta property="og:type" content="website" />
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 
 <body class="bg-slate-950 text-slate-100 min-h-screen">
@@ -28,7 +27,12 @@
 <header class="mb-6 flex justify-between items-center">
   <div>
     <h1 class="text-2xl md:text-3xl font-bold">Market & Gold Tracker</h1>
-    <p class="text-slate-400 mt-1">Professional live market chart</p>
+
+    <!-- ✅ IMPROVED PAGE DESCRIPTION -->
+    <p class="text-slate-400 mt-2 max-w-xl">
+      Track live gold prices in USD including ounce, gram, and karats (24K, 22K, 18K). 
+      Explore real-time market charts powered by professional trading data with zoom, indicators, and interactive tools.
+    </p>
   </div>
 
   <button id="themeToggle" class="bg-slate-800 px-3 py-2 rounded text-sm">
@@ -36,7 +40,7 @@
   </button>
 </header>
 
-<!-- GOLD -->
+<!-- GOLD SECTION -->
 <section class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 mb-6">
   <h2 class="text-lg font-semibold text-yellow-400 mb-4">Gold Price</h2>
 
@@ -68,7 +72,7 @@
   </div>
 </section>
 
-<!-- SYMBOL -->
+<!-- SYMBOL SELECT -->
 <div class="mb-4">
   <select id="symbolSelect" class="bg-slate-800 p-2 rounded">
     <option value="XAUUSD" selected>Gold</option>
@@ -77,150 +81,74 @@
   </select>
 </div>
 
-<!-- CHART -->
+<!-- ✅ TRADINGVIEW CHART -->
 <div class="bg-slate-900 p-4 rounded-xl">
 
-  <div class="flex gap-2 mb-3">
-    <button class="rangeBtn px-3 py-1 bg-blue-600 rounded" data-range="1d">1D</button>
-    <button class="rangeBtn px-3 py-1 bg-slate-800 rounded" data-range="7d">1W</button>
-    <button class="rangeBtn px-3 py-1 bg-slate-800 rounded" data-range="30d">1M</button>
-    <button class="rangeBtn px-3 py-1 bg-slate-800 rounded" data-range="365d">1Y</button>
+  <div class="tradingview-widget-container">
+    <div id="tradingview_chart"></div>
   </div>
 
-  <canvas id="marketChart" height="100"></canvas>
 </div>
 
 </main>
 
+<!-- TRADINGVIEW -->
+<script src="https://s3.tradingview.com/tv.js"></script>
+
 <script>
-let chart;
-let darkMode = true;
-let currentRange = "1d";
+new TradingView.widget({
+  container_id: "tradingview_chart",
+  width: "100%",
+  height: 500,
+  symbol: "OANDA:XAUUSD",
+  interval: "60",
+  timezone: "Etc/UTC",
+  theme: "dark",
+  style: "1",
+  locale: "en",
+  toolbar_bg: "#0f172a",
+  enable_publishing: false,
+  hide_side_toolbar: false,
+  allow_symbol_change: true,
+  studies: ["RSI@tv-basicstudies"]
+});
+</script>
 
-// ================= DATA =================
-async function fetchData(symbol) {
+<!-- GOLD PRICE FETCH -->
+<script>
+async function loadGold() {
+  try {
+    const res = await fetch("https://api.gold-api.com/price/XAU");
+    const json = await res.json();
 
-  let limit = 100;
-  let interval = "1h";
+    const price = Number(json.price);
+    const gram = price / 31.1035;
 
-  if (currentRange === "1d") { interval = "5m"; limit = 200; }
-  if (currentRange === "7d") { interval = "15m"; limit = 200; }
-  if (currentRange === "30d") { interval = "1h"; limit = 300; }
-  if (currentRange === "365d") { interval = "1d"; limit = 365; }
-
-  // GOLD (stable)
-  if (symbol === "XAUUSD") {
-    try {
-      const res = await fetch("https://api.gold-api.com/price/XAU");
-      const json = await res.json();
-
-      const price = Number(json.price);
-      if (!price) throw new Error("Invalid gold price");
-
-      return Array.from({ length: limit }, (_, i) => ({
-        time: Date.now() - (limit - i) * 60000,
-        close: price
-      }));
-
-    } catch (e) {
-      console.error("Gold fetch failed", e);
-      return [];
-    }
-  }
-
-  // CRYPTO
-  const res = await fetch(
-    `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
-  );
-  const data = await res.json();
-
-  return data.map(c => ({
-    time: c[0],
-    close: parseFloat(c[4])
-  }));
-}
-
-// ================= CHART =================
-function renderChart(symbol, data) {
-  const ctx = document.getElementById("marketChart").getContext("2d");
-
-  if (chart) chart.destroy();
-
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, "rgba(34,197,94,0.4)");
-  gradient.addColorStop(1, "rgba(34,197,94,0)");
-
-  chart = new Chart(ctx, {
-    type: "line",
-    data: {
-      datasets: [{
-        data: data.map(p => ({ x: p.time, y: p.close })),
-        borderColor: "#22c55e",
-        backgroundColor: gradient,
-        fill: true,
-        tension: 0.3,
-        pointRadius: 0
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false },
-        zoom: {
-          pan: { enabled: true, mode: "x" },
-          zoom: { wheel: { enabled: true }, mode: "x" }
-        }
-      },
-      scales: {
-        x: { type: "time" },
-        y: {}
-      }
-    }
-  });
-}
-
-// ================= LOAD =================
-async function load() {
-  const symbol = document.getElementById("symbolSelect").value;
-  const data = await fetchData(symbol);
-
-  if (!data || data.length === 0) return;
-
-  const last = data[data.length - 1].close;
-
-  if (symbol === "XAUUSD") {
-    const gram = last / 31.1035;
-
-    document.getElementById("goldOunce").textContent = "$" + last.toFixed(2);
+    document.getElementById("goldOunce").textContent = "$" + price.toFixed(2);
     document.getElementById("goldGramHero").textContent = "$" + gram.toFixed(2);
     document.getElementById("gold24kHero").textContent = "$" + gram.toFixed(2);
     document.getElementById("gold22kHero").textContent = "$" + (gram * 0.916).toFixed(2);
     document.getElementById("gold18kHero").textContent = "$" + (gram * 0.75).toFixed(2);
-  }
 
-  renderChart(symbol, data);
+  } catch (e) {
+    console.error("Gold load failed", e);
+  }
 }
 
-// ================= EVENTS =================
+loadGold();
+</script>
+
+<!-- THEME -->
+<script>
+let dark = true;
+
 document.getElementById("themeToggle").onclick = () => {
-  darkMode = !darkMode;
-  document.body.className = darkMode ? "bg-slate-950 text-slate-100" : "bg-white text-black";
-  load();
+  dark = !dark;
+
+  document.body.className = dark
+    ? "bg-slate-950 text-slate-100"
+    : "bg-white text-black";
 };
-
-document.getElementById("symbolSelect").onchange = load;
-
-document.querySelectorAll(".rangeBtn").forEach(btn => {
-  btn.onclick = () => {
-    currentRange = btn.dataset.range;
-
-    document.querySelectorAll(".rangeBtn").forEach(b => b.classList.remove("bg-blue-600"));
-    btn.classList.add("bg-blue-600");
-
-    load();
-  };
-});
-
-load();
 </script>
 
 </body>
