@@ -12,217 +12,173 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body id="body" class="bg-slate-950 text-slate-100 min-h-screen">
 
 <main class="max-w-6xl mx-auto px-4 py-8">
 
-<header class="mb-6">
-  <h1 class="text-2xl md:text-3xl font-bold">Market & Gold Tracker</h1>
+<header class="mb-6 flex justify-between items-center">
+  <div>
+    <h1 class="text-2xl md:text-3xl font-bold">Market & Gold Tracker</h1>
+    <p class="text-slate-400 mt-1">Professional live market chart</p>
+  </div>
 
-  <p class="text-slate-400 mt-1">
-    Live snapshot with interactive chart, zoom, and pan.
-  </p>
-
-  <p class="text-slate-400 mt-4 text-sm">
-    This tool shows the live gold price in USD, including per gram, kilogram, and different karats such as 24K, 22K, and 18K.
-  </p>
+  <!-- 🌗 THEME TOGGLE -->
+  <button id="themeToggle" class="bg-slate-800 px-3 py-2 rounded text-sm">
+    Toggle Theme
+  </button>
 </header>
 
-<!-- ✅ GOLD HERO SECTION -->
-<section id="goldSection" class="bg-gradient-to-r from-yellow-500/10 to-yellow-300/5 border border-yellow-500/20 rounded-xl p-6 mb-6">
+<!-- GOLD SECTION -->
+<section id="goldSection" class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 mb-6">
+  <h2 class="text-lg font-semibold text-yellow-400 mb-4">Gold Price</h2>
 
-  <h2 class="text-xl font-semibold text-yellow-400 mb-4">Gold Price (XAU/USD)</h2>
+  <div class="grid md:grid-cols-5 gap-4">
 
-  <div class="grid md:grid-cols-4 gap-4">
-
-    <div class="bg-slate-900 p-4 rounded-lg text-center">
-      <p class="text-slate-400 text-sm">Per Ounce</p>
-      <p id="goldOunce" class="text-2xl font-bold text-yellow-400">$—</p>
+    <div class="bg-slate-900 p-4 rounded text-center">
+      <p class="text-sm text-slate-400">Ounce</p>
+      <p id="goldOunce" class="text-xl font-bold">$—</p>
     </div>
 
-    <div class="bg-slate-900 p-4 rounded-lg text-center">
-      <p class="text-slate-400 text-sm">Per Gram</p>
-      <p id="goldGramHero" class="text-2xl font-bold">$—</p>
+    <div class="bg-slate-900 p-4 rounded text-center">
+      <p class="text-sm text-slate-400">Gram</p>
+      <p id="goldGramHero" class="text-xl font-bold">$—</p>
     </div>
 
-    <div class="bg-slate-900 p-4 rounded-lg text-center">
-      <p class="text-slate-400 text-sm">24K</p>
+    <div class="bg-slate-900 p-4 rounded text-center">
+      <p class="text-sm text-slate-400">24K</p>
       <p id="gold24kHero" class="text-xl font-bold">$—</p>
     </div>
 
-    <div class="bg-slate-900 p-4 rounded-lg text-center">
-      <p class="text-slate-400 text-sm">22K</p>
+    <div class="bg-slate-900 p-4 rounded text-center">
+      <p class="text-sm text-slate-400">22K</p>
       <p id="gold22kHero" class="text-xl font-bold">$—</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded text-center">
+      <p class="text-sm text-slate-400">18K</p>
+      <p id="gold18kHero" class="text-xl font-bold">$—</p>
     </div>
 
   </div>
 </section>
 
 <!-- CONTROLS -->
-<section class="grid md:grid-cols-4 gap-4 mb-6">
-  <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-4">
-    <label class="text-sm text-slate-300">Symbol</label>
-    <select id="symbolSelect" class="w-full mt-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
-      <option value="BTCUSDT">BTC/USDT</option>
-      <option value="ETHUSDT">ETH/USDT</option>
-      <option value="XAUUSD" selected>XAU/USD (Gold)</option>
-    </select>
-  </div>
-
-  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-    <label class="text-sm text-slate-300">Interval</label>
-    <select id="intervalSelect" class="w-full mt-2 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2">
-      <option value="1m">1m</option>
-      <option value="5m">5m</option>
-      <option value="15m">15m</option>
-      <option value="1h" selected>1h</option>
-      <option value="4h">4h</option>
-      <option value="1d">1d</option>
-    </select>
-  </div>
-
-  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-end">
-    <button id="refreshBtn" class="w-full bg-blue-600 hover:bg-blue-500 rounded-lg px-3 py-2 font-semibold">
-      Refresh
-    </button>
-  </div>
-</section>
-
-<!-- STATS -->
-<section class="grid md:grid-cols-4 gap-4 mb-6">
-  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-    <p class="text-slate-400 text-sm">Current Price</p>
-    <p id="currentPrice" class="text-2xl font-bold mt-1">—</p>
-  </article>
-
-  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-    <p class="text-slate-400 text-sm">24h Change</p>
-    <p id="change24h" class="text-2xl font-bold mt-1">—</p>
-  </article>
-
-  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-    <p class="text-slate-400 text-sm">24h High</p>
-    <p id="high24h" class="text-2xl font-bold mt-1">—</p>
-  </article>
-
-  <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-    <p class="text-slate-400 text-sm">24h Low</p>
-    <p id="low24h" class="text-2xl font-bold mt-1">—</p>
-  </article>
-</section>
+<div class="mb-4">
+  <select id="symbolSelect" class="bg-slate-800 p-2 rounded">
+    <option value="XAUUSD" selected>Gold</option>
+    <option value="BTCUSDT">BTC</option>
+    <option value="ETHUSDT">ETH</option>
+  </select>
+</div>
 
 <!-- CHART -->
-<section class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-  <div class="h-[420px]">
-    <canvas id="marketChart"></canvas>
-  </div>
-</section>
+<div class="bg-slate-900 p-4 rounded-xl">
+  <canvas id="marketChart" height="100"></canvas>
+</div>
 
 </main>
 
 <script>
 let chart;
+let darkMode = true;
 
-async function fetchData(symbol, interval) {
-  try {
-    if (symbol === "XAUUSD") {
-      const res = await fetch("https://api.gold-api.com/price/XAU");
-      const json = await res.json();
-      const price = Number(json.price);
+// ================= DATA =================
+async function fetchData(symbol) {
+  if (symbol === "XAUUSD") {
+    const res = await fetch("https://api.gold-api.com/price/XAU");
+    const json = await res.json();
+    const price = json.price;
 
-      return Array.from({ length: 120 }, (_, i) => ({
-        time: Date.now() - (120 - i) * 60000,
-        close: price + Math.sin(i / 5) * 5
-      }));
-    }
-
-    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=200`);
-    const data = await res.json();
-
-    return data.map(c => ({
-      time: c[0],
-      close: parseFloat(c[4])
+    return Array.from({ length: 100 }, (_, i) => ({
+      time: Date.now() - i * 60000,
+      close: price + Math.sin(i / 5) * 5
     }));
-
-  } catch {
-    return [];
   }
+
+  const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1h&limit=200`);
+  const data = await res.json();
+
+  return data.map(c => ({
+    time: c[0],
+    close: parseFloat(c[4])
+  }));
 }
 
-function renderChart(symbol, series) {
-  const ctx = document.getElementById("marketChart");
+// ================= CHART =================
+function renderChart(symbol, data) {
+  const ctx = document.getElementById("marketChart").getContext("2d");
 
   if (chart) chart.destroy();
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, "rgba(34,197,94,0.4)");
+  gradient.addColorStop(1, "rgba(34,197,94,0)");
 
   chart = new Chart(ctx, {
     type: "line",
     data: {
       datasets: [{
-        label: symbol,
-        data: series.map(p => ({ x: p.time, y: p.close })),
-        parsing: false,
-        borderColor: "#facc15",
-        backgroundColor: "rgba(250,204,21,0.1)",
+        data: data.map(p => ({ x: p.time, y: p.close })),
+        borderColor: "#22c55e",
+        backgroundColor: gradient,
         fill: true,
-        pointRadius: 0,
-        tension: 0.35
+        tension: 0.3,
+        pointRadius: 0
       }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { type: "time", ticks: { color: "white" } },
-        y: { ticks: { color: "white" } }
-      },
       plugins: {
+        legend: { display: false },
         zoom: {
           pan: { enabled: true, mode: "x" },
-          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: "x" }
+          zoom: { wheel: { enabled: true }, mode: "x" }
+        }
+      },
+      scales: {
+        x: {
+          type: "time",
+          grid: { color: darkMode ? "#1e293b" : "#e5e7eb" }
+        },
+        y: {
+          grid: { color: darkMode ? "#1e293b" : "#e5e7eb" }
         }
       }
     }
   });
 }
 
+// ================= LOAD =================
 async function load() {
   const symbol = document.getElementById("symbolSelect").value;
-  const interval = document.getElementById("intervalSelect").value;
-
-  const data = await fetchData(symbol, interval);
-  if (!data.length) return;
+  const data = await fetchData(symbol);
 
   const last = data[data.length - 1].close;
-  const first = data[0].close;
-
-  document.getElementById("currentPrice").textContent = "$" + last.toFixed(2);
-  document.getElementById("change24h").textContent = (((last - first) / first) * 100).toFixed(2) + "%";
-
-  document.getElementById("high24h").textContent = "$" + Math.max(...data.map(d => d.close)).toFixed(2);
-  document.getElementById("low24h").textContent = "$" + Math.min(...data.map(d => d.close)).toFixed(2);
-
-  const goldSection = document.getElementById("goldSection");
 
   if (symbol === "XAUUSD") {
     const gram = last / 31.1035;
-
-    goldSection.style.display = "block";
 
     document.getElementById("goldOunce").textContent = "$" + last.toFixed(2);
     document.getElementById("goldGramHero").textContent = "$" + gram.toFixed(2);
     document.getElementById("gold24kHero").textContent = "$" + gram.toFixed(2);
     document.getElementById("gold22kHero").textContent = "$" + (gram * 0.916).toFixed(2);
-
-  } else {
-    goldSection.style.display = "none";
+    document.getElementById("gold18kHero").textContent = "$" + (gram * 0.75).toFixed(2);
   }
 
   renderChart(symbol, data);
 }
 
-document.getElementById("refreshBtn").onclick = load;
+// ================= THEME =================
+document.getElementById("themeToggle").onclick = () => {
+  darkMode = !darkMode;
+
+  document.body.className = darkMode
+    ? "bg-slate-950 text-slate-100"
+    : "bg-white text-black";
+
+  load();
+};
+
 document.getElementById("symbolSelect").onchange = load;
-document.getElementById("intervalSelect").onchange = load;
 
 load();
 </script>
