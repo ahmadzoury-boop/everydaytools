@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
- <title>Live Gold Price Tracker (Gram, Ounce, 24K) + Market Charts</title>
- <meta name="description" content="Track live gold prices per gram, ounce, and karat (24K, 22K, 18K). Interactive chart with real-time market data.">
+  <title>Live Gold Price Tracker (Gram, Ounce, 24K) + Market Charts</title>
+  <meta name="description" content="Track live gold prices per gram, ounce, and karat (24K, 22K, 18K). Interactive chart with real-time market data.">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
@@ -15,6 +15,7 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen">
 
 <main class="max-w-6xl mx-auto px-4 py-8">
+
 <header class="mb-6">
   <h1 class="text-2xl md:text-3xl font-bold">Market & Gold Tracker</h1>
 
@@ -23,9 +24,41 @@
   </p>
 
   <p class="text-slate-400 mt-4 text-sm">
-    This tool shows the live gold price in USD, including per gram, kilogram, and different karats such as 24K, 22K, and 18K. You can also view market charts for crypto assets with zoom and pan functionality.
+    This tool shows the live gold price in USD, including per gram, kilogram, and different karats such as 24K, 22K, and 18K.
   </p>
 </header>
+
+<!-- ✅ GOLD HERO SECTION -->
+<section id="goldSection" class="bg-gradient-to-r from-yellow-500/10 to-yellow-300/5 border border-yellow-500/20 rounded-xl p-6 mb-6">
+
+  <h2 class="text-xl font-semibold text-yellow-400 mb-4">Gold Price (XAU/USD)</h2>
+
+  <div class="grid md:grid-cols-4 gap-4">
+
+    <div class="bg-slate-900 p-4 rounded-lg text-center">
+      <p class="text-slate-400 text-sm">Per Ounce</p>
+      <p id="goldOunce" class="text-2xl font-bold text-yellow-400">$—</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-lg text-center">
+      <p class="text-slate-400 text-sm">Per Gram</p>
+      <p id="goldGramHero" class="text-2xl font-bold">$—</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-lg text-center">
+      <p class="text-slate-400 text-sm">24K</p>
+      <p id="gold24kHero" class="text-xl font-bold">$—</p>
+    </div>
+
+    <div class="bg-slate-900 p-4 rounded-lg text-center">
+      <p class="text-slate-400 text-sm">22K</p>
+      <p id="gold22kHero" class="text-xl font-bold">$—</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTROLS -->
 <section class="grid md:grid-cols-4 gap-4 mb-6">
   <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-4">
     <label class="text-sm text-slate-300">Symbol</label>
@@ -55,6 +88,7 @@
   </div>
 </section>
 
+<!-- STATS -->
 <section class="grid md:grid-cols-4 gap-4 mb-6">
   <article class="bg-slate-900 border border-slate-800 rounded-xl p-4">
     <p class="text-slate-400 text-sm">Current Price</p>
@@ -75,48 +109,10 @@
     <p class="text-slate-400 text-sm">24h Low</p>
     <p id="low24h" class="text-2xl font-bold mt-1">—</p>
   </article>
-
-  <!-- ✅ GOLD PANEL -->
-  <div id="goldPanel" class="hidden md:col-span-4 bg-slate-900 border border-slate-800 rounded-xl p-4">
-    <h3 class="text-lg font-semibold mb-3">Gold Breakdown</h3>
-
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-
-      <div class="bg-slate-800 rounded-lg p-3 text-center">
-        <p class="text-xs text-slate-400">Per Gram</p>
-        <p id="goldGram" class="text-xl font-bold">$—</p>
-      </div>
-
-      <div class="bg-slate-800 rounded-lg p-3 text-center">
-        <p class="text-xs text-slate-400">Per Kg</p>
-        <p id="goldKg" class="text-xl font-bold">$—</p>
-      </div>
-
-      <div class="bg-slate-800 rounded-lg p-3 text-center">
-        <p class="text-xs text-slate-400">24K</p>
-        <p id="gold24k" class="text-xl font-bold">$—</p>
-      </div>
-
-      <div class="bg-slate-800 rounded-lg p-3 text-center">
-        <p class="text-xs text-slate-400">22K</p>
-        <p id="gold22k" class="text-xl font-bold">$—</p>
-      </div>
-
-      <div class="bg-slate-800 rounded-lg p-3 text-center">
-        <p class="text-xs text-slate-400">18K</p>
-        <p id="gold18k" class="text-xl font-bold">$—</p>
-      </div>
-
-    </div>
-  </div>
 </section>
 
+<!-- CHART -->
 <section class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-  <div class="flex justify-between mb-3">
-    <h2>Price Chart</h2>
-    <button id="resetZoomBtn" class="text-sm bg-slate-800 px-3 py-1 rounded">Reset Zoom</button>
-  </div>
-
   <div class="h-[420px]">
     <canvas id="marketChart"></canvas>
   </div>
@@ -132,7 +128,6 @@ async function fetchData(symbol, interval) {
     if (symbol === "XAUUSD") {
       const res = await fetch("https://api.gold-api.com/price/XAU");
       const json = await res.json();
-
       const price = Number(json.price);
 
       return Array.from({ length: 120 }, (_, i) => ({
@@ -141,8 +136,7 @@ async function fetchData(symbol, interval) {
       }));
     }
 
-    const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=200`;
-    const res = await fetch(url);
+    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=200`);
     const data = await res.json();
 
     return data.map(c => ({
@@ -150,7 +144,7 @@ async function fetchData(symbol, interval) {
       close: parseFloat(c[4])
     }));
 
-  } catch (err) {
+  } catch {
     return [];
   }
 }
@@ -167,7 +161,10 @@ function renderChart(symbol, series) {
         label: symbol,
         data: series.map(p => ({ x: p.time, y: p.close })),
         parsing: false,
-        borderWidth: 2,
+        borderColor: "#facc15",
+        backgroundColor: "rgba(250,204,21,0.1)",
+        fill: true,
+        pointRadius: 0,
         tension: 0.35
       }]
     },
@@ -181,11 +178,7 @@ function renderChart(symbol, series) {
       plugins: {
         zoom: {
           pan: { enabled: true, mode: "x" },
-          zoom: {
-            wheel: { enabled: true },
-            pinch: { enabled: true },
-            mode: "x"
-          }
+          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: "x" }
         }
       }
     }
@@ -203,31 +196,25 @@ async function load() {
   const first = data[0].close;
 
   document.getElementById("currentPrice").textContent = "$" + last.toFixed(2);
+  document.getElementById("change24h").textContent = (((last - first) / first) * 100).toFixed(2) + "%";
 
-  const change = ((last - first) / first) * 100;
-  document.getElementById("change24h").textContent = change.toFixed(2) + "%";
+  document.getElementById("high24h").textContent = "$" + Math.max(...data.map(d => d.close)).toFixed(2);
+  document.getElementById("low24h").textContent = "$" + Math.min(...data.map(d => d.close)).toFixed(2);
 
-  document.getElementById("high24h").textContent =
-    "$" + Math.max(...data.map(d => d.close)).toFixed(2);
+  const goldSection = document.getElementById("goldSection");
 
-  document.getElementById("low24h").textContent =
-    "$" + Math.min(...data.map(d => d.close)).toFixed(2);
-
-  // ✅ GOLD PANEL LOGIC
   if (symbol === "XAUUSD") {
     const gram = last / 31.1035;
-    const kg = gram * 1000;
 
-    document.getElementById("goldPanel").classList.remove("hidden");
+    goldSection.style.display = "block";
 
-    document.getElementById("goldGram").textContent = "$" + gram.toFixed(2);
-    document.getElementById("goldKg").textContent = "$" + kg.toFixed(0);
-    document.getElementById("gold24k").textContent = "$" + gram.toFixed(2);
-    document.getElementById("gold22k").textContent = "$" + (gram * 0.916).toFixed(2);
-    document.getElementById("gold18k").textContent = "$" + (gram * 0.75).toFixed(2);
+    document.getElementById("goldOunce").textContent = "$" + last.toFixed(2);
+    document.getElementById("goldGramHero").textContent = "$" + gram.toFixed(2);
+    document.getElementById("gold24kHero").textContent = "$" + gram.toFixed(2);
+    document.getElementById("gold22kHero").textContent = "$" + (gram * 0.916).toFixed(2);
 
   } else {
-    document.getElementById("goldPanel").classList.add("hidden");
+    goldSection.style.display = "none";
   }
 
   renderChart(symbol, data);
