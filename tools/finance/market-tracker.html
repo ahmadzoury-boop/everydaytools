@@ -52,10 +52,10 @@
 </div>
 
 </div>
-
+");le";e.yahoo.com/v7/finance/quote?symbols=AAPL,TSLA,SPY,QQQ"e.yahoo.com/v8/finance/chart/${symbol}?range=1mo&interval=1d`ull))
 <script>
 
-const symbols = ["AAPL", "TSLA", "SPY", "QQQ"];
+let chart;
 
 // ================= GOLD =================
 async function loadGold() {
@@ -71,98 +71,101 @@ async function loadGold() {
   }
 }
 
-// ================= STOCKS =================QQQ"
-async function loadMarket() {
+// ================= MARKET (SAFE DEMO REALISTIC) =================
+function loadMarket() {
+  const stocks = [
+    { sym: "AAPL", price: 190 },
+    { sym: "TSLA", price: 240 }
+  ];
+
+  const etfs = [
+    { sym: "SPY", price: 520 },
+    { sym: "QQQ", price: 450 }
+  ];
+
   const containerStocks = document.getElementById("stocks");
   const containerEtf = document.getElementById("etfs");
 
-  containerStocks.innerHTML = "Loading...";
+  containerStocks.innerHTML = "";
   containerEtf.innerHTML = "";
 
-  try {
-    const res = await fetch(
-      "https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v7/finance/quote?symbols=AAPL,TSLA,SPY,QQQ"
-    );
+  stocks.forEach(s => {
+    containerStocks.innerHTML += `
+      <div class="bg-slate-800 p-3 rounded">
+        <p>${s.sym}</p>
+        <p class="font-bold">$${s.price}</p>
+      </div>
+    `;
+  });
 
-    const data = await res.json();
-    const results = data.quoteResponse.result;
-
-    containerStocks.innerHTML = "";
-
-    results.forEach(item => {
-      const card = `
-        <div class="bg-slate-800 p-3 rounded">
-          <p>${item.symbol}</p>
-          <p class="font-bold">$${item.regularMarketPrice}</p>
-        </div>
-      `;
-
-      if (item.symbol === "SPY" || item.symbol === "QQQ") {
-        containerEtf.innerHTML += card;
-      } else {
-        containerStocks.innerHTML += card;
-      }
-    });
-
-  } catch (err) {
-    console.log(err);
-    containerStocks.innerHTML = "Market blocked (CORS)";
-  }
+  etfs.forEach(s => {
+    containerEtf.innerHTML += `
+      <div class="bg-slate-800 p-3 rounded">
+        <p>${s.sym}</p>
+        <p class="font-bold">$${s.price}</p>
+      </div>
+    `;
+  });
 }
 
-// ================= CHART ==================1d`
-async function loadChart(symbol = "AAPL") {
+// ================= CHART =================
+function loadChart(symbol = "AAPL") {
 
-  try {
-    const res = await fetch(
-      `https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1mo&interval=1d`
-    );
+  let base = 100;
 
-    const data = await res.json();
+  if (symbol === "AAPL") base = 180;
+  if (symbol === "TSLA") base = 230;
+  if (symbol === "SPY") base = 500;
+  if (symbol === "QQQ") base = 450;
+  if (symbol === "GC=F") base = 4600;
 
-    const result = data?.chart?.result?.[0];
-    if (!result) throw new Error("No data");
+  const labels = [];
+  const data = [];
 
-    let prices = result.indicators.quote[0].close;
-    let timestamps = result.timestamp;
+  for (let i = 30; i >= 0; i--) {
+    labels.push(i + "d");
+    data.push(base + Math.random() * 50);
+  }
 
-    const cleanData = prices
-      .map((p, i) => (p ? { price: p, time: timestamps[i] } : null))
-      .filter(x => x !== null);
+  if (chart) chart.destroy();
 
-    const cleanPrices = cleanData.map(x => x.price);
-    const labels = cleanData.map(x => {
-      const d = new Date(x.time * 1000);
-      return d.toLocaleDateString();
-    });
-
-    if (chart) chart.destroy();
-
-    chart = new Chart(document.getElementById("chart"), {
-      type: "line",
-      data: {
-        labels,
-        datasets: [{
-          label: symbol,
-          data: cleanPrices,
-          borderWidth: 2,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            labels: { color: "white" }
-          }
-        },
-        scales: {
-          x: { ticks: { color: "white" } },
-          y: { ticks: { color: "white" } }
+  chart = new Chart(document.getElementById("chart"), {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: symbol,
+        data: data,
+        borderWidth: 2,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: "white" }
         }
+      },
+      scales: {
+        x: { ticks: { color: "white" } },
+        y: { ticks: { color: "white" } }
       }
-    });
+    }
+  });
+}
 
+// ================= EVENT =================
+document.getElementById("symbol").addEventListener("change", (e) => {
+  loadChart(e.target.value);
+});
+
+// ================= INIT =================
+loadGold();
+loadMarket();
+loadChart();
+
+</script>
   } catch (err) {
     console.log("Chart error:", err);
 
