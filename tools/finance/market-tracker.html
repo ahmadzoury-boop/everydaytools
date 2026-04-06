@@ -44,6 +44,7 @@
 <option value="AAPL">Apple</option>
 <option value="TSLA">Tesla</option>
 <option value="SPY">SPY ETF</option>
+<option value="QQQ">QQQ ETF</option>
 </select>
 
 <canvas id="chart"></canvas>
@@ -51,6 +52,7 @@
 </div>
 
 </div>
+
 <script>
 
 const symbols = ["AAPL", "TSLA", "SPY", "QQQ"];
@@ -77,29 +79,31 @@ async function loadMarket() {
   containerStocks.innerHTML = "";
   containerEtf.innerHTML = "";
 
-  for (let sym of symbols) {
-    try {
-      const res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${sym}`);
-      const data = await res.json();
+  try {
+    const res = await fetch(
+      "https://query1.finance.yahoo.com/v7/finance/quote?symbols=AAPL,TSLA,SPY,QQQ"
+    );
 
-      const price = data.quoteResponse.result[0].regularMarketPrice;
+    const data = await res.json();
+    const results = data.quoteResponse.result;
 
+    results.forEach(item => {
       const card = `
         <div class="bg-slate-800 p-3 rounded">
-          <p>${sym}</p>
-          <p class="font-bold">$${price}</p>
+          <p>${item.symbol}</p>
+          <p class="font-bold">$${item.regularMarketPrice}</p>
         </div>
       `;
 
-      if (sym === "SPY" || sym === "QQQ") {
+      if (item.symbol === "SPY" || item.symbol === "QQQ") {
         containerEtf.innerHTML += card;
       } else {
         containerStocks.innerHTML += card;
       }
+    });
 
-    } catch {
-      console.log(sym + " failed");
-    }
+  } catch {
+    containerStocks.innerHTML = "Failed to load";
   }
 }
 
@@ -115,13 +119,20 @@ async function loadChart(symbol = "AAPL") {
 
     const data = await res.json();
 
-    const result = data.chart.result[0];
+    const result = data?.chart?.result?.[0];
+    if (!result) throw new Error("No data");
 
-    const prices = result.indicators.quote[0].close;
-    const timestamps = result.timestamp;
+    let prices = result.indicators.quote[0].close;
+    let timestamps = result.timestamp;
 
-    const labels = timestamps.map(t => {
-      const d = new Date(t * 1000);
+    // ✅ CLEAN NULL VALUES
+    const cleanData = prices
+      .map((p, i) => (p ? { price: p, time: timestamps[i] } : null))
+      .filter(x => x !== null);
+
+    const cleanPrices = cleanData.map(x => x.price);
+    const labels = cleanData.map(x => {
+      const d = new Date(x.time * 1000);
       return d.toLocaleDateString();
     });
 
@@ -133,7 +144,7 @@ async function loadChart(symbol = "AAPL") {
         labels,
         datasets: [{
           label: symbol,
-          data: prices,
+          data: cleanPrices,
           borderWidth: 2,
           tension: 0.3
         }]
@@ -152,8 +163,21 @@ async function loadChart(symbol = "AAPL") {
       }
     });
 
-  } catch {
-    console.log("Chart error");
+  } catch (err) {
+    console.log("Chart failed:", err);
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels: ["Error"],
+        datasets: [{
+          label: "No data",
+          data: [0]
+        }]
+      }
+    });
   }
 }
 
