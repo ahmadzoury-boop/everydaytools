@@ -99,16 +99,9 @@
 <script>
 let chart;
 
-l, interval) {
-
-  async function fetchData(symbol, interval) {
+async function fetchData(symbol, interval) {
   try {
-    // 🟡 GOLD FIX
-    if (symbol === "XAUUSD") {
-      const res = await fetch("https://api.gold-api.com/price/XAU")
-      async function fetchData(symbol, interval) {
-  try {
-    // 🟡 GOLD FIX (REAL DATA)
+    // 🟡 GOLD
     if (symbol === "XAUUSD") {
       const res = await fetch("https://api.gold-api.com/price/XAU");
       const json = await res.json();
@@ -117,20 +110,17 @@ l, interval) {
 
       if (!price) throw new Error("Gold price missing");
 
-      // build realistic data
       return Array.from({ length: 120 }, (_, i) => ({
         time: Date.now() - (120 - i) * 60000,
         close: price + Math.sin(i / 5) * 5
       }));
     }
 
-    // 🔵 CRYPTO (Binance)
+    // 🔵 CRYPTO
     const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=200`;
 
     const res = await fetch(url);
     const data = await res.json();
-
-    if (!Array.isArray(data)) throw new Error("Invalid crypto data");
 
     return data.map(c => ({
       time: c[0],
@@ -140,32 +130,9 @@ l, interval) {
   } catch (err) {
     console.error("Fetch failed:", err);
 
-    // fallback so UI NEVER breaks
     return Array.from({ length: 100 }, (_, i) => ({
       time: Date.now() - i * 60000,
       close: 2000 + Math.sin(i / 5) * 10
-    }));
-  }
-}
-
-    // 🔵 CRYPTO (UNCHANGED)
-    const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=200`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    return data.map(c => ({
-      time: c[0],
-      close: parseFloat(c[4])
-    }));
-
-  } catch (err) {
-    console.error("Fetch failed:", err);
-
-    // fallback
-    return Array.from({ length: 100 }, (_, i) => ({
-      time: Date.now() - i * 60000,
-      close: 100 + Math.sin(i / 5) * 10
     }));
   }
 }
@@ -222,27 +189,27 @@ async function load() {
   const interval = document.getElementById("intervalSelect").value;
 
   const data = await fetchData(symbol, interval);
-  if (!data || data.length === 0) {
-  console.warn("No data returned");
-  return;
-}
+
+  if (!data || data.length === 0) return;
+
   const last = data[data.length - 1]?.close;
-const first = data[0]?.close;
+  const first = data[0]?.close;
 
-document.getElementById("currentPrice").textContent = "$" + last?.toFixed(2);
+  document.getElementById("currentPrice").textContent = "$" + last?.toFixed(2);
 
-if (first && last) {
-  const change = ((last - first) / first) * 100;
-  const el = document.getElementById("change24h");
-  el.textContent = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
-  el.style.color = change > 0 ? "#10b981" : "#ef4444";
-}
+  if (first && last) {
+    const change = ((last - first) / first) * 100;
+    const el = document.getElementById("change24h");
+    el.textContent = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
+    el.style.color = change > 0 ? "#10b981" : "#ef4444";
+  }
 
-document.getElementById("high24h").textContent =
-  "$" + Math.max(...data.map(d => d.close)).toFixed(2);
+  document.getElementById("high24h").textContent =
+    "$" + Math.max(...data.map(d => d.close)).toFixed(2);
 
-document.getElementById("low24h").textContent =
-  "$" + Math.min(...data.map(d => d.close)).toFixed(2);
+  document.getElementById("low24h").textContent =
+    "$" + Math.min(...data.map(d => d.close)).toFixed(2);
+
   renderChart(symbol, data);
 }
 
