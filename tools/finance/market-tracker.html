@@ -60,15 +60,16 @@ const etfList = ["SPY", "QQQ"];
 // GOLD PRICE (using metals API alternative)
 async function loadGold() {
   try {
-    const res = await fetch("https://api.metals.live/v1/spot");
+    const res = await fetch("https://api.gold-api.com/price/XAU");
     const data = await res.json();
 
-    const gold = data.find(x => x.gold)?.gold;
+    if (!data.price) throw new Error();
 
     document.getElementById("goldPrice").innerText =
-      "$" + gold.toFixed(2);
-  } catch {
-    document.getElementById("goldPrice").innerText = "Error loading";
+      "$" + data.price.toFixed(2);
+
+  } catch (err) {
+    document.getElementById("goldPrice").innerText = "Gold unavailable";
   }
 }
 
