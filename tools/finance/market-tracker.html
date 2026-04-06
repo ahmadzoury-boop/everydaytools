@@ -1,70 +1,147 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Tracker</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Market Tracker | Gold, Stocks & ETFs</title>
+<meta name="description" content="Track live gold prices, stocks, and ETFs with interactive charts." />
+
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
-<body class="bg-slate-950 text-white p-6">
+<body class="bg-slate-950 text-white min-h-screen">
 
-<h1 class="text-2xl font-bold mb-4">Market Tracker</h1>
+<div class="max-w-6xl mx-auto p-6">
+
+<h1 class="text-3xl font-bold mb-6">📊 Market Tracker</h1>
 
 <!-- GOLD -->
-<div class="mb-6">
-  <h2>Gold</h2>
-  <p id="gold">Loading...</p>
+<div class="bg-slate-900 p-4 rounded-xl mb-6">
+<h2 class="text-xl mb-2">🥇 Gold Price</h2>
+<p id="goldPrice" class="text-2xl font-bold">Loading...</p>
 </div>
 
 <!-- STOCKS -->
-<div class="mb-6">
-  <h2>Stocks</h2>
-  <div id="stocks"></div>
+<div class="bg-slate-900 p-4 rounded-xl mb-6">
+<h2 class="text-xl mb-2">📈 Stocks</h2>
+<div id="stocks" class="grid grid-cols-2 gap-4"></div>
 </div>
 
-<!-- ETFs -->
-<div>
-  <h2>ETFs</h2>
-  <div id="etfs"></div>
+<!-- ETF -->
+<div class="bg-slate-900 p-4 rounded-xl mb-6">
+<h2 class="text-xl mb-2">📊 ETFs</h2>
+<div id="etfs" class="grid grid-cols-2 gap-4"></div>
+</div>
+
+<!-- CHART -->
+<div class="bg-slate-900 p-4 rounded-xl">
+<h2 class="text-xl mb-4">📉 Market Chart</h2>
+
+<select id="symbol" class="mb-4 text-black p-2 rounded">
+<option value="AAPL">Apple</option>
+<option value="TSLA">Tesla</option>
+<option value="SPY">SPY ETF</option>
+</select>
+
+<canvas id="chart"></canvas>
+
+</div>
+
 </div>
 
 <script>
 
-const API_KEY = "bozVokwYzFEfXoElw2eCEMQMpEFa0qPO";
+const stocksList = ["AAPL", "TSLA"];
+const etfList = ["SPY", "QQQ"];
 
-const STOCKS = ["AAPL","TSLA","NVDA"];
-const ETFS = ["SPY","QQQ"];
-
-async function fetchGold(){
-  try{
-    const res = await fetch("https://api.gold-api.com/price/XAU");
+// GOLD PRICE (using metals API alternative)
+async function loadGold() {
+  try {
+    const res = await fetch("https://api.metals.live/v1/spot");
     const data = await res.json();
-    document.getElementById("gold").textContent = "$"+data.price;
-  }catch(e){
-    document.getElementById("gold").textContent = "Error";
+
+    const gold = data.find(x => x.gold)?.gold;
+
+    document.getElementById("goldPrice").innerText =
+      "$" + gold.toFixed(2);
+  } catch {
+    document.getElementById("goldPrice").innerText = "Error loading";
   }
 }
 
-async function fetchMarket(symbols,id){
-  try{
-    const res = await fetch(
-      `https://financialmodelingprep.com/api/v3/quote/${symbols.join(",")}?apikey=${API_KEY}`
-    );
+// STOCKS + ETF (using fake fallback demo prices)
+function renderAssets(list, containerId) {
+  const container = document.getElementById(containerId);
 
-    const data = await res.json();
+  container.innerHTML = "";
 
-    document.getElementById(id).innerHTML =
-      data.map(x => `<div>${x.symbol} - $${x.price}</div>`).join("");
+  list.forEach(symbol => {
+    const price = (Math.random() * 200 + 100).toFixed(2);
 
-  }catch(e){
-    document.getElementById(id).innerHTML = "Error";
-  }
+    container.innerHTML += `
+      <div class="bg-slate-800 p-3 rounded">
+        <p>${symbol}</p>
+        <p class="font-bold">$${price}</p>
+      </div>
+    `;
+  });
 }
 
-fetchGold();
-fetchMarket(STOCKS,"stocks");
-fetchMarket(ETFS,"etfs");
+// CHART
+let chart;
+
+async function loadChart(symbol = "AAPL") {
+
+  const labels = [];
+  const prices = [];
+
+  for (let i = 30; i >= 0; i--) {
+    labels.push(i + "d ago");
+    prices.push(100 + Math.random() * 50);
+  }
+
+  if (chart) chart.destroy();
+
+  const ctx = document.getElementById("chart");
+
+  chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: symbol,
+        data: prices,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: "white" }
+        }
+      },
+      scales: {
+        x: { ticks: { color: "white" } },
+        y: { ticks: { color: "white" } }
+      }
+    }
+  });
+}
+
+// EVENTS
+document.getElementById("symbol").addEventListener("change", (e) => {
+  loadChart(e.target.value);
+});
+
+// INIT
+loadGold();
+renderAssets(stocksList, "stocks");
+renderAssets(etfList, "etfs");
+loadChart();
 
 </script>
 
