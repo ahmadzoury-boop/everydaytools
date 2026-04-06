@@ -54,61 +54,48 @@
 </div>
 ");le";e.yahoo.com/v7/finance/quote?symbols=AAPL,TSLA,SPY,QQQ"e.yahoo.com/v8/finance/chart/${symbol}?range=1mo&interval=1d`ull))
 <script>
-
 let chart;
 
-// ================= GOLD =================
+// GOLD
 async function loadGold() {
   try {
     const res = await fetch("https://api.gold-api.com/price/XAU");
     const data = await res.json();
-
-    document.getElementById("goldPrice").innerText =
-      "$" + data.price.toFixed(2);
-
+    document.getElementById("goldPrice").innerText = "$" + data.price.toFixed(2);
   } catch {
     document.getElementById("goldPrice").innerText = "Unavailable";
   }
 }
 
-// ================= MARKET (SAFE DEMO REALISTIC) =================
+// MARKET (simple stable)
 function loadMarket() {
-  const stocks = [
-    { sym: "AAPL", price: 190 },
-    { sym: "TSLA", price: 240 }
-  ];
+  const stocks = ["AAPL", "TSLA"];
+  const etfs = ["SPY", "QQQ"];
 
-  const etfs = [
-    { sym: "SPY", price: 520 },
-    { sym: "QQQ", price: 450 }
-  ];
+  const stocksBox = document.getElementById("stocks");
+  const etfBox = document.getElementById("etfs");
 
-  const containerStocks = document.getElementById("stocks");
-  const containerEtf = document.getElementById("etfs");
-
-  containerStocks.innerHTML = "";
-  containerEtf.innerHTML = "";
+  stocksBox.innerHTML = "";
+  etfBox.innerHTML = "";
 
   stocks.forEach(s => {
-    containerStocks.innerHTML += `
+    stocksBox.innerHTML += `
       <div class="bg-slate-800 p-3 rounded">
-        <p>${s.sym}</p>
-        <p class="font-bold">$${s.price}</p>
-      </div>
-    `;
+        <p>${s}</p>
+        <p class="font-bold">$${(150 + Math.random()*50).toFixed(2)}</p>
+      </div>`;
   });
 
   etfs.forEach(s => {
-    containerEtf.innerHTML += `
+    etfBox.innerHTML += `
       <div class="bg-slate-800 p-3 rounded">
-        <p>${s.sym}</p>
-        <p class="font-bold">$${s.price}</p>
-      </div>
-    `;
+        <p>${s}</p>
+        <p class="font-bold">$${(400 + Math.random()*50).toFixed(2)}</p>
+      </div>`;
   });
 }
 
-// ================= CHART =================
+// CHART
 function loadChart(symbol = "AAPL") {
 
   let base = 100;
@@ -124,7 +111,7 @@ function loadChart(symbol = "AAPL") {
 
   for (let i = 30; i >= 0; i--) {
     labels.push(i + "d");
-    data.push(base + Math.random() * 50);
+    data.push(base + Math.random() * 40);
   }
 
   if (chart) chart.destroy();
@@ -135,18 +122,13 @@ function loadChart(symbol = "AAPL") {
       labels,
       datasets: [{
         label: symbol,
-        data: data,
+        data,
         borderWidth: 2,
         tension: 0.3
       }]
     },
     options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          labels: { color: "white" }
-        }
-      },
+      plugins: { legend: { labels: { color: "white" } } },
       scales: {
         x: { ticks: { color: "white" } },
         y: { ticks: { color: "white" } }
@@ -155,16 +137,15 @@ function loadChart(symbol = "AAPL") {
   });
 }
 
-// ================= EVENT =================
+// EVENT
 document.getElementById("symbol").addEventListener("change", (e) => {
   loadChart(e.target.value);
 });
 
-// ================= INIT =================
+// INIT
 loadGold();
 loadMarket();
 loadChart();
-
 </script>
   } catch (err) {
     console.log("Chart error:", err);
