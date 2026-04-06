@@ -51,97 +51,120 @@
 </div>
 
 </div>
-
 <script>
 
-const stocksList = ["AAPL", "TSLA"];
-const etfList = ["SPY", "QQQ"];
+const symbols = ["AAPL", "TSLA", "SPY", "QQQ"];
 
-// GOLD PRICE (using metals API alternative)
+// ================= GOLD =================
 async function loadGold() {
   try {
     const res = await fetch("https://api.gold-api.com/price/XAU");
     const data = await res.json();
 
-    if (!data.price) throw new Error();
-
     document.getElementById("goldPrice").innerText =
       "$" + data.price.toFixed(2);
 
-  } catch (err) {
-    document.getElementById("goldPrice").innerText = "Gold unavailable";
+  } catch {
+    document.getElementById("goldPrice").innerText = "Unavailable";
   }
 }
 
-// STOCKS + ETF (using fake fallback demo prices)
-function renderAssets(list, containerId) {
-  const container = document.getElementById(containerId);
+// ================= STOCKS =================
+async function loadMarket() {
+  const containerStocks = document.getElementById("stocks");
+  const containerEtf = document.getElementById("etfs");
 
-  container.innerHTML = "";
+  containerStocks.innerHTML = "";
+  containerEtf.innerHTML = "";
 
-  list.forEach(symbol => {
-    const price = (Math.random() * 200 + 100).toFixed(2);
+  for (let sym of symbols) {
+    try {
+      const res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${sym}`);
+      const data = await res.json();
 
-    container.innerHTML += `
-      <div class="bg-slate-800 p-3 rounded">
-        <p>${symbol}</p>
-        <p class="font-bold">$${price}</p>
-      </div>
-    `;
-  });
+      const price = data.quoteResponse.result[0].regularMarketPrice;
+
+      const card = `
+        <div class="bg-slate-800 p-3 rounded">
+          <p>${sym}</p>
+          <p class="font-bold">$${price}</p>
+        </div>
+      `;
+
+      if (sym === "SPY" || sym === "QQQ") {
+        containerEtf.innerHTML += card;
+      } else {
+        containerStocks.innerHTML += card;
+      }
+
+    } catch {
+      console.log(sym + " failed");
+    }
+  }
 }
 
-// CHART
+// ================= CHART =================
 let chart;
 
 async function loadChart(symbol = "AAPL") {
 
-  const labels = [];
-  const prices = [];
+  try {
+    const res = await fetch(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=1mo&interval=1d`
+    );
 
-  for (let i = 30; i >= 0; i--) {
-    labels.push(i + "d ago");
-    prices.push(100 + Math.random() * 50);
-  }
+    const data = await res.json();
 
-  if (chart) chart.destroy();
+    const result = data.chart.result[0];
 
-  const ctx = document.getElementById("chart");
+    const prices = result.indicators.quote[0].close;
+    const timestamps = result.timestamp;
 
-  chart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [{
-        label: symbol,
-        data: prices,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          labels: { color: "white" }
-        }
+    const labels = timestamps.map(t => {
+      const d = new Date(t * 1000);
+      return d.toLocaleDateString();
+    });
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{
+          label: symbol,
+          data: prices,
+          borderWidth: 2,
+          tension: 0.3
+        }]
       },
-      scales: {
-        x: { ticks: { color: "white" } },
-        y: { ticks: { color: "white" } }
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: { color: "white" }
+          }
+        },
+        scales: {
+          x: { ticks: { color: "white" } },
+          y: { ticks: { color: "white" } }
+        }
       }
-    }
-  });
+    });
+
+  } catch {
+    console.log("Chart error");
+  }
 }
 
-// EVENTS
+// ================= EVENT =================
 document.getElementById("symbol").addEventListener("change", (e) => {
   loadChart(e.target.value);
 });
 
-// INIT
+// ================= INIT =================
 loadGold();
-renderAssets(stocksList, "stocks");
-renderAssets(etfList, "etfs");
+loadMarket();
 loadChart();
 
 </script>
